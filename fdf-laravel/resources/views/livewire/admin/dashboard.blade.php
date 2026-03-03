@@ -1,8 +1,15 @@
 <div class="space-y-6">
     <!-- Page Header -->
     <div class="bg-white shadow rounded-lg p-6">
-        <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p class="mt-2 text-gray-600">Welcome to the Friends of The Deaf Foundation Admin Dashboard</p>
+        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                <p class="mt-2 text-gray-600">Welcome to the Friends of The Deaf Foundation Admin Dashboard</p>
+            </div>
+            <a href="{{ route('admin.manual') }}" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                Open Admin & LMS Manual
+            </a>
+        </div>
     </div>
 
     <!-- Statistics Cards -->

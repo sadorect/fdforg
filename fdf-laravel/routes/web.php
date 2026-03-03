@@ -55,6 +55,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/roles-permissions', RolePermissionManager::class)->name('roles');
         Route::get('/analytics', AnalyticsDashboard::class)->name('analytics');
         Route::get('/analytics/export/pdf', [AdminAnalyticsExportController::class, 'exportPdf'])->name('analytics.export.pdf');
+        Route::view('/manual', 'admin.manual')->name('manual');
         Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile');
         Route::put('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');

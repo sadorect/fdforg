@@ -10,11 +10,29 @@
 </head>
 <body class="bg-gray-100">
     @php
-        $contentActive = request()->routeIs('admin.pages*') || request()->routeIs('admin.events*');
-        $blogActive = request()->routeIs('admin.blog*') || request()->routeIs('admin.categories*');
-        $lmsActive = request()->routeIs('admin.lms*') || request()->routeIs('admin.courses*') || request()->routeIs('admin.lessons*') || request()->routeIs('admin.enrollments*');
-        $siteSettingsActive = request()->routeIs('admin.site-settings*') || request()->routeIs('admin.hero-slides*') || request()->routeIs('admin.email-templates*');
-        $accessActive = request()->routeIs('admin.users*') || request()->routeIs('admin.roles*');
+        $dashboardActive = request()->routeIs('admin.dashboard');
+        $analyticsActive = request()->routeIs('admin.analytics*');
+        $manualActive = request()->routeIs('admin.manual*');
+
+        $pagesActive = request()->routeIs('admin.pages*');
+        $eventsActive = request()->routeIs('admin.events*');
+        $postsActive = request()->routeIs('admin.blog*');
+        $categoriesActive = request()->routeIs('admin.categories*');
+        $lmsDashboardActive = request()->routeIs('admin.lms*');
+        $coursesActive = request()->routeIs('admin.courses*');
+        $lessonsActive = request()->routeIs('admin.lessons*');
+        $enrollmentsActive = request()->routeIs('admin.enrollments*');
+        $siteSettingsPageActive = request()->routeIs('admin.site-settings*');
+        $heroSlidesActive = request()->routeIs('admin.hero-slides*');
+        $emailTemplatesActive = request()->routeIs('admin.email-templates*');
+        $usersActive = request()->routeIs('admin.users*');
+        $rolesActive = request()->routeIs('admin.roles*');
+
+        $contentActive = $pagesActive || $eventsActive;
+        $blogActive = $postsActive || $categoriesActive;
+        $lmsActive = $lmsDashboardActive || $coursesActive || $lessonsActive || $enrollmentsActive;
+        $siteSettingsActive = $siteSettingsPageActive || $heroSlidesActive || $emailTemplatesActive;
+        $accessActive = $usersActive || $rolesActive;
     @endphp
     <!-- Admin Navigation -->
     <nav class="bg-gray-900 shadow-lg">
@@ -50,98 +68,135 @@
             </div>
 
             <div class="hidden md:flex flex-wrap items-center gap-2 border-t border-gray-700 py-3">
-                <a href="{{ route('admin.dashboard') }}" class="rounded px-3 py-1.5 text-sm {{ request()->routeIs('admin.dashboard') ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
-                <a href="{{ route('admin.analytics') }}" class="rounded px-3 py-1.5 text-sm {{ request()->routeIs('admin.analytics*') ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                <a href="{{ route('admin.dashboard') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
+                <a href="{{ route('admin.analytics') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                <a href="{{ route('admin.manual') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Admin Manual</a>
 
-                <details class="relative">
-                    <summary class="list-none cursor-pointer rounded px-3 py-1.5 text-sm {{ $contentActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Content</summary>
+                <details class="relative" @if($contentActive) open @endif>
+                    <summary class="list-none cursor-pointer rounded-md border px-3 py-1.5 text-sm font-semibold {{ $contentActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="inline-flex items-center gap-1.5">
+                            Content
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
                     <div class="absolute left-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl">
-                        <a href="{{ route('admin.pages') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Pages</a>
-                        <a href="{{ route('admin.events') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Events</a>
+                        <a href="{{ route('admin.pages') }}" class="block px-4 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Pages</a>
+                        <a href="{{ route('admin.events') }}" class="block px-4 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Events</a>
                     </div>
                 </details>
 
-                <details class="relative">
-                    <summary class="list-none cursor-pointer rounded px-3 py-1.5 text-sm {{ $blogActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Blog</summary>
+                <details class="relative" @if($blogActive) open @endif>
+                    <summary class="list-none cursor-pointer rounded-md border px-3 py-1.5 text-sm font-semibold {{ $blogActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="inline-flex items-center gap-1.5">
+                            Blog
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
                     <div class="absolute left-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl">
-                        <a href="{{ route('admin.blog') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Posts</a>
-                        <a href="{{ route('admin.categories') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Categories</a>
+                        <a href="{{ route('admin.blog') }}" class="block px-4 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Posts</a>
+                        <a href="{{ route('admin.categories') }}" class="block px-4 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Categories</a>
                     </div>
                 </details>
 
-                <details class="relative">
-                    <summary class="list-none cursor-pointer rounded px-3 py-1.5 text-sm {{ $lmsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">LMS</summary>
+                <details class="relative" @if($lmsActive) open @endif>
+                    <summary class="list-none cursor-pointer rounded-md border px-3 py-1.5 text-sm font-semibold {{ $lmsActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="inline-flex items-center gap-1.5">
+                            LMS
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
                     <div class="absolute left-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl">
-                        <a href="{{ route('admin.lms') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">LMS Dashboard</a>
-                        <a href="{{ route('admin.courses') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Courses</a>
-                        <a href="{{ route('admin.lessons') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Lessons</a>
-                        <a href="{{ route('admin.enrollments') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Enrollments</a>
+                        <a href="{{ route('admin.lms') }}" class="block px-4 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">LMS Dashboard</a>
+                        <a href="{{ route('admin.courses') }}" class="block px-4 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Courses</a>
+                        <a href="{{ route('admin.lessons') }}" class="block px-4 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Lessons</a>
+                        <a href="{{ route('admin.enrollments') }}" class="block px-4 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Enrollments</a>
                     </div>
                 </details>
 
-                <details class="relative">
-                    <summary class="list-none cursor-pointer rounded px-3 py-1.5 text-sm {{ $siteSettingsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Site Settings</summary>
+                <details class="relative" @if($siteSettingsActive) open @endif>
+                    <summary class="list-none cursor-pointer rounded-md border px-3 py-1.5 text-sm font-semibold {{ $siteSettingsActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="inline-flex items-center gap-1.5">
+                            Site Settings
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
                     <div class="absolute left-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl">
-                        <a href="{{ route('admin.site-settings') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Footer & Branding</a>
-                        <a href="{{ route('admin.hero-slides') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Hero Slides</a>
-                        <a href="{{ route('admin.email-templates') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Email Templates</a>
+                        <a href="{{ route('admin.site-settings') }}" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Footer & Branding</a>
+                        <a href="{{ route('admin.hero-slides') }}" class="block px-4 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Hero Slides</a>
+                        <a href="{{ route('admin.email-templates') }}" class="block px-4 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Email Templates</a>
                     </div>
                 </details>
 
-                <details class="relative">
-                    <summary class="list-none cursor-pointer rounded px-3 py-1.5 text-sm {{ $accessActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Access</summary>
+                <details class="relative" @if($accessActive) open @endif>
+                    <summary class="list-none cursor-pointer rounded-md border px-3 py-1.5 text-sm font-semibold {{ $accessActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                        <span class="inline-flex items-center gap-1.5">
+                            Access
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </summary>
                     <div class="absolute left-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl">
-                        <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Users</a>
-                        <a href="{{ route('admin.roles') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Roles & Permissions</a>
+                        <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Users</a>
+                        <a href="{{ route('admin.roles') }}" class="block px-4 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Roles & Permissions</a>
                     </div>
                 </details>
             </div>
 
             <div id="admin-mobile-nav" class="hidden border-t border-gray-700 py-3 md:hidden">
                 <div class="space-y-2">
-                    <a href="{{ route('admin.dashboard') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('admin.dashboard') ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
-                    <a href="{{ route('admin.analytics') }}" class="block rounded px-3 py-2 text-sm {{ request()->routeIs('admin.analytics*') ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                    <a href="{{ route('admin.dashboard') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
+                    <a href="{{ route('admin.analytics') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                    <a href="{{ route('admin.manual') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Admin Manual</a>
 
-                    <details>
-                        <summary class="cursor-pointer rounded px-3 py-2 text-sm {{ $contentActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Content</summary>
+                    <details @if($contentActive) open @endif>
+                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $contentActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Content</summary>
                         <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.pages') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Pages</a>
-                            <a href="{{ route('admin.events') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Events</a>
+                            <a href="{{ route('admin.pages') }}" class="block rounded-md px-3 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Pages</a>
+                            <a href="{{ route('admin.events') }}" class="block rounded-md px-3 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Events</a>
                         </div>
                     </details>
 
-                    <details>
-                        <summary class="cursor-pointer rounded px-3 py-2 text-sm {{ $blogActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Blog</summary>
+                    <details @if($blogActive) open @endif>
+                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $blogActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Blog</summary>
                         <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.blog') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Posts</a>
-                            <a href="{{ route('admin.categories') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Categories</a>
+                            <a href="{{ route('admin.blog') }}" class="block rounded-md px-3 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Posts</a>
+                            <a href="{{ route('admin.categories') }}" class="block rounded-md px-3 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Categories</a>
                         </div>
                     </details>
 
-                    <details>
-                        <summary class="cursor-pointer rounded px-3 py-2 text-sm {{ $lmsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">LMS</summary>
+                    <details @if($lmsActive) open @endif>
+                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $lmsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">LMS</summary>
                         <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.lms') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">LMS Dashboard</a>
-                            <a href="{{ route('admin.courses') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Courses</a>
-                            <a href="{{ route('admin.lessons') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Lessons</a>
-                            <a href="{{ route('admin.enrollments') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Enrollments</a>
+                            <a href="{{ route('admin.lms') }}" class="block rounded-md px-3 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">LMS Dashboard</a>
+                            <a href="{{ route('admin.courses') }}" class="block rounded-md px-3 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Courses</a>
+                            <a href="{{ route('admin.lessons') }}" class="block rounded-md px-3 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Lessons</a>
+                            <a href="{{ route('admin.enrollments') }}" class="block rounded-md px-3 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Enrollments</a>
                         </div>
                     </details>
 
-                    <details>
-                        <summary class="cursor-pointer rounded px-3 py-2 text-sm {{ $siteSettingsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Site Settings</summary>
+                    <details @if($siteSettingsActive) open @endif>
+                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $siteSettingsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Site Settings</summary>
                         <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.site-settings') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Footer & Branding</a>
-                            <a href="{{ route('admin.hero-slides') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Hero Slides</a>
-                            <a href="{{ route('admin.email-templates') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Email Templates</a>
+                            <a href="{{ route('admin.site-settings') }}" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Footer & Branding</a>
+                            <a href="{{ route('admin.hero-slides') }}" class="block rounded-md px-3 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Hero Slides</a>
+                            <a href="{{ route('admin.email-templates') }}" class="block rounded-md px-3 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Email Templates</a>
                         </div>
                     </details>
 
-                    <details>
-                        <summary class="cursor-pointer rounded px-3 py-2 text-sm {{ $accessActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Access</summary>
+                    <details @if($accessActive) open @endif>
+                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $accessActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Access</summary>
                         <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.users') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Users</a>
-                            <a href="{{ route('admin.roles') }}" class="block rounded px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white">Roles & Permissions</a>
+                            <a href="{{ route('admin.users') }}" class="block rounded-md px-3 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Users</a>
+                            <a href="{{ route('admin.roles') }}" class="block rounded-md px-3 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Roles & Permissions</a>
                         </div>
                     </details>
                 </div>

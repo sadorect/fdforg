@@ -121,4 +121,18 @@ class PublicNavigationAndHeroTest extends TestCase
             ->assertSee('Active Hero Slide')
             ->assertDontSee('Inactive Hero Slide');
     }
+
+    public function test_public_navigation_marks_active_menu_item(): void
+    {
+        Page::create([
+            'title' => 'Home',
+            'slug' => 'home',
+            'content' => 'Home content',
+            'status' => 'published',
+        ]);
+
+        $this->get('/events')
+            ->assertOk()
+            ->assertSee('transition bg-blue-100 text-blue-700">Events</a>', false);
+    }
 }

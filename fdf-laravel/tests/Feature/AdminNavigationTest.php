@@ -19,6 +19,7 @@ class AdminNavigationTest extends TestCase
         $response->assertOk();
         $response->assertSee('Dashboard');
         $response->assertSee('Analytics');
+        $response->assertSee('Admin Manual');
         $response->assertSee('Pages');
         $response->assertSee('Events');
         $response->assertSee('Blog');
@@ -33,5 +34,16 @@ class AdminNavigationTest extends TestCase
         $response->assertSee('Users');
         $response->assertSee('Roles & Permissions', false);
         $response->assertSee('Profile Settings');
+        $response->assertSeeText('Open Admin & LMS Manual', false);
+    }
+
+    public function test_admin_navigation_marks_active_submenu_item(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin)
+            ->get('/admin/courses')
+            ->assertOk()
+            ->assertSee('href="' . route('admin.courses') . '" class="block px-4 py-2 text-sm bg-blue-50 font-semibold text-blue-700"', false);
     }
 }

@@ -58,6 +58,24 @@
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
+    @php
+        $homeActive = request()->routeIs('home');
+        $coursesActive = request()->routeIs('courses.*');
+        $eventsActive = request()->routeIs('events.*');
+        $blogActive = request()->routeIs('blog.*');
+        $aboutActive = request()->routeIs('about');
+        $programsActive = request()->routeIs('programs');
+        $donationsActive = request()->routeIs('donations');
+        $contactActive = request()->routeIs('contact*');
+        $dashboardActive = request()->routeIs('dashboard*');
+
+        $desktopNavBase = 'px-3 py-2 text-sm font-medium rounded-md transition';
+        $desktopNavActive = 'bg-blue-100 text-blue-700';
+        $desktopNavInactive = 'text-gray-700 hover:text-blue-600 hover:bg-blue-50';
+        $mobileNavBase = 'block rounded-md px-3 py-2 text-sm font-medium transition';
+        $mobileNavActive = 'bg-blue-100 text-blue-700';
+        $mobileNavInactive = 'text-gray-700 hover:text-blue-600 hover:bg-blue-50';
+    @endphp
     <!-- Skip to main content for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
@@ -76,22 +94,24 @@
                 </div>
                 
                 <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8">
-                    <a href="{{ route('home') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Home</a>
-                    <a href="{{ route('courses.index') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Courses</a>
-                    <a href="{{ route('events.index') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Events</a>
-                    <a href="{{ route('blog.index') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Blog</a>
+                <div class="hidden md:flex space-x-2">
+                    <a href="{{ route('home') }}" class="{{ $desktopNavBase }} {{ $homeActive ? $desktopNavActive : $desktopNavInactive }}">Home</a>
+                    
                     @if(!empty($publishedPageSlugs['about']))
-                        <a href="{{ route('about') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">About</a>
+                        <a href="{{ route('about') }}" class="{{ $desktopNavBase }} {{ $aboutActive ? $desktopNavActive : $desktopNavInactive }}">About</a>
                     @endif
+                    
+                    <a href="{{ route('events.index') }}" class="{{ $desktopNavBase }} {{ $eventsActive ? $desktopNavActive : $desktopNavInactive }}">Events</a>
+                    <a href="{{ route('blog.index') }}" class="{{ $desktopNavBase }} {{ $blogActive ? $desktopNavActive : $desktopNavInactive }}">Blog</a>
+                    <a href="{{ route('courses.index') }}" class="{{ $desktopNavBase }} {{ $coursesActive ? $desktopNavActive : $desktopNavInactive }}">Courses</a>
                     @if(!empty($publishedPageSlugs['programs']))
-                        <a href="{{ route('programs') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Programs</a>
+                        <a href="{{ route('programs') }}" class="{{ $desktopNavBase }} {{ $programsActive ? $desktopNavActive : $desktopNavInactive }}">Programs</a>
                     @endif
                     @if(!empty($publishedPageSlugs['donations']))
-                        <a href="{{ route('donations') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Donate</a>
+                        <a href="{{ route('donations') }}" class="{{ $desktopNavBase }} {{ $donationsActive ? $desktopNavActive : $desktopNavInactive }}">Donate</a>
                     @endif
                     @if(!empty($publishedPageSlugs['contact']))
-                        <a href="{{ route('contact') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Contact</a>
+                        <a href="{{ route('contact') }}" class="{{ $desktopNavBase }} {{ $contactActive ? $desktopNavActive : $desktopNavInactive }}">Contact</a>
                     @endif
                 </div>
 
@@ -107,11 +127,40 @@
                 
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
-                    <button type="button" class="text-gray-700 hover:text-blue-600 p-2" aria-label="Toggle mobile menu">
+                    <button id="public-mobile-toggle" type="button" class="text-gray-700 hover:text-blue-600 p-2" aria-label="Toggle mobile menu">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
+                </div>
+            </div>
+
+            <div id="public-mobile-nav" class="hidden border-t border-gray-200 py-3 md:hidden">
+                <div class="space-y-1">
+                    <a href="{{ route('home') }}" class="{{ $mobileNavBase }} {{ $homeActive ? $mobileNavActive : $mobileNavInactive }}">Home</a>
+                    @if(!empty($publishedPageSlugs['about']))
+                        <a href="{{ route('about') }}" class="{{ $mobileNavBase }} {{ $aboutActive ? $mobileNavActive : $mobileNavInactive }}">About</a>
+                    @endif
+                   
+                    <a href="{{ route('events.index') }}" class="{{ $mobileNavBase }} {{ $eventsActive ? $mobileNavActive : $mobileNavInactive }}">Events</a>
+                    <a href="{{ route('blog.index') }}" class="{{ $mobileNavBase }} {{ $blogActive ? $mobileNavActive : $mobileNavInactive }}">Blog</a>
+                     <a href="{{ route('courses.index') }}" class="{{ $mobileNavBase }} {{ $coursesActive ? $mobileNavActive : $mobileNavInactive }}">Courses</a>
+                    @if(!empty($publishedPageSlugs['programs']))
+                        <a href="{{ route('programs') }}" class="{{ $mobileNavBase }} {{ $programsActive ? $mobileNavActive : $mobileNavInactive }}">Programs</a>
+                    @endif
+                    @if(!empty($publishedPageSlugs['donations']))
+                        <a href="{{ route('donations') }}" class="{{ $mobileNavBase }} {{ $donationsActive ? $mobileNavActive : $mobileNavInactive }}">Donate</a>
+                    @endif
+                    @if(!empty($publishedPageSlugs['contact']))
+                        <a href="{{ route('contact') }}" class="{{ $mobileNavBase }} {{ $contactActive ? $mobileNavActive : $mobileNavInactive }}">Contact</a>
+                    @endif
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="{{ $mobileNavBase }} {{ $dashboardActive ? $mobileNavActive : $mobileNavInactive }}">Dashboard</a>
+                        <form method="POST" action="{{ route('logout') }}" class="px-3 py-2">
+                            @csrf
+                            <button type="submit" class="text-sm font-medium text-gray-700 hover:text-blue-600">Logout</button>
+                        </form>
+                    @endauth
                 </div>
             </div>
         </nav>
@@ -199,45 +248,17 @@
     
     <!-- Scripts -->
     <script>
-        // Simple mobile menu toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.querySelector('button[aria-label="Toggle mobile menu"]');
-            const mobileMenu = document.createElement('div');
-            mobileMenu.className = 'md:hidden hidden bg-white border-t border-gray-200';
-            mobileMenu.innerHTML = `
-                <div class="px-2 pt-2 pb-3 space-y-1">
-                    <a href="{{ route('home') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Home</a>
-                    <a href="{{ route('courses.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Courses</a>
-                    <a href="{{ route('events.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Events</a>
-                    <a href="{{ route('blog.index') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Blog</a>
-                    @if(!empty($publishedPageSlugs['about']))
-                        <a href="{{ route('about') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">About</a>
-                    @endif
-                    @if(!empty($publishedPageSlugs['programs']))
-                        <a href="{{ route('programs') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Programs</a>
-                    @endif
-                    @if(!empty($publishedPageSlugs['donations']))
-                        <a href="{{ route('donations') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Donate</a>
-                    @endif
-                    @if(!empty($publishedPageSlugs['contact']))
-                        <a href="{{ route('contact') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Contact</a>
-                    @endif
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="block px-3 py-2 text-gray-700 hover:text-blue-600">Dashboard</a>
-                        <form method="POST" action="{{ route('logout') }}" class="px-3 py-2">
-                            @csrf
-                            <button type="submit" class="text-gray-700 hover:text-blue-600">Logout</button>
-                        </form>
-                    @endauth
-                </div>
-            `;
-            
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
-                });
-                mobileMenuButton.parentNode.parentNode.appendChild(mobileMenu);
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('public-mobile-toggle');
+            const mobileMenu = document.getElementById('public-mobile-nav');
+
+            if (!mobileMenuButton || !mobileMenu) {
+                return;
             }
+
+            mobileMenuButton.addEventListener('click', function () {
+                mobileMenu.classList.toggle('hidden');
+            });
         });
     </script>
 </body>

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -49,6 +50,23 @@ class AdminRoutesTest extends TestCase
         $this->actingAs($admin)->get('/admin/users')->assertOk();
         $this->actingAs($admin)->get('/admin/roles-permissions')->assertOk();
         $this->actingAs($admin)->get('/admin/analytics')->assertOk();
+        $this->actingAs($admin)->get('/admin/manual')->assertOk();
         $this->actingAs($admin)->get('/admin/profile')->assertOk();
+    }
+
+    public function test_delegated_admin_can_access_admin_manual(): void
+    {
+        $delegatedAdmin = User::factory()->create(['is_admin' => true]);
+        $role = Role::create([
+            'name' => 'Delegated Admin',
+            'slug' => 'delegated-admin',
+            'description' => 'Delegated admin access for scoped administration tasks.',
+        ]);
+        $delegatedAdmin->roles()->attach($role->id);
+
+        $this->actingAs($delegatedAdmin)
+            ->get('/admin/manual')
+            ->assertOk()
+            ->assertSeeText('Admin & LMS User Manual', false);
     }
 }
