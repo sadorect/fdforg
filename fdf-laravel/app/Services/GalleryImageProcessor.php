@@ -56,6 +56,11 @@ class GalleryImageProcessor
         }
     }
 
+    public function isOptimizationAvailable(): bool
+    {
+        return $this->resolveImageManager() !== null;
+    }
+
     private function resolveImageManager(): ?ImageManager
     {
         if (class_exists(\Imagick::class)) {

@@ -71,11 +71,14 @@ class GalleryManager extends Component
             ->orderByDesc('created_at')
             ->paginate(12);
 
+        $imageProcessor = app(GalleryImageProcessor::class);
+
         return view('livewire.admin.gallery-manager', [
             'items' => $items,
             'maxImageKb' => self::MAX_IMAGE_KB,
             'uploadMaxFilesize' => ini_get('upload_max_filesize') ?: 'unknown',
             'postMaxSize' => ini_get('post_max_size') ?: 'unknown',
+            'imageOptimizationAvailable' => $imageProcessor->isOptimizationAvailable(),
         ])->layout('layouts.admin')
             ->title('Gallery Management');
     }
