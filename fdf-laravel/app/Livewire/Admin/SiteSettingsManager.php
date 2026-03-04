@@ -23,7 +23,27 @@ class SiteSettingsManager extends Component
     public $social_youtube_url = '';
     public $social_tiktok_url = '';
     public $social_linkedin_url = '';
+    public $social_facebook_page_id = '';
+    public $social_facebook_access_token = '';
+    public $social_instagram_user_id = '';
+    public $social_instagram_access_token = '';
+    public $social_youtube_channel_id = '';
+    public $social_youtube_api_key = '';
+    public $social_x_username = '';
+    public $social_x_bearer_token = '';
+    public $social_linkedin_org_id = '';
+    public $social_linkedin_access_token = '';
     public $global_show_media_sidebar = true;
+    public $show_media_sidebar_home = true;
+    public $show_media_sidebar_about = true;
+    public $show_media_sidebar_blog = true;
+    public $show_media_sidebar_gallery = true;
+    public $show_media_sidebar_contact = true;
+    public $show_media_sidebar_events = true;
+    public $show_media_sidebar_courses = true;
+    public $show_media_sidebar_programs = true;
+    public $show_media_sidebar_donations = true;
+    public $show_media_sidebar_accessibility = true;
     public $gallery_show_media_sidebar = true;
 
     public $logo = null;
@@ -47,8 +67,68 @@ class SiteSettingsManager extends Component
         $this->social_youtube_url = SiteSetting::getValue('social_youtube_url', '') ?? '';
         $this->social_tiktok_url = SiteSetting::getValue('social_tiktok_url', '') ?? '';
         $this->social_linkedin_url = SiteSetting::getValue('social_linkedin_url', '') ?? '';
+        $this->social_facebook_page_id = SiteSetting::getValue('social_facebook_page_id', '') ?? '';
+        $this->social_facebook_access_token = SiteSetting::getValue('social_facebook_access_token', '') ?? '';
+        $this->social_instagram_user_id = SiteSetting::getValue('social_instagram_user_id', '') ?? '';
+        $this->social_instagram_access_token = SiteSetting::getValue('social_instagram_access_token', '') ?? '';
+        $this->social_youtube_channel_id = SiteSetting::getValue('social_youtube_channel_id', '') ?? '';
+        $this->social_youtube_api_key = SiteSetting::getValue('social_youtube_api_key', '') ?? '';
+        $this->social_x_username = SiteSetting::getValue('social_x_username', '') ?? '';
+        $this->social_x_bearer_token = SiteSetting::getValue('social_x_bearer_token', '') ?? '';
+        $this->social_linkedin_org_id = SiteSetting::getValue('social_linkedin_org_id', '') ?? '';
+        $this->social_linkedin_access_token = SiteSetting::getValue('social_linkedin_access_token', '') ?? '';
         $this->global_show_media_sidebar = in_array(
             strtolower((string) (SiteSetting::getValue('global_show_media_sidebar', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_home = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_home', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_about = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_about', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_blog = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_blog', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_gallery = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_gallery', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_contact = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_contact', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_events = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_events', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_courses = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_courses', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_programs = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_programs', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_donations = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_donations', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        $this->show_media_sidebar_accessibility = in_array(
+            strtolower((string) (SiteSetting::getValue('show_media_sidebar_accessibility', '1') ?? '1')),
             ['1', 'true', 'yes', 'on'],
             true
         );
@@ -88,7 +168,27 @@ class SiteSettingsManager extends Component
             'social_youtube_url' => ['nullable', 'url', 'max:500'],
             'social_tiktok_url' => ['nullable', 'url', 'max:500'],
             'social_linkedin_url' => ['nullable', 'url', 'max:500'],
+            'social_facebook_page_id' => ['nullable', 'string', 'max:255'],
+            'social_facebook_access_token' => ['nullable', 'string', 'max:1000'],
+            'social_instagram_user_id' => ['nullable', 'string', 'max:255'],
+            'social_instagram_access_token' => ['nullable', 'string', 'max:1000'],
+            'social_youtube_channel_id' => ['nullable', 'string', 'max:255'],
+            'social_youtube_api_key' => ['nullable', 'string', 'max:255'],
+            'social_x_username' => ['nullable', 'string', 'max:255'],
+            'social_x_bearer_token' => ['nullable', 'string', 'max:1000'],
+            'social_linkedin_org_id' => ['nullable', 'string', 'max:255'],
+            'social_linkedin_access_token' => ['nullable', 'string', 'max:1000'],
             'global_show_media_sidebar' => ['boolean'],
+            'show_media_sidebar_home' => ['boolean'],
+            'show_media_sidebar_about' => ['boolean'],
+            'show_media_sidebar_blog' => ['boolean'],
+            'show_media_sidebar_gallery' => ['boolean'],
+            'show_media_sidebar_contact' => ['boolean'],
+            'show_media_sidebar_events' => ['boolean'],
+            'show_media_sidebar_courses' => ['boolean'],
+            'show_media_sidebar_programs' => ['boolean'],
+            'show_media_sidebar_donations' => ['boolean'],
+            'show_media_sidebar_accessibility' => ['boolean'],
             'gallery_show_media_sidebar' => ['boolean'],
         ]);
 
@@ -99,8 +199,30 @@ class SiteSettingsManager extends Component
         SiteSetting::setValue('social_youtube_url', $validated['social_youtube_url'] ?? '');
         SiteSetting::setValue('social_tiktok_url', $validated['social_tiktok_url'] ?? '');
         SiteSetting::setValue('social_linkedin_url', $validated['social_linkedin_url'] ?? '');
+        SiteSetting::setValue('social_facebook_page_id', $validated['social_facebook_page_id'] ?? '');
+        SiteSetting::setValue('social_facebook_access_token', $validated['social_facebook_access_token'] ?? '');
+        SiteSetting::setValue('social_instagram_user_id', $validated['social_instagram_user_id'] ?? '');
+        SiteSetting::setValue('social_instagram_access_token', $validated['social_instagram_access_token'] ?? '');
+        SiteSetting::setValue('social_youtube_channel_id', $validated['social_youtube_channel_id'] ?? '');
+        SiteSetting::setValue('social_youtube_api_key', $validated['social_youtube_api_key'] ?? '');
+        SiteSetting::setValue('social_x_username', $validated['social_x_username'] ?? '');
+        SiteSetting::setValue('social_x_bearer_token', $validated['social_x_bearer_token'] ?? '');
+        SiteSetting::setValue('social_linkedin_org_id', $validated['social_linkedin_org_id'] ?? '');
+        SiteSetting::setValue('social_linkedin_access_token', $validated['social_linkedin_access_token'] ?? '');
         SiteSetting::setValue('global_show_media_sidebar', !empty($validated['global_show_media_sidebar']) ? '1' : '0');
-        SiteSetting::setValue('gallery_show_media_sidebar', !empty($validated['gallery_show_media_sidebar']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_home', !empty($validated['show_media_sidebar_home']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_about', !empty($validated['show_media_sidebar_about']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_blog', !empty($validated['show_media_sidebar_blog']) ? '1' : '0');
+        $galleryVisibility = !empty($validated['show_media_sidebar_gallery']) ? '1' : '0';
+
+        SiteSetting::setValue('show_media_sidebar_gallery', $galleryVisibility);
+        SiteSetting::setValue('show_media_sidebar_contact', !empty($validated['show_media_sidebar_contact']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_events', !empty($validated['show_media_sidebar_events']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_courses', !empty($validated['show_media_sidebar_courses']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_programs', !empty($validated['show_media_sidebar_programs']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_donations', !empty($validated['show_media_sidebar_donations']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_accessibility', !empty($validated['show_media_sidebar_accessibility']) ? '1' : '0');
+        SiteSetting::setValue('gallery_show_media_sidebar', $galleryVisibility);
 
         session()->flash('success', 'Media sidebar settings updated successfully.');
     }

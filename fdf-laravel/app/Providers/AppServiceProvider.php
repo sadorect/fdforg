@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\VisitLog;
+use App\Services\SocialStatsService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -42,11 +43,17 @@ class AppServiceProvider extends ServiceProvider
                 $siteSettings = SiteSetting::allAsKeyValue();
             }
 
-            $globalSidebarVisible = in_array(
-                strtolower((string) ($siteSettings['global_show_media_sidebar'] ?? '1')),
-                ['1', 'true', 'yes', 'on'],
-                true
-            );
+            $isEnabled = static function (array $settings, string $key, bool $default = true): bool {
+                $fallback = $default ? '1' : '0';
+
+                return in_array(
+                    strtolower((string) ($settings[$key] ?? $fallback)),
+                    ['1', 'true', 'yes', 'on'],
+                    true
+                );
+            };
+
+            $globalSidebarVisible = $isEnabled($siteSettings, 'global_show_media_sidebar', true);
 
             $showMediaSidebar = $globalSidebarVisible;
 
@@ -61,6 +68,29 @@ class AppServiceProvider extends ServiceProvider
                 $showMediaSidebar = false;
             }
 
+            $visibilityByRoute = [
+                'home' => 'show_media_sidebar_home',
+                'about' => 'show_media_sidebar_about',
+                'programs' => 'show_media_sidebar_programs',
+                'donations' => 'show_media_sidebar_donations',
+                'contact' => 'show_media_sidebar_contact',
+                'accessibility' => 'show_media_sidebar_accessibility',
+                'blog.index' => 'show_media_sidebar_blog',
+                'blog.show' => 'show_media_sidebar_blog',
+                'gallery' => 'show_media_sidebar_gallery',
+                'events.index' => 'show_media_sidebar_events',
+                'events.show' => 'show_media_sidebar_events',
+                'events.calendar' => 'show_media_sidebar_events',
+                'events.register' => 'show_media_sidebar_events',
+                'courses.index' => 'show_media_sidebar_courses',
+                'courses.show' => 'show_media_sidebar_courses',
+                'courses.lessons.show' => 'show_media_sidebar_courses',
+            ];
+
+            if ($routeName !== null && isset($visibilityByRoute[$routeName])) {
+                $showMediaSidebar = $isEnabled($siteSettings, $visibilityByRoute[$routeName], true);
+            }
+
             if (Schema::hasTable('pages')) {
                 $publishedPageSlugs = Page::published()
                     ->whereIn('slug', ['about', 'programs', 'donations', 'contact', 'accessibility'])
@@ -69,16 +99,9 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if (Schema::hasTable('pages') && Schema::hasColumn('pages', 'show_media_sidebar')) {
-                $pageSlugForSidebar = match ($routeName) {
-                    'home' => 'home',
-                    'about' => 'about',
-                    'programs' => 'programs',
-                    'donations' => 'donations',
-                    'contact' => 'contact',
-                    'accessibility' => 'accessibility',
-                    'pages.show' => request()->route('slug'),
-                    default => null,
-                };
+                $pageSlugForSidebar = $routeName === 'pages.show'
+                    ? request()->route('slug')
+                    : null;
 
                 if (!empty($pageSlugForSidebar)) {
                     $pageSidebarSetting = Page::query()
@@ -91,26 +114,11 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
-            $gallerySidebarVisible = in_array(
-                strtolower((string) ($siteSettings['gallery_show_media_sidebar'] ?? '1')),
-                ['1', 'true', 'yes', 'on'],
-                true
-            );
+            $mediaSidebarChannels = app(SocialStatsService::class)->buildChannels($siteSettings);
 
-            if ($routeName === 'gallery') {
-                $showMediaSidebar = $gallerySidebarVisible;
+            if (count($mediaSidebarChannels) === 0) {
+                $showMediaSidebar = false;
             }
-
-            $mediaSidebarStreams = collect([
-                ['label' => 'Facebook', 'url' => $siteSettings['social_facebook_url'] ?? null, 'action_text' => 'Follow'],
-                ['label' => 'Instagram', 'url' => $siteSettings['social_instagram_url'] ?? null, 'action_text' => 'Follow'],
-                ['label' => 'X / Twitter', 'url' => $siteSettings['social_x_url'] ?? null, 'action_text' => 'Follow'],
-                ['label' => 'YouTube', 'url' => $siteSettings['social_youtube_url'] ?? null, 'action_text' => 'Watch'],
-                ['label' => 'TikTok', 'url' => $siteSettings['social_tiktok_url'] ?? null, 'action_text' => 'Watch'],
-                ['label' => 'LinkedIn', 'url' => $siteSettings['social_linkedin_url'] ?? null, 'action_text' => 'Connect'],
-            ])->filter(fn (array $stream) => filled($stream['url']))
-                ->values()
-                ->all();
 
             $view->with([
                 'totalSiteVisits' => $totalSiteVisits,
@@ -129,7 +137,7 @@ class AppServiceProvider extends ServiceProvider
                 'mediaSidebar' => [
                     'show' => $showMediaSidebar,
                     'title' => $siteSettings['media_sidebar_title'] ?? 'Media Streams',
-                    'streams' => $mediaSidebarStreams,
+                    'channels' => $mediaSidebarChannels,
                 ],
             ]);
         });

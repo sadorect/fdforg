@@ -58,18 +58,89 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <input wire:model="global_show_media_sidebar" type="checkbox" class="rounded border-gray-300">
-                    Show media widget on all public pages
-                </label>
-                @error('global_show_media_sidebar') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <h3 class="text-sm font-semibold text-gray-900">API Stats Credentials</h3>
+                <p class="mt-1 text-xs text-gray-500">Add credentials to display live follower/subscriber metrics in the widget. Leave blank to show link-only cards.</p>
 
-                <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                    <input wire:model="gallery_show_media_sidebar" type="checkbox" class="rounded border-gray-300">
-                    Show media sidebar on gallery page
-                </label>
-                @error('gallery_show_media_sidebar') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                <div class="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Facebook Page ID</label>
+                        <input wire:model="social_facebook_page_id" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="1234567890">
+                        @error('social_facebook_page_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Facebook Access Token</label>
+                        <input wire:model="social_facebook_access_token" type="password" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="EAAB...">
+                        @error('social_facebook_access_token') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Instagram User ID</label>
+                        <input wire:model="social_instagram_user_id" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="1784...">
+                        @error('social_instagram_user_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Instagram Access Token</label>
+                        <input wire:model="social_instagram_access_token" type="password" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="IGQV...">
+                        @error('social_instagram_access_token') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">YouTube Channel ID</label>
+                        <input wire:model="social_youtube_channel_id" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="UC...">
+                        @error('social_youtube_channel_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">YouTube API Key</label>
+                        <input wire:model="social_youtube_api_key" type="password" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="AIza...">
+                        @error('social_youtube_api_key') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">X Username</label>
+                        <input wire:model="social_x_username" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="your_handle">
+                        @error('social_x_username') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">X Bearer Token</label>
+                        <input wire:model="social_x_bearer_token" type="password" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="AAAA...">
+                        @error('social_x_bearer_token') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">LinkedIn Organization ID</label>
+                        <input wire:model="social_linkedin_org_id" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="123456">
+                        @error('social_linkedin_org_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">LinkedIn Access Token</label>
+                        <input wire:model="social_linkedin_access_token" type="password" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="AQX...">
+                        @error('social_linkedin_access_token') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <h3 class="text-sm font-semibold text-gray-900">Visibility Controls</h3>
+                <p class="mt-1 text-xs text-gray-500">Choose exactly where the floating media widget appears.</p>
+
+                <div class="mt-3 space-y-2">
+                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input wire:model="global_show_media_sidebar" type="checkbox" class="rounded border-gray-300">
+                        Enable floating media widget globally
+                    </label>
+                    @error('global_show_media_sidebar') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_home" type="checkbox" class="rounded border-gray-300"> Home</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_about" type="checkbox" class="rounded border-gray-300"> About</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_blog" type="checkbox" class="rounded border-gray-300"> Blog (index + posts)</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_gallery" type="checkbox" class="rounded border-gray-300"> Gallery</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_contact" type="checkbox" class="rounded border-gray-300"> Contact</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_events" type="checkbox" class="rounded border-gray-300"> Events (all)</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_courses" type="checkbox" class="rounded border-gray-300"> Courses (all)</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_programs" type="checkbox" class="rounded border-gray-300"> Programs</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_donations" type="checkbox" class="rounded border-gray-300"> Donations</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700"><input wire:model="show_media_sidebar_accessibility" type="checkbox" class="rounded border-gray-300"> Accessibility</label>
+                </div>
+
             </div>
 
             <button type="submit" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Save Media Sidebar Settings</button>

@@ -190,10 +190,8 @@
         </div>
         @yield('content')
 
-        @if(($mediaSidebar['show'] ?? false) && !empty($mediaSidebar['streams'] ?? []))
-            <div id="media-widget-template" class="hidden">
-                <x-media-sidebar :title="$mediaSidebar['title'] ?? 'Media Streams'" :streams="$mediaSidebar['streams']" />
-            </div>
+        @if(($mediaSidebar['show'] ?? false) && !empty($mediaSidebar['channels'] ?? []))
+            <x-media-sidebar :title="$mediaSidebar['title'] ?? 'Media Streams'" :channels="$mediaSidebar['channels']" />
         @endif
     </main>
     
@@ -268,22 +266,28 @@
                 });
             }
 
-            const mediaWidgetTemplate = document.getElementById('media-widget-template');
+            const floatingMediaSidebar = document.getElementById('floating-media-sidebar');
             const mainContent = document.getElementById('main-content');
 
-            if (mediaWidgetTemplate && mainContent) {
-                const mediaWidget = mediaWidgetTemplate.firstElementChild;
-                if (mediaWidget) {
+            if (floatingMediaSidebar && mainContent) {
+                const setSidebarTop = function () {
                     const firstHeroSection = mainContent.querySelector('section');
+                    const fallbackTop = 96;
 
-                    if (firstHeroSection) {
-                        firstHeroSection.insertAdjacentElement('afterend', mediaWidget);
-                    } else {
-                        mainContent.insertBefore(mediaWidget, mainContent.firstChild);
+                    if (!firstHeroSection) {
+                        floatingMediaSidebar.style.top = fallbackTop + 'px';
+                        return;
                     }
-                }
 
-                mediaWidgetTemplate.remove();
+                    const heroBottom = firstHeroSection.getBoundingClientRect().bottom;
+                    const maxTop = Math.max(fallbackTop, window.innerHeight - 180);
+                    const topOffset = Math.min(maxTop, Math.max(fallbackTop, Math.round(heroBottom + 16)));
+                    floatingMediaSidebar.style.top = topOffset + 'px';
+                };
+
+                setSidebarTop();
+                window.addEventListener('resize', setSidebarTop);
+                setTimeout(setSidebarTop, 200);
             }
         });
     </script>

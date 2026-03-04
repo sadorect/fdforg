@@ -80,14 +80,33 @@ class AdminSiteSettingsManagerTest extends TestCase
             ->set('social_youtube_url', 'https://youtube.com/@fdf')
             ->set('social_tiktok_url', 'https://tiktok.com/@fdf')
             ->set('social_linkedin_url', 'https://linkedin.com/company/fdf')
+            ->set('social_facebook_page_id', '123456789')
+            ->set('social_instagram_user_id', '17841400000000000')
+            ->set('social_youtube_channel_id', 'UC1234567890')
+            ->set('social_x_username', 'fdf')
+            ->set('social_linkedin_org_id', '11223344')
             ->set('global_show_media_sidebar', true)
+            ->set('show_media_sidebar_home', true)
+            ->set('show_media_sidebar_about', false)
+            ->set('show_media_sidebar_blog', true)
+            ->set('show_media_sidebar_gallery', true)
+            ->set('show_media_sidebar_contact', false)
+            ->set('show_media_sidebar_events', true)
+            ->set('show_media_sidebar_courses', true)
+            ->set('show_media_sidebar_programs', true)
+            ->set('show_media_sidebar_donations', false)
+            ->set('show_media_sidebar_accessibility', true)
             ->set('gallery_show_media_sidebar', true)
             ->call('saveMediaSidebarSettings')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('site_settings', ['key' => 'media_sidebar_title', 'value' => 'Follow Our Streams']);
         $this->assertDatabaseHas('site_settings', ['key' => 'social_facebook_url', 'value' => 'https://facebook.com/fdf']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'social_facebook_page_id', 'value' => '123456789']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'social_youtube_channel_id', 'value' => 'UC1234567890']);
         $this->assertDatabaseHas('site_settings', ['key' => 'global_show_media_sidebar', 'value' => '1']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'show_media_sidebar_about', 'value' => '0']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'show_media_sidebar_contact', 'value' => '0']);
         $this->assertDatabaseHas('site_settings', ['key' => 'gallery_show_media_sidebar', 'value' => '1']);
     }
 }
