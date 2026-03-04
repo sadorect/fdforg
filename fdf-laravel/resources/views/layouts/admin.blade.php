@@ -82,7 +82,7 @@
                             </svg>
                         </span>
                     </button>
-                    <div class="invisible absolute left-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100">
+                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                         <a href="{{ route('admin.pages') }}" class="block px-4 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Pages</a>
                         <a href="{{ route('admin.events') }}" class="block px-4 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Events</a>
                         <a href="{{ route('admin.gallery') }}" class="block px-4 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Gallery</a>
@@ -98,7 +98,7 @@
                             </svg>
                         </span>
                     </button>
-                    <div class="invisible absolute left-0 z-20 mt-2 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100">
+                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                         <a href="{{ route('admin.blog') }}" class="block px-4 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Posts</a>
                         <a href="{{ route('admin.categories') }}" class="block px-4 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Categories</a>
                     </div>
@@ -113,7 +113,7 @@
                             </svg>
                         </span>
                     </button>
-                    <div class="invisible absolute left-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100">
+                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                         <a href="{{ route('admin.lms') }}" class="block px-4 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">LMS Dashboard</a>
                         <a href="{{ route('admin.courses') }}" class="block px-4 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Courses</a>
                         <a href="{{ route('admin.lessons') }}" class="block px-4 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Lessons</a>
@@ -130,7 +130,7 @@
                             </svg>
                         </span>
                     </button>
-                    <div class="invisible absolute left-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100">
+                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                         <a href="{{ route('admin.site-settings') }}" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Branding & Footer</a>
                         <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Social Media & Sidebar</a>
                         <a href="{{ route('admin.hero-slides') }}" class="block px-4 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Hero Slides</a>
@@ -147,7 +147,7 @@
                             </svg>
                         </span>
                     </button>
-                    <div class="invisible absolute left-0 z-20 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100">
+                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                         <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Users</a>
                         <a href="{{ route('admin.roles') }}" class="block px-4 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Roles & Permissions</a>
                     </div>

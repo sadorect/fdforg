@@ -42,6 +42,25 @@ class AppServiceProvider extends ServiceProvider
                 $siteSettings = SiteSetting::allAsKeyValue();
             }
 
+            $globalSidebarVisible = in_array(
+                strtolower((string) ($siteSettings['global_show_media_sidebar'] ?? '1')),
+                ['1', 'true', 'yes', 'on'],
+                true
+            );
+
+            $showMediaSidebar = $globalSidebarVisible;
+
+            if (
+                $routeName !== null
+                && (
+                    str_starts_with($routeName, 'dashboard')
+                    || str_starts_with($routeName, 'password.')
+                    || in_array($routeName, ['login', 'login.submit', 'register', 'register.submit', 'logout'], true)
+                )
+            ) {
+                $showMediaSidebar = false;
+            }
+
             if (Schema::hasTable('pages')) {
                 $publishedPageSlugs = Page::published()
                     ->whereIn('slug', ['about', 'programs', 'donations', 'contact', 'accessibility'])
@@ -62,9 +81,13 @@ class AppServiceProvider extends ServiceProvider
                 };
 
                 if (!empty($pageSlugForSidebar)) {
-                    $showMediaSidebar = (bool) Page::query()
+                    $pageSidebarSetting = Page::query()
                         ->where('slug', $pageSlugForSidebar)
                         ->value('show_media_sidebar');
+
+                    if ($pageSidebarSetting !== null) {
+                        $showMediaSidebar = (bool) $pageSidebarSetting;
+                    }
                 }
             }
 

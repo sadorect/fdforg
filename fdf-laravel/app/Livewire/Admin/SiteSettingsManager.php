@@ -23,6 +23,7 @@ class SiteSettingsManager extends Component
     public $social_youtube_url = '';
     public $social_tiktok_url = '';
     public $social_linkedin_url = '';
+    public $global_show_media_sidebar = true;
     public $gallery_show_media_sidebar = true;
 
     public $logo = null;
@@ -46,6 +47,11 @@ class SiteSettingsManager extends Component
         $this->social_youtube_url = SiteSetting::getValue('social_youtube_url', '') ?? '';
         $this->social_tiktok_url = SiteSetting::getValue('social_tiktok_url', '') ?? '';
         $this->social_linkedin_url = SiteSetting::getValue('social_linkedin_url', '') ?? '';
+        $this->global_show_media_sidebar = in_array(
+            strtolower((string) (SiteSetting::getValue('global_show_media_sidebar', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
         $this->gallery_show_media_sidebar = in_array(
             strtolower((string) (SiteSetting::getValue('gallery_show_media_sidebar', '1') ?? '1')),
             ['1', 'true', 'yes', 'on'],
@@ -82,6 +88,7 @@ class SiteSettingsManager extends Component
             'social_youtube_url' => ['nullable', 'url', 'max:500'],
             'social_tiktok_url' => ['nullable', 'url', 'max:500'],
             'social_linkedin_url' => ['nullable', 'url', 'max:500'],
+            'global_show_media_sidebar' => ['boolean'],
             'gallery_show_media_sidebar' => ['boolean'],
         ]);
 
@@ -92,6 +99,7 @@ class SiteSettingsManager extends Component
         SiteSetting::setValue('social_youtube_url', $validated['social_youtube_url'] ?? '');
         SiteSetting::setValue('social_tiktok_url', $validated['social_tiktok_url'] ?? '');
         SiteSetting::setValue('social_linkedin_url', $validated['social_linkedin_url'] ?? '');
+        SiteSetting::setValue('global_show_media_sidebar', !empty($validated['global_show_media_sidebar']) ? '1' : '0');
         SiteSetting::setValue('gallery_show_media_sidebar', !empty($validated['gallery_show_media_sidebar']) ? '1' : '0');
 
         session()->flash('success', 'Media sidebar settings updated successfully.');

@@ -58,7 +58,13 @@
                 </div>
             </div>
 
-            <div>
+            <div class="space-y-2">
+                <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <input wire:model="global_show_media_sidebar" type="checkbox" class="rounded border-gray-300">
+                    Show media widget on all public pages
+                </label>
+                @error('global_show_media_sidebar') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+
                 <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
                     <input wire:model="gallery_show_media_sidebar" type="checkbox" class="rounded border-gray-300">
                     Show media sidebar on gallery page

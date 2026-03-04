@@ -191,7 +191,9 @@
         @yield('content')
 
         @if(($mediaSidebar['show'] ?? false) && !empty($mediaSidebar['streams'] ?? []))
-            <x-media-sidebar :title="$mediaSidebar['title'] ?? 'Media Streams'" :streams="$mediaSidebar['streams']" />
+            <div id="media-widget-template" class="hidden">
+                <x-media-sidebar :title="$mediaSidebar['title'] ?? 'Media Streams'" :streams="$mediaSidebar['streams']" />
+            </div>
         @endif
     </main>
     
@@ -260,13 +262,29 @@
             const mobileMenuButton = document.getElementById('public-mobile-toggle');
             const mobileMenu = document.getElementById('public-mobile-nav');
 
-            if (!mobileMenuButton || !mobileMenu) {
-                return;
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function () {
+                    mobileMenu.classList.toggle('hidden');
+                });
             }
 
-            mobileMenuButton.addEventListener('click', function () {
-                mobileMenu.classList.toggle('hidden');
-            });
+            const mediaWidgetTemplate = document.getElementById('media-widget-template');
+            const mainContent = document.getElementById('main-content');
+
+            if (mediaWidgetTemplate && mainContent) {
+                const mediaWidget = mediaWidgetTemplate.firstElementChild;
+                if (mediaWidget) {
+                    const firstHeroSection = mainContent.querySelector('section');
+
+                    if (firstHeroSection) {
+                        firstHeroSection.insertAdjacentElement('afterend', mediaWidget);
+                    } else {
+                        mainContent.insertBefore(mediaWidget, mainContent.firstChild);
+                    }
+                }
+
+                mediaWidgetTemplate.remove();
+            }
         });
     </script>
 </body>

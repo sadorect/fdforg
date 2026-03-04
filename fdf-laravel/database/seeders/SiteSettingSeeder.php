@@ -24,6 +24,7 @@ class SiteSettingSeeder extends Seeder
             'social_youtube_url' => '',
             'social_tiktok_url' => '',
             'social_linkedin_url' => '',
+            'global_show_media_sidebar' => '1',
             'gallery_show_media_sidebar' => '1',
         ];
 
