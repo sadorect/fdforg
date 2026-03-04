@@ -91,7 +91,11 @@
                 <div class="md:col-span-2">
                     <label class="text-sm font-medium text-gray-700">Photos *</label>
                     <input wire:model="images" type="file" multiple class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" accept="image/png,image/jpeg,image/webp">
-                    <p class="mt-1 text-xs text-gray-500">You can upload multiple images for one gallery post.</p>
+                    <p class="mt-1 text-xs text-gray-500">You can upload multiple images for one gallery post. Maximum size is {{ number_format($maxImageKb / 1024, 1) }}MB per image.</p>
+                    <div class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        <p>Images are auto-resized/compressed on the backend after upload, but oversized uploads can still be rejected by the server.</p>
+                        <p class="mt-1">Server caps currently detected: <strong>upload_max_filesize={{ $uploadMaxFilesize }}</strong>, <strong>post_max_size={{ $postMaxSize }}</strong>. A 413 error means these caps were exceeded before validation.</p>
+                    </div>
                     @error('images') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     @error('images.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
 

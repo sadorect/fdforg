@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\GalleryItem;
+use App\Services\GalleryImageProcessor;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -36,6 +37,7 @@ class GalleryManager extends Component
     public $removedImagePaths = [];
 
     protected $paginationTheme = 'tailwind';
+    private const MAX_IMAGE_KB = 4096;
 
     public function updatingSearch(): void
     {
@@ -71,6 +73,9 @@ class GalleryManager extends Component
 
         return view('livewire.admin.gallery-manager', [
             'items' => $items,
+            'maxImageKb' => self::MAX_IMAGE_KB,
+            'uploadMaxFilesize' => ini_get('upload_max_filesize') ?: 'unknown',
+            'postMaxSize' => ini_get('post_max_size') ?: 'unknown',
         ])->layout('layouts.admin')
             ->title('Gallery Management');
     }
@@ -109,8 +114,9 @@ class GalleryManager extends Component
 
         $allImagePaths = $this->existingImagePaths;
 
+        $imageProcessor = app(GalleryImageProcessor::class);
         foreach ($this->images as $image) {
-            $allImagePaths[] = $image->store('gallery', 'public');
+            $allImagePaths[] = $imageProcessor->storeOptimized($image);
         }
 
         $allImagePaths = array_values(array_filter($allImagePaths));
@@ -215,7 +221,7 @@ class GalleryManager extends Component
             'sort_order' => ['required', 'integer', 'min:0', 'max:100000'],
             'status' => ['required', Rule::in(['draft', 'published', 'archived'])],
             'images' => [$this->editing ? 'nullable' : 'required', 'array', 'min:1'],
-            'images.*' => ['image', 'max:4096', 'mimes:jpg,jpeg,png,webp'],
+            'images.*' => ['image', 'max:' . self::MAX_IMAGE_KB, 'mimes:jpg,jpeg,png,webp'],
         ];
     }
 
