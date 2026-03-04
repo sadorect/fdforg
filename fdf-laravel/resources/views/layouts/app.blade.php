@@ -63,6 +63,7 @@
         $coursesActive = request()->routeIs('courses.*');
         $eventsActive = request()->routeIs('events.*');
         $blogActive = request()->routeIs('blog.*');
+        $galleryActive = request()->routeIs('gallery');
         $aboutActive = request()->routeIs('about');
         $programsActive = request()->routeIs('programs');
         $donationsActive = request()->routeIs('donations');
@@ -103,6 +104,7 @@
                     
                     <a href="{{ route('events.index') }}" class="{{ $desktopNavBase }} {{ $eventsActive ? $desktopNavActive : $desktopNavInactive }}">Events</a>
                     <a href="{{ route('blog.index') }}" class="{{ $desktopNavBase }} {{ $blogActive ? $desktopNavActive : $desktopNavInactive }}">Blog</a>
+                    <a href="{{ route('gallery') }}" class="{{ $desktopNavBase }} {{ $galleryActive ? $desktopNavActive : $desktopNavInactive }}">Gallery</a>
                     <a href="{{ route('courses.index') }}" class="{{ $desktopNavBase }} {{ $coursesActive ? $desktopNavActive : $desktopNavInactive }}">Courses</a>
                     @if(!empty($publishedPageSlugs['programs']))
                         <a href="{{ route('programs') }}" class="{{ $desktopNavBase }} {{ $programsActive ? $desktopNavActive : $desktopNavInactive }}">Programs</a>
@@ -144,7 +146,8 @@
                    
                     <a href="{{ route('events.index') }}" class="{{ $mobileNavBase }} {{ $eventsActive ? $mobileNavActive : $mobileNavInactive }}">Events</a>
                     <a href="{{ route('blog.index') }}" class="{{ $mobileNavBase }} {{ $blogActive ? $mobileNavActive : $mobileNavInactive }}">Blog</a>
-                     <a href="{{ route('courses.index') }}" class="{{ $mobileNavBase }} {{ $coursesActive ? $mobileNavActive : $mobileNavInactive }}">Courses</a>
+                    <a href="{{ route('gallery') }}" class="{{ $mobileNavBase }} {{ $galleryActive ? $mobileNavActive : $mobileNavInactive }}">Gallery</a>
+                    <a href="{{ route('courses.index') }}" class="{{ $mobileNavBase }} {{ $coursesActive ? $mobileNavActive : $mobileNavInactive }}">Courses</a>
                     @if(!empty($publishedPageSlugs['programs']))
                         <a href="{{ route('programs') }}" class="{{ $mobileNavBase }} {{ $programsActive ? $mobileNavActive : $mobileNavInactive }}">Programs</a>
                     @endif
@@ -186,6 +189,10 @@
             @endif
         </div>
         @yield('content')
+
+        @if(($mediaSidebar['show'] ?? false) && !empty($mediaSidebar['streams'] ?? []))
+            <x-media-sidebar :title="$mediaSidebar['title'] ?? 'Media Streams'" :streams="$mediaSidebar['streams']" />
+        @endif
     </main>
     
     <!-- Footer -->
@@ -207,6 +214,7 @@
                     <ul class="space-y-2">
                         <li><a href="{{ route('events.index') }}" class="text-gray-300 hover:text-white">Events</a></li>
                         <li><a href="{{ route('blog.index') }}" class="text-gray-300 hover:text-white">Blog</a></li>
+                        <li><a href="{{ route('gallery') }}" class="text-gray-300 hover:text-white">Gallery</a></li>
                         @if(!empty($publishedPageSlugs['about']))
                             <li><a href="{{ route('about') }}" class="text-gray-300 hover:text-white">About Us</a></li>
                         @endif

@@ -66,4 +66,26 @@ class AdminSiteSettingsManagerTest extends TestCase
         Storage::disk('public')->assertExists($logoPath);
         Storage::disk('public')->assertExists($faviconPath);
     }
+
+    public function test_admin_can_update_media_sidebar_stream_settings(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        Livewire::actingAs($admin)
+            ->test(SiteSettingsManager::class)
+            ->set('media_sidebar_title', 'Follow Our Streams')
+            ->set('social_facebook_url', 'https://facebook.com/fdf')
+            ->set('social_instagram_url', 'https://instagram.com/fdf')
+            ->set('social_x_url', 'https://x.com/fdf')
+            ->set('social_youtube_url', 'https://youtube.com/@fdf')
+            ->set('social_tiktok_url', 'https://tiktok.com/@fdf')
+            ->set('social_linkedin_url', 'https://linkedin.com/company/fdf')
+            ->set('gallery_show_media_sidebar', true)
+            ->call('saveMediaSidebarSettings')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('site_settings', ['key' => 'media_sidebar_title', 'value' => 'Follow Our Streams']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'social_facebook_url', 'value' => 'https://facebook.com/fdf']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'gallery_show_media_sidebar', 'value' => '1']);
+    }
 }

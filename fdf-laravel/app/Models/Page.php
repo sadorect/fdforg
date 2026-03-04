@@ -18,6 +18,7 @@ class Page extends Model
         'meta_description',
         'meta_image',
         'status',
+        'show_media_sidebar',
         'order',
         'metadata',
         'navigation',
@@ -28,6 +29,7 @@ class Page extends Model
         'metadata' => 'array',
         'navigation' => 'array',
         'sections' => 'array',
+        'show_media_sidebar' => 'boolean',
     ];
 
     /**

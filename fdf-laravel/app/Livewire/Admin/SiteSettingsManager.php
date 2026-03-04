@@ -16,6 +16,14 @@ class SiteSettingsManager extends Component
     public $footer_phone = '';
     public $footer_email = '';
     public $footer_address = '';
+    public $media_sidebar_title = '';
+    public $social_facebook_url = '';
+    public $social_instagram_url = '';
+    public $social_x_url = '';
+    public $social_youtube_url = '';
+    public $social_tiktok_url = '';
+    public $social_linkedin_url = '';
+    public $gallery_show_media_sidebar = true;
 
     public $logo = null;
     public $favicon = null;
@@ -31,6 +39,18 @@ class SiteSettingsManager extends Component
         $this->footer_address = SiteSetting::getValue('footer_address', '') ?? '';
         $this->logo_path = SiteSetting::getValue('site_logo_path', '') ?? '';
         $this->favicon_path = SiteSetting::getValue('site_favicon_path', '') ?? '';
+        $this->media_sidebar_title = SiteSetting::getValue('media_sidebar_title', 'Media Streams') ?? '';
+        $this->social_facebook_url = SiteSetting::getValue('social_facebook_url', '') ?? '';
+        $this->social_instagram_url = SiteSetting::getValue('social_instagram_url', '') ?? '';
+        $this->social_x_url = SiteSetting::getValue('social_x_url', '') ?? '';
+        $this->social_youtube_url = SiteSetting::getValue('social_youtube_url', '') ?? '';
+        $this->social_tiktok_url = SiteSetting::getValue('social_tiktok_url', '') ?? '';
+        $this->social_linkedin_url = SiteSetting::getValue('social_linkedin_url', '') ?? '';
+        $this->gallery_show_media_sidebar = in_array(
+            strtolower((string) (SiteSetting::getValue('gallery_show_media_sidebar', '1') ?? '1')),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
     }
 
     public function saveFooterSettings(): void
@@ -50,6 +70,31 @@ class SiteSettingsManager extends Component
         SiteSetting::setValue('footer_address', $validated['footer_address'] ?? '');
 
         session()->flash('success', 'Footer settings updated successfully.');
+    }
+
+    public function saveMediaSidebarSettings(): void
+    {
+        $validated = $this->validate([
+            'media_sidebar_title' => ['nullable', 'string', 'max:255'],
+            'social_facebook_url' => ['nullable', 'url', 'max:500'],
+            'social_instagram_url' => ['nullable', 'url', 'max:500'],
+            'social_x_url' => ['nullable', 'url', 'max:500'],
+            'social_youtube_url' => ['nullable', 'url', 'max:500'],
+            'social_tiktok_url' => ['nullable', 'url', 'max:500'],
+            'social_linkedin_url' => ['nullable', 'url', 'max:500'],
+            'gallery_show_media_sidebar' => ['boolean'],
+        ]);
+
+        SiteSetting::setValue('media_sidebar_title', $validated['media_sidebar_title'] ?? 'Media Streams');
+        SiteSetting::setValue('social_facebook_url', $validated['social_facebook_url'] ?? '');
+        SiteSetting::setValue('social_instagram_url', $validated['social_instagram_url'] ?? '');
+        SiteSetting::setValue('social_x_url', $validated['social_x_url'] ?? '');
+        SiteSetting::setValue('social_youtube_url', $validated['social_youtube_url'] ?? '');
+        SiteSetting::setValue('social_tiktok_url', $validated['social_tiktok_url'] ?? '');
+        SiteSetting::setValue('social_linkedin_url', $validated['social_linkedin_url'] ?? '');
+        SiteSetting::setValue('gallery_show_media_sidebar', !empty($validated['gallery_show_media_sidebar']) ? '1' : '0');
+
+        session()->flash('success', 'Media sidebar settings updated successfully.');
     }
 
     public function saveBrandingAssets(): void

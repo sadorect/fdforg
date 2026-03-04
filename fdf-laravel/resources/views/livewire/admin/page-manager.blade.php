@@ -38,6 +38,7 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Title</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Slug</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Media Sidebar</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Updated</th>
                     <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-600">Actions</th>
                 </tr>
@@ -63,6 +64,11 @@
                                 {{ ucfirst($page->status) }}
                             </button>
                         </td>
+                        <td class="px-4 py-3">
+                            <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $page->show_media_sidebar ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700' }}">
+                                {{ $page->show_media_sidebar ? 'Enabled' : 'Hidden' }}
+                            </span>
+                        </td>
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $page->updated_at->diffForHumans() }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="inline-flex items-center gap-3 text-sm">
@@ -73,7 +79,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500">No pages found.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-sm text-gray-500">No pages found.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -140,6 +146,12 @@
                                             <input type="file" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" wire:model="featured_image">
                                             @error('featured_image') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                         </div>
+
+                                        <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                                            <input type="checkbox" class="rounded border-gray-300" wire:model="show_media_sidebar">
+                                            Show media sidebar on this page
+                                        </label>
+                                        @error('show_media_sidebar') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                     </div>
                                 </div>
 

@@ -22,6 +22,7 @@ class AdminNavigationTest extends TestCase
         $response->assertSee('Admin Manual');
         $response->assertSee('Pages');
         $response->assertSee('Events');
+        $response->assertSee('Gallery');
         $response->assertSee('Blog');
         $response->assertSee('Categories');
         $response->assertSee('Hero Slides');

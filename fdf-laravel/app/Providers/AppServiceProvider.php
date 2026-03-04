@@ -29,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
             $totalSiteVisits = 0;
             $publishedPageSlugs = [];
             $siteSettings = [];
+            $showMediaSidebar = false;
+            $routeName = request()->route()?->getName();
 
             if (Schema::hasTable('visit_logs')) {
                 $totalSiteVisits = Cache::remember('analytics.total_site_visits', now()->addMinutes(5), function () {
@@ -47,6 +49,46 @@ class AppServiceProvider extends ServiceProvider
                     ->all();
             }
 
+            if (Schema::hasTable('pages') && Schema::hasColumn('pages', 'show_media_sidebar')) {
+                $pageSlugForSidebar = match ($routeName) {
+                    'home' => 'home',
+                    'about' => 'about',
+                    'programs' => 'programs',
+                    'donations' => 'donations',
+                    'contact' => 'contact',
+                    'accessibility' => 'accessibility',
+                    'pages.show' => request()->route('slug'),
+                    default => null,
+                };
+
+                if (!empty($pageSlugForSidebar)) {
+                    $showMediaSidebar = (bool) Page::query()
+                        ->where('slug', $pageSlugForSidebar)
+                        ->value('show_media_sidebar');
+                }
+            }
+
+            $gallerySidebarVisible = in_array(
+                strtolower((string) ($siteSettings['gallery_show_media_sidebar'] ?? '1')),
+                ['1', 'true', 'yes', 'on'],
+                true
+            );
+
+            if ($routeName === 'gallery') {
+                $showMediaSidebar = $gallerySidebarVisible;
+            }
+
+            $mediaSidebarStreams = collect([
+                ['label' => 'Facebook', 'url' => $siteSettings['social_facebook_url'] ?? null, 'action_text' => 'Follow'],
+                ['label' => 'Instagram', 'url' => $siteSettings['social_instagram_url'] ?? null, 'action_text' => 'Follow'],
+                ['label' => 'X / Twitter', 'url' => $siteSettings['social_x_url'] ?? null, 'action_text' => 'Follow'],
+                ['label' => 'YouTube', 'url' => $siteSettings['social_youtube_url'] ?? null, 'action_text' => 'Watch'],
+                ['label' => 'TikTok', 'url' => $siteSettings['social_tiktok_url'] ?? null, 'action_text' => 'Watch'],
+                ['label' => 'LinkedIn', 'url' => $siteSettings['social_linkedin_url'] ?? null, 'action_text' => 'Connect'],
+            ])->filter(fn (array $stream) => filled($stream['url']))
+                ->values()
+                ->all();
+
             $view->with([
                 'totalSiteVisits' => $totalSiteVisits,
                 'publishedPageSlugs' => array_fill_keys($publishedPageSlugs, true),
@@ -60,6 +102,11 @@ class AppServiceProvider extends ServiceProvider
                     'phone' => $siteSettings['footer_phone'] ?? '(555) 123-4567',
                     'email' => $siteSettings['footer_email'] ?? 'info@friendsofthedeaffoundation.org',
                     'address' => $siteSettings['footer_address'] ?? '',
+                ],
+                'mediaSidebar' => [
+                    'show' => $showMediaSidebar,
+                    'title' => $siteSettings['media_sidebar_title'] ?? 'Media Streams',
+                    'streams' => $mediaSidebarStreams,
                 ],
             ]);
         });

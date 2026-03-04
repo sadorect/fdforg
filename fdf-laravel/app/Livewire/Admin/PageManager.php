@@ -20,6 +20,7 @@ class PageManager extends Component
     public $content;
     public $meta_description;
     public $status = 'published';
+    public $show_media_sidebar = false;
     public $featured_image;
     public $search = '';
 
@@ -29,6 +30,7 @@ class PageManager extends Component
         'content' => 'required|string',
         'meta_description' => 'nullable|string|max:255',
         'status' => 'required|in:draft,published,archived',
+        'show_media_sidebar' => 'boolean',
         'featured_image' => 'nullable|image|max:2048',
     ];
 
@@ -64,6 +66,7 @@ class PageManager extends Component
             'content' => $this->content,
             'meta_description' => $this->meta_description,
             'status' => $this->status,
+            'show_media_sidebar' => (bool) $this->show_media_sidebar,
         ]);
 
         if ($this->featured_image) {
@@ -86,6 +89,7 @@ class PageManager extends Component
         $this->content = $page->content;
         $this->meta_description = $page->meta_description;
         $this->status = $page->status;
+        $this->show_media_sidebar = (bool) $page->show_media_sidebar;
         $this->showForm = true;
         $this->editing = true;
     }
@@ -98,6 +102,7 @@ class PageManager extends Component
             'content' => 'required|string',
             'meta_description' => 'nullable|string|max:255',
             'status' => 'required|in:draft,published,archived',
+            'show_media_sidebar' => 'boolean',
             'featured_image' => 'nullable|image|max:2048',
         ]);
 
@@ -108,6 +113,7 @@ class PageManager extends Component
             'content' => $this->content,
             'meta_description' => $this->meta_description,
             'status' => $this->status,
+            'show_media_sidebar' => (bool) $this->show_media_sidebar,
         ]);
 
         if ($this->featured_image) {
@@ -154,10 +160,12 @@ class PageManager extends Component
             'slug',
             'content',
             'meta_description',
+            'show_media_sidebar',
             'featured_image',
             'showForm',
             'editing',
         ]);
         $this->status = 'published';
+        $this->show_media_sidebar = false;
     }
 }

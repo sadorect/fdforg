@@ -17,6 +17,14 @@ class SiteSettingSeeder extends Seeder
             'footer_address' => '',
             'site_logo_path' => '',
             'site_favicon_path' => '',
+            'media_sidebar_title' => 'Media Streams',
+            'social_facebook_url' => '',
+            'social_instagram_url' => '',
+            'social_x_url' => '',
+            'social_youtube_url' => '',
+            'social_tiktok_url' => '',
+            'social_linkedin_url' => '',
+            'gallery_show_media_sidebar' => '1',
         ];
 
         foreach ($defaults as $key => $value) {

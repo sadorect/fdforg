@@ -42,6 +42,7 @@ class AdminRoutesTest extends TestCase
         $this->actingAs($admin)->get('/admin/dashboard')->assertOk();
         $this->actingAs($admin)->get('/admin/pages')->assertOk();
         $this->actingAs($admin)->get('/admin/events')->assertOk();
+        $this->actingAs($admin)->get('/admin/gallery')->assertOk();
         $this->actingAs($admin)->get('/admin/blog')->assertOk();
         $this->actingAs($admin)->get('/admin/categories')->assertOk();
         $this->actingAs($admin)->get('/admin/hero-slides')->assertOk();

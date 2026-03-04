@@ -7,6 +7,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminAnalyticsExportController;
 use App\Http\Controllers\AdminProfileController;
@@ -24,6 +25,7 @@ use App\Livewire\Admin\AnalyticsDashboard;
 use App\Livewire\Admin\HeroSlideManager;
 use App\Livewire\Admin\EmailTemplateManager;
 use App\Livewire\Admin\SiteSettingsManager;
+use App\Livewire\Admin\GalleryManager;
 
 // Admin Authentication Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -38,6 +40,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Content Management Routes
         Route::get('/pages', \App\Livewire\Admin\PageManager::class)->name('pages');
         Route::get('/events', EventManager::class)->name('events');
+        Route::get('/gallery', GalleryManager::class)->name('gallery');
         Route::get('/blog', \App\Livewire\Admin\BlogManager::class)->name('blog');
         Route::get('/categories', CategoryManager::class)->name('categories');
         Route::get('/hero-slides', HeroSlideManager::class)->name('hero-slides');
@@ -114,6 +117,7 @@ Route::prefix('courses')->name('courses.')->group(function () {
 });
 
 // Static Pages
+Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
