@@ -14,9 +14,10 @@ class ContentSeeder extends Seeder
     public function run(): void
     {
         // Clear existing data
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+DB::table('event_registrations')->delete();
         Page::truncate();
-        Event::truncate();
+DB::table('events')->delete();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $this->command->info('Importing scraped content...');
@@ -42,7 +43,7 @@ class ContentSeeder extends Seeder
                 'content' => '<p>Bridging the communication gap and empowering the deaf community through education, advocacy, and support.</p>',
                 'meta_title' => 'Friends of the Deaf Foundation - Empowering the Deaf Community',
                 'meta_description' => 'Friends of the Deaf Foundation is dedicated to bridging the communication gap and empowering the deaf community through education, advocacy, and support.',
-                'is_published' => true,
+                
             ],
             'about' => [
                 'title' => 'About Us',
@@ -50,7 +51,7 @@ class ContentSeeder extends Seeder
                 'content' => $this->getAboutContent(),
                 'meta_title' => 'About Us - Friends of the Deaf Foundation',
                 'meta_description' => 'Learn about Friends of the Deaf Foundation\'s mission, vision, and commitment to empowering the deaf community.',
-                'is_published' => true,
+                
                 'metadata' => [
                     'show_cta' => true,
                     'cta_title' => 'Join Our Mission',
@@ -63,7 +64,7 @@ class ContentSeeder extends Seeder
                 'content' => $this->getContactContent(),
                 'meta_title' => 'Contact Us - Friends of the Deaf Foundation',
                 'meta_description' => 'Get in touch with Friends of the Deaf Foundation. We\'re here to help and answer your questions.',
-                'is_published' => true,
+                
             ],
             'programs' => [
                 'title' => 'Our Programs',
@@ -71,7 +72,7 @@ class ContentSeeder extends Seeder
                 'content' => $this->getProgramsContent(),
                 'meta_title' => 'Our Programs - Friends of the Deaf Foundation',
                 'meta_description' => 'Explore our comprehensive programs designed to support and empower the deaf community.',
-                'is_published' => true,
+                
                 'metadata' => [
                     'show_cta' => true,
                 ],
@@ -82,7 +83,7 @@ class ContentSeeder extends Seeder
                 'content' => $this->getDonationsContent(),
                 'meta_title' => 'Donate - Friends of the Deaf Foundation',
                 'meta_description' => 'Support our mission by making a donation to Friends of the Deaf Foundation.',
-                'is_published' => true,
+                
             ],
         ];
 
@@ -102,7 +103,7 @@ class ContentSeeder extends Seeder
             [
                 'title' => 'ASL Workshop for Beginners',
                 'slug' => 'asl-workshop-beginners',
-                'content' => '<p>Join us for an introductory American Sign Language workshop designed for beginners. Learn basic ASL vocabulary, grammar, and conversational skills in a supportive environment.</p><p>This workshop is perfect for family members, friends, and community members who want to learn how to communicate better with deaf individuals.</p>',
+                'description' => '<p>Join us for an introductory American Sign Language workshop designed for beginners. Learn basic ASL vocabulary, grammar, and conversational skills in a supportive environment.</p><p>This workshop is perfect for family members, friends, and community members who want to learn how to communicate better with deaf individuals.</p>',
                 'excerpt' => 'Learn basic American Sign Language in this beginner-friendly workshop.',
                 'event_type' => 'workshop',
                 'start_date' => now()->addDays(14),
@@ -118,7 +119,7 @@ class ContentSeeder extends Seeder
             [
                 'title' => 'Deaf Community Networking Event',
                 'slug' => 'deaf-community-networking',
-                'content' => '<p>Connect with fellow deaf and hard-of-hearing individuals, allies, and community members at our monthly networking event.</p><p>Enjoy refreshments, meet new people, and learn about local resources and opportunities for the deaf community.</p>',
+                'description' => '<p>Connect with fellow deaf and hard-of-hearing individuals, allies, and community members at our monthly networking event.</p><p>Enjoy refreshments, meet new people, and learn about local resources and opportunities for the deaf community.</p>',
                 'excerpt' => 'Monthly networking event for the deaf community and allies.',
                 'event_type' => 'social',
                 'start_date' => now()->addDays(7),
@@ -134,7 +135,7 @@ class ContentSeeder extends Seeder
             [
                 'title' => 'Virtual ASL Practice Session',
                 'slug' => 'virtual-asl-practice',
-                'content' => '<p>Practice your ASL skills from the comfort of your home! Join our virtual practice sessions led by experienced ASL instructors.</p><p>All skill levels welcome. This is a great opportunity to practice conversational ASL in a supportive online environment.</p>',
+                'description' => '<p>Practice your ASL skills from the comfort of your home! Join our virtual practice sessions led by experienced ASL instructors.</p><p>All skill levels welcome. This is a great opportunity to practice conversational ASL in a supportive online environment.</p>',
                 'excerpt' => 'Online ASL practice session for all skill levels.',
                 'event_type' => 'workshop',
                 'start_date' => now()->addDays(3),
@@ -151,7 +152,7 @@ class ContentSeeder extends Seeder
             [
                 'title' => 'Deaf Awareness Month Celebration',
                 'slug' => 'deaf-awareness-celebration',
-                'content' => '<p>Join us as we celebrate Deaf Awareness Month with a special event featuring deaf artists, performers, and speakers.</p><p>This family-friendly event will showcase deaf culture, provide educational resources, and create opportunities for community connection.</p>',
+                'description' => '<p>Join us as we celebrate Deaf Awareness Month with a special event featuring deaf artists, performers, and speakers.</p><p>This family-friendly event will showcase deaf culture, provide educational resources, and create opportunities for community connection.</p>',
                 'excerpt' => 'Celebrate Deaf Awareness Month with performances and community activities.',
                 'event_type' => 'celebration',
                 'start_date' => now()->addMonths(1)->startOfMonth(),

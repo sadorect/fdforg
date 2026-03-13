@@ -5,14 +5,22 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Page;
 use App\Models\Event;
+use Illuminate\Support\Facades\DB;
 
 class SimpleContentSeeder extends Seeder
 {
     public function run(): void
     {
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
         // Clear existing data
         Page::truncate();
         Event::truncate();
+        DB::table('event_registrations')->truncate();
+
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         $this->command->info('Importing sample content...');
         
