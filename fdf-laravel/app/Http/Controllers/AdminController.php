@@ -13,7 +13,7 @@ class AdminController extends Controller
      */
     public function showLoginForm(Request $request)
     {
-        if (Auth::check() && Auth::user()->is_admin) {
+        if (Auth::check() && Auth::user()->canAccessAdminPanel()) {
             return redirect()->route('admin.dashboard');
         }
 
@@ -34,7 +34,7 @@ class AdminController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'admin')) {
+        if (! MathCaptcha::isValid($request, 'admin')) {
             MathCaptcha::regenerate($request, 'admin');
 
             return back()->withErrors([
@@ -49,15 +49,16 @@ class AdminController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            
-            if ($user->is_admin) {
+
+            if ($user->canAccessAdminPanel()) {
                 $request->session()->regenerate();
                 MathCaptcha::regenerate($request, 'admin');
-                
+
                 return redirect()->intended(route('admin.dashboard'));
             }
-            
+
             Auth::logout();
+
             return back()->withErrors([
                 'email' => 'This account does not have admin privileges.',
             ]);
@@ -76,10 +77,10 @@ class AdminController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('admin.login');
     }
 
@@ -90,5 +91,4 @@ class AdminController extends Controller
     {
         return view('admin.dashboard');
     }
-
 }

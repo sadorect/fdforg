@@ -75,7 +75,7 @@
                             <tr>
                                 <td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500">
                                     You do not have enrollments yet.
-                                    <a href="{{ route('courses.index') }}" class="font-semibold text-blue-600 hover:text-blue-800">Browse courses</a>.
+                                    <a href="{{ route('courses.index') }}" class="font-semibold text-blue-600 hover:text-blue-800">Browse learning</a>.
                                 </td>
                             </tr>
                         @endforelse

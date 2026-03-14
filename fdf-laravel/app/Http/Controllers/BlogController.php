@@ -14,6 +14,16 @@ class BlogController extends Controller
         $category = null;
         $categorySlug = $request->string('category')->toString();
 
+        $categories = Category::active()
+            ->byType('blog')
+            ->ordered()
+            ->withCount([
+                'blogPosts as published_posts_count' => function ($query) {
+                    $query->published();
+                },
+            ])
+            ->get();
+
         $baseQuery = BlogPost::published()
             ->with(['author', 'category'])
             ->when($categorySlug !== '', function ($query) use (&$category, $categorySlug) {
@@ -42,17 +52,33 @@ class BlogController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        $categories = Category::active()
-            ->byType('blog')
-            ->ordered()
+        $popularPosts = (clone $baseQuery)
+            ->when($featuredPost, function ($query) use ($featuredPost) {
+                $query->whereKeyNot($featuredPost->id);
+            })
+            ->popular()
+            ->take(3)
             ->get();
 
-        return view('blog.index', compact('posts', 'featuredPost', 'categories', 'category'));
+        $blogStats = [
+            'article_count' => BlogPost::published()->count(),
+            'category_count' => $categories->where('published_posts_count', '>', 0)->count(),
+            'author_count' => BlogPost::published()->distinct()->count('author_id'),
+        ];
+
+        return view('blog.index', compact(
+            'posts',
+            'featuredPost',
+            'categories',
+            'category',
+            'popularPosts',
+            'blogStats'
+        ));
     }
 
     public function show(BlogPost $blogPost): View
     {
-        if (!$blogPost->isPublished()) {
+        if (! $blogPost->isPublished()) {
             abort(404);
         }
 
@@ -69,9 +95,17 @@ class BlogController extends Controller
             ->take(3)
             ->get();
 
+        $latestPosts = BlogPost::published()
+            ->with('category')
+            ->where('id', '!=', $blogPost->id)
+            ->recent()
+            ->take(3)
+            ->get();
+
         return view('blog.show', [
             'post' => $blogPost,
             'relatedPosts' => $relatedPosts,
+            'latestPosts' => $latestPosts,
         ]);
     }
 }

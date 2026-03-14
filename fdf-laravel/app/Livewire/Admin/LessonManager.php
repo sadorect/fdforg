@@ -2,32 +2,48 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use App\Models\Lesson;
 use App\Models\Course;
+use App\Models\Lesson;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Str;
 
-class LessonManager extends Component
+class LessonManager extends AdminComponent
 {
+    protected array $adminAbilities = [AdminPermissions::MANAGE_LESSONS];
+
     public $lessons;
+
     public $courses;
+
     public $selectedLesson = null;
+
     public $showCreateForm = false;
+
     public $showEditForm = false;
+
     public $selectedCourseId = null;
-    
+
     // Form fields
     public $title;
+
     public $description;
+
     public $content;
+
     public $course_id;
+
     public $video_url;
+
     public $duration_minutes = 0;
+
     public $sort_order = 0;
+
     public $type = 'video';
+
     public $is_published = false;
+
     public $is_free = false;
-    
+
     protected $rules = [
         'title' => 'required|string|max:255',
         'description' => 'nullable|string|max:500',
@@ -48,11 +64,11 @@ class LessonManager extends Component
     public function loadLessons()
     {
         $query = Lesson::with('course')->orderBy('course_id')->orderBy('sort_order');
-        
+
         if ($this->selectedCourseId) {
             $query->where('course_id', $this->selectedCourseId);
         }
-        
+
         $this->lessons = $query->get();
     }
 
@@ -67,7 +83,7 @@ class LessonManager extends Component
         $this->resetForm();
         $this->showCreateForm = true;
         $this->showEditForm = false;
-        
+
         // Set default order
         if ($this->selectedCourseId) {
             $maxOrder = Lesson::where('course_id', $this->selectedCourseId)->max('sort_order');
@@ -80,7 +96,7 @@ class LessonManager extends Component
     {
         $this->validate();
 
-        $lesson = new Lesson();
+        $lesson = new Lesson;
         $lesson->title = $this->title;
         $lesson->slug = Str::slug($this->title);
         $lesson->description = $this->description;
@@ -92,7 +108,7 @@ class LessonManager extends Component
         $lesson->type = $this->type;
         $lesson->is_published = $this->is_published;
         $lesson->is_free = $this->is_free;
-        
+
         $lesson->save();
 
         $this->showCreateForm = false;
@@ -113,7 +129,7 @@ class LessonManager extends Component
         $this->type = $this->selectedLesson->type;
         $this->is_published = $this->selectedLesson->is_published;
         $this->is_free = $this->selectedLesson->is_free;
-        
+
         $this->showEditForm = true;
         $this->showCreateForm = false;
     }
@@ -133,7 +149,7 @@ class LessonManager extends Component
         $this->selectedLesson->type = $this->type;
         $this->selectedLesson->is_published = $this->is_published;
         $this->selectedLesson->is_free = $this->is_free;
-        
+
         $this->selectedLesson->save();
 
         $this->showEditForm = false;
@@ -152,7 +168,7 @@ class LessonManager extends Component
     public function togglePublished($id)
     {
         $lesson = Lesson::findOrFail($id);
-        $lesson->is_published = !$lesson->is_published;
+        $lesson->is_published = ! $lesson->is_published;
         $lesson->save();
         $this->loadLessons();
     }
@@ -160,7 +176,7 @@ class LessonManager extends Component
     public function toggleFree($id)
     {
         $lesson = Lesson::findOrFail($id);
-        $lesson->is_free = !$lesson->is_free;
+        $lesson->is_free = ! $lesson->is_free;
         $lesson->save();
         $this->loadLessons();
     }
@@ -172,15 +188,15 @@ class LessonManager extends Component
             ->where('sort_order', '<', $lesson->sort_order)
             ->orderBy('sort_order', 'desc')
             ->first();
-            
+
         if ($previousLesson) {
             $tempOrder = $lesson->sort_order;
             $lesson->sort_order = $previousLesson->sort_order;
             $previousLesson->sort_order = $tempOrder;
-            
+
             $lesson->save();
             $previousLesson->save();
-            
+
             $this->loadLessons();
         }
     }
@@ -192,15 +208,15 @@ class LessonManager extends Component
             ->where('sort_order', '>', $lesson->sort_order)
             ->orderBy('sort_order')
             ->first();
-            
+
         if ($nextLesson) {
             $tempOrder = $lesson->sort_order;
             $lesson->sort_order = $nextLesson->sort_order;
             $nextLesson->sort_order = $tempOrder;
-            
+
             $lesson->save();
             $nextLesson->save();
-            
+
             $this->loadLessons();
         }
     }

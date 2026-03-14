@@ -3,16 +3,24 @@
 namespace App\Livewire\Admin;
 
 use App\Models\EmailTemplate;
-use Livewire\Component;
+use App\Support\AdminPermissions;
 
-class EmailTemplateManager extends Component
+class EmailTemplateManager extends AdminComponent
 {
+    protected array $adminAbilities = [AdminPermissions::MANAGE_EMAIL_TEMPLATES];
+
     public $templates;
+
     public $selectedTemplateId = null;
+
     public $name = '';
+
     public $description = '';
+
     public $subject = '';
+
     public $body = '';
+
     public $is_active = true;
 
     protected $rules = [

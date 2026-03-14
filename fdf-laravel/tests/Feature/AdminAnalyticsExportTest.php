@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\VisitLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -13,7 +12,7 @@ class AdminAnalyticsExportTest extends TestCase
 
     public function test_admin_can_export_filtered_analytics_to_pdf(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         VisitLog::create([
             'visit_type' => 'site',

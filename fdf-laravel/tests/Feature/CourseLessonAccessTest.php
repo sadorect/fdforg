@@ -28,7 +28,7 @@ class CourseLessonAccessTest extends TestCase
         ]);
 
         $this->actingAs($learner)
-            ->get("/courses/{$course->slug}/lessons/{$lesson->slug}")
+            ->get(route('courses.lessons.show', [$course->slug, $lesson->slug]))
             ->assertOk()
             ->assertSee('Lesson Content')
             ->assertSee('Paid lesson body');
@@ -49,7 +49,7 @@ class CourseLessonAccessTest extends TestCase
         ]);
 
         $this->actingAs($learner)
-            ->get("/courses/{$course->slug}/lessons/{$lesson->slug}")
+            ->get(route('courses.lessons.show', [$course->slug, $lesson->slug]))
             ->assertRedirect("/dashboard/payments/{$enrollment->id}");
     }
 
@@ -57,7 +57,7 @@ class CourseLessonAccessTest extends TestCase
     {
         [$course, $lesson] = $this->createPaidCourseWithLesson();
 
-        $this->get("/courses/{$course->slug}/lessons/{$lesson->slug}")
+        $this->get(route('courses.lessons.show', [$course->slug, $lesson->slug]))
             ->assertRedirect('/login');
     }
 
@@ -89,7 +89,7 @@ class CourseLessonAccessTest extends TestCase
             'course_id' => $course->id,
         ]);
 
-        $this->get("/courses/{$course->slug}/lessons/{$lesson->slug}")
+        $this->get(route('courses.lessons.show', [$course->slug, $lesson->slug]))
             ->assertOk()
             ->assertSee('Free lesson body');
     }
@@ -110,7 +110,7 @@ class CourseLessonAccessTest extends TestCase
         ]);
 
         $this->actingAs($learner)
-            ->get("/courses/{$course->slug}/lessons/{$lesson->slug}")
+            ->get(route('courses.lessons.show', [$course->slug, $lesson->slug]))
             ->assertOk()
             ->assertSee('Paid lesson body');
     }
@@ -131,7 +131,7 @@ class CourseLessonAccessTest extends TestCase
 
         $this->actingAs($learner)
             ->get("/dashboard/enrollments/{$enrollment->id}/continue")
-            ->assertRedirect("/courses/{$course->slug}/lessons/{$lesson->slug}");
+            ->assertRedirect(route('courses.lessons.show', [$course->slug, $lesson->slug]));
     }
 
     private function createPaidCourseWithLesson(): array

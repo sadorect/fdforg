@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Support\AdminPermissions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,7 +28,7 @@ class AdminRoutesTest extends TestCase
 
     public function test_admin_can_access_lms_management_routes(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         $this->actingAs($admin)->get('/admin/lms')->assertOk();
         $this->actingAs($admin)->get('/admin/courses')->assertOk();
@@ -37,7 +38,7 @@ class AdminRoutesTest extends TestCase
 
     public function test_admin_can_access_content_and_user_management_routes(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         $this->actingAs($admin)->get('/admin/dashboard')->assertOk();
         $this->actingAs($admin)->get('/admin/pages')->assertOk();
@@ -69,5 +70,43 @@ class AdminRoutesTest extends TestCase
             ->get('/admin/manual')
             ->assertOk()
             ->assertSeeText('Admin & LMS User Manual', false);
+    }
+
+    public function test_roleless_admin_can_only_access_basic_admin_pages(): void
+    {
+        $rolelessAdmin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($rolelessAdmin)->get('/admin/dashboard')->assertOk();
+        $this->actingAs($rolelessAdmin)->get('/admin/manual')->assertOk();
+        $this->actingAs($rolelessAdmin)->get('/admin/profile')->assertOk();
+        $this->actingAs($rolelessAdmin)->get('/admin/pages')->assertForbidden();
+        $this->actingAs($rolelessAdmin)->get('/admin/courses')->assertForbidden();
+        $this->actingAs($rolelessAdmin)->get('/admin/users')->assertForbidden();
+    }
+
+    public function test_scoped_admin_can_only_access_their_granted_routes(): void
+    {
+        $scopedAdmin = $this->createScopedAdminUser([AdminPermissions::MANAGE_COURSES]);
+
+        $this->actingAs($scopedAdmin)->get('/admin/courses')->assertOk();
+        $this->actingAs($scopedAdmin)->get('/admin/pages')->assertForbidden();
+        $this->actingAs($scopedAdmin)->get('/admin/lms')->assertForbidden();
+        $this->actingAs($scopedAdmin)->get('/admin/manual')->assertOk();
+    }
+
+    public function test_scoped_admin_can_manage_users_without_accessing_roles_screen(): void
+    {
+        $scopedAdmin = $this->createScopedAdminUser([AdminPermissions::MANAGE_USERS]);
+
+        $this->actingAs($scopedAdmin)->get('/admin/users')->assertOk();
+        $this->actingAs($scopedAdmin)->get('/admin/roles-permissions')->assertForbidden();
+    }
+
+    public function test_scoped_analytics_viewer_cannot_export_reports_without_export_permission(): void
+    {
+        $scopedAdmin = $this->createScopedAdminUser([AdminPermissions::VIEW_ANALYTICS]);
+
+        $this->actingAs($scopedAdmin)->get('/admin/analytics')->assertOk();
+        $this->actingAs($scopedAdmin)->get('/admin/analytics/export/pdf')->assertForbidden();
     }
 }

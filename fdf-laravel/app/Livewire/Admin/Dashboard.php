@@ -2,33 +2,44 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use App\Models\Page;
-use App\Models\Event;
 use App\Models\BlogPost;
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\Lesson;
-use App\Models\User;
 use App\Models\Enrollment;
+use App\Models\Event;
+use App\Models\Lesson;
 use App\Models\LessonProgress;
+use App\Models\Page;
+use App\Models\User;
 
-class Dashboard extends Component
+class Dashboard extends AdminComponent
 {
     public $totalPages;
+
     public $totalEvents;
+
     public $totalBlogPosts;
+
     public $totalCategories;
+
     public $totalCourses;
+
     public $totalLessons;
+
     public $totalUsers;
+
     public $totalEnrollments;
+
     public $totalLessonProgress;
 
     public $recentPages;
+
     public $recentEvents;
+
     public $recentBlogPosts;
+
     public $recentCourses;
+
     public $recentEnrollments;
 
     public function mount()

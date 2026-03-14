@@ -16,7 +16,7 @@ class AdminRolePermissionManagerTest extends TestCase
 
     public function test_admin_can_create_permission_and_role_and_assign_to_user(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
         $targetAdmin = User::factory()->create(['is_admin' => true]);
 
         Livewire::actingAs($admin)

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'trix/dist/trix.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -8,4 +9,538 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+    --font-editorial-display: 'Fraunces', Georgia, serif;
+    --font-editorial-body: 'Source Serif 4', Georgia, serif;
+    --admin-page-bg: oklch(0.958 0.008 247.858);
+    --admin-surface: oklch(1 0 0);
+    --admin-surface-soft: oklch(0.983 0.004 247.858);
+    --admin-border: oklch(0.852 0.012 264.695);
+    --admin-border-strong: oklch(0.712 0.018 264.695);
+    --admin-text: oklch(0.208 0.014 264.665);
+    --admin-muted: oklch(0.446 0.015 264.695);
+    --admin-placeholder: oklch(0.555 0.013 264.695);
+    --admin-focus: oklch(0.546 0.245 262.881);
+    --admin-focus-soft: color-mix(in oklab, var(--admin-focus) 14%, white);
+    --admin-shadow: 0 16px 34px -24px rgb(15 23 42 / 0.38), 0 8px 18px -16px rgb(15 23 42 / 0.22);
+    --admin-field-bg: oklch(0.945 0.01 247.858);
+    --admin-field-bg-hover: oklch(0.932 0.012 247.858);
+    --admin-field-border: oklch(0.655 0.022 255.508);
+    --admin-field-shadow: inset 0 1px 0 rgb(255 255 255 / 0.82), 0 1px 2px rgb(15 23 42 / 0.08);
+}
+
+.public-article-prose {
+    color: oklch(0.34 0.018 264.665);
+    font-family: var(--font-editorial-body);
+    font-size: 1.08rem;
+    line-height: 1.95;
+}
+
+.public-article-prose h1,
+.public-article-prose h2,
+.public-article-prose h3,
+.public-article-prose h4 {
+    color: oklch(0.21 0.034 264.665);
+    font-family: var(--font-editorial-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.14;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.public-article-prose h1 {
+    font-size: 2.45rem;
+}
+
+.public-article-prose h2 {
+    font-size: 2rem;
+}
+
+.public-article-prose h3 {
+    font-size: 1.6rem;
+}
+
+.public-article-prose p,
+.public-article-prose ul,
+.public-article-prose ol,
+.public-article-prose blockquote,
+.public-article-prose pre {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.public-article-prose p:first-of-type {
+    color: oklch(0.21 0.034 264.665);
+    font-size: 1.28rem;
+    line-height: 1.8;
+}
+
+.public-article-prose p:first-of-type::first-letter {
+    float: left;
+    margin-right: 0.6rem;
+    padding-top: 0.25rem;
+    color: oklch(0.52 0.105 223.128);
+    font-family: var(--font-editorial-display);
+    font-size: 4.25rem;
+    font-weight: 700;
+    line-height: 0.78;
+}
+
+.public-article-prose ul,
+.public-article-prose ol {
+    padding-left: 1.5rem;
+}
+
+.public-article-prose ul {
+    list-style: disc;
+}
+
+.public-article-prose ol {
+    list-style: decimal;
+}
+
+.public-article-prose li {
+    margin-bottom: 0.45rem;
+}
+
+.public-article-prose a {
+    color: oklch(0.45 0.085 224.283);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+}
+
+.public-article-prose blockquote {
+    position: relative;
+    padding: 0.25rem 0 0.25rem 1.5rem;
+    color: oklch(0.21 0.034 264.665);
+    font-family: var(--font-editorial-display);
+    font-size: 1.4rem;
+    line-height: 1.6;
+}
+
+.public-article-prose blockquote::before {
+    content: '"';
+    position: absolute;
+    top: -0.35rem;
+    left: 0;
+    color: color-mix(in oklab, oklch(0.52 0.105 223.128) 70%, white);
+    font-size: 2.8rem;
+    line-height: 1;
+}
+
+.public-article-prose pre {
+    display: block;
+    overflow-x: auto;
+    border-radius: 1rem;
+    background: oklch(0.967 0.003 264.542);
+    padding: 1rem 1.1rem;
+}
+
+.public-article-prose img {
+    border-radius: 1.25rem;
+}
+
+.admin-shell {
+    background:
+        radial-gradient(circle at top left, rgb(59 130 246 / 0.08), transparent 24rem),
+        linear-gradient(180deg, oklch(0.938 0.012 247.858) 0%, var(--admin-page-bg) 18rem, oklch(0.972 0.004 247.858) 100%);
+    color: var(--admin-text);
+}
+
+.admin-shell .admin-main {
+    min-height: calc(100vh - 5rem);
+}
+
+.admin-shell .admin-page-shell .text-gray-500 {
+    color: var(--admin-placeholder);
+}
+
+.admin-shell .admin-page-shell .text-gray-600 {
+    color: var(--admin-muted);
+}
+
+.admin-shell .admin-page-shell .text-gray-700,
+.admin-shell .admin-page-shell .text-gray-800,
+.admin-shell .admin-page-shell .text-gray-900 {
+    color: var(--admin-text);
+}
+
+.admin-shell .admin-page-shell .border-gray-100,
+.admin-shell .admin-page-shell .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+    border-color: color-mix(in oklab, var(--admin-border) 72%, white);
+}
+
+.admin-shell .admin-page-shell .border-gray-200,
+.admin-shell .admin-page-shell .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--admin-border);
+}
+
+.admin-shell .admin-page-shell .border-gray-300 {
+    border-color: var(--admin-border-strong);
+}
+
+.admin-shell .admin-page-shell .ring-gray-200 {
+    --tw-ring-color: var(--admin-border);
+}
+
+.admin-shell .admin-page-shell .bg-white {
+    background-color: var(--admin-surface);
+}
+
+.admin-shell .admin-page-shell .bg-gray-50 {
+    background-color: var(--admin-surface-soft);
+}
+
+.admin-shell .admin-page-shell .rounded-lg.bg-white,
+.admin-shell .admin-page-shell .rounded-xl.bg-white,
+.admin-shell .admin-page-shell .rounded-2xl.bg-white,
+.admin-shell .admin-page-shell .rounded-lg.bg-gray-50,
+.admin-shell .admin-page-shell .rounded-xl.bg-gray-50,
+.admin-shell .admin-page-shell .rounded-2xl.bg-gray-50,
+.admin-shell .admin-page-shell .shadow,
+.admin-shell .admin-page-shell .shadow-sm,
+.admin-shell .admin-page-shell .shadow-lg,
+.admin-shell .admin-page-shell .shadow-xl,
+.admin-shell .admin-page-shell .shadow-2xl {
+    box-shadow: var(--admin-shadow);
+}
+
+.admin-shell .admin-page-shell input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.admin-shell .admin-page-shell select,
+.admin-shell .admin-page-shell textarea {
+    border-color: var(--admin-field-border);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-field-bg) 82%, white), var(--admin-field-bg));
+    color: var(--admin-text);
+    box-shadow: var(--admin-field-shadow);
+}
+
+.admin-shell .admin-page-shell input::placeholder,
+.admin-shell .admin-page-shell textarea::placeholder {
+    color: var(--admin-placeholder);
+}
+
+.admin-shell .admin-page-shell input:hover:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.admin-shell .admin-page-shell select:hover,
+.admin-shell .admin-page-shell textarea:hover {
+    border-color: color-mix(in oklab, var(--admin-field-border) 80%, black);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-field-bg-hover) 80%, white), var(--admin-field-bg-hover));
+}
+
+.admin-shell .admin-page-shell input:focus:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.admin-shell .admin-page-shell select:focus,
+.admin-shell .admin-page-shell textarea:focus {
+    border-color: var(--admin-focus);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-focus) 7%, white), color-mix(in oklab, var(--admin-field-bg) 92%, white));
+    box-shadow: 0 0 0 3px var(--admin-focus-soft);
+    outline: none;
+}
+
+.admin-shell .admin-page-shell input[type='file'] {
+    padding: 0.3rem;
+}
+
+.admin-shell .admin-page-shell input[type='file']::file-selector-button {
+    margin-right: 0.85rem;
+    border: 1px solid color-mix(in oklab, var(--admin-field-border) 82%, white);
+    border-radius: 0.55rem;
+    background: color-mix(in oklab, var(--admin-focus) 12%, white);
+    color: color-mix(in oklab, var(--admin-text) 90%, var(--admin-focus));
+    padding: 0.6rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.admin-shell .admin-page-shell input[type='checkbox'],
+.admin-shell .admin-page-shell input[type='radio'] {
+    border-color: var(--admin-field-border);
+    background-color: var(--admin-field-bg);
+}
+
+.admin-shell .admin-page-shell input[type='checkbox']:focus,
+.admin-shell .admin-page-shell input[type='radio']:focus {
+    box-shadow: 0 0 0 3px var(--admin-focus-soft);
+}
+
+.admin-shell .admin-page-shell label {
+    color: var(--admin-text);
+}
+
+.admin-rich-editor trix-toolbar .trix-button-group--file-tools {
+    display: none;
+}
+
+.admin-rich-editor trix-toolbar {
+    margin-bottom: 0.85rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 0.85rem;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(241 245 249 / 0.95));
+    padding: 0.55rem;
+    box-shadow: 0 10px 22px -20px rgb(15 23 42 / 0.45);
+}
+
+.admin-rich-editor trix-toolbar .trix-button-row {
+    gap: 0.4rem;
+}
+
+.admin-rich-editor trix-toolbar .trix-button-group {
+    border-color: var(--admin-border);
+    border-radius: 0.7rem;
+    overflow: hidden;
+}
+
+.admin-rich-editor trix-toolbar .trix-button {
+    background: rgb(255 255 255 / 0.96);
+    border-bottom: 0;
+    color: var(--admin-muted);
+}
+
+.admin-rich-editor trix-toolbar .trix-button:hover,
+.admin-rich-editor trix-toolbar .trix-button.trix-active {
+    background: color-mix(in oklab, var(--admin-focus) 10%, white);
+    color: color-mix(in oklab, var(--admin-focus) 78%, black);
+}
+
+.admin-rich-editor trix-editor {
+    min-height: 22rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--admin-field-border);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-field-bg) 74%, white), var(--admin-field-bg));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.92), 0 10px 25px -24px rgb(15 23 42 / 0.4);
+    padding: 0.875rem 1rem;
+}
+
+.admin-rich-editor trix-editor.trix-content {
+    color: var(--admin-text);
+    line-height: 1.7;
+}
+
+.admin-rich-editor trix-editor:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: var(--admin-focus);
+    box-shadow: 0 0 0 3px var(--admin-focus-soft), 0 16px 30px -26px rgb(15 23 42 / 0.5);
+}
+
+.admin-rich-editor trix-editor [data-trix-placeholder]::before {
+    color: var(--admin-placeholder);
+}
+
+.admin-rich-editor trix-editor.trix-content h1,
+.admin-rich-editor trix-editor.trix-content h2,
+.admin-rich-editor trix-editor.trix-content h3,
+.admin-rich-editor trix-editor.trix-content h4 {
+    color: oklch(0.21 0.006 285.885);
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-rich-editor trix-editor.trix-content h1 {
+    font-size: 1.875rem;
+}
+
+.admin-rich-editor trix-editor.trix-content h2 {
+    font-size: 1.5rem;
+}
+
+.admin-rich-editor trix-editor.trix-content h3 {
+    font-size: 1.25rem;
+}
+
+.admin-rich-editor trix-editor.trix-content p,
+.admin-rich-editor trix-editor.trix-content ul,
+.admin-rich-editor trix-editor.trix-content ol,
+.admin-rich-editor trix-editor.trix-content blockquote,
+.admin-rich-editor trix-editor.trix-content pre {
+    margin-top: 0.875rem;
+    margin-bottom: 0.875rem;
+}
+
+.admin-rich-editor trix-editor.trix-content ul,
+.admin-rich-editor trix-editor.trix-content ol {
+    padding-left: 1.5rem;
+}
+
+.admin-rich-editor trix-editor.trix-content ul {
+    list-style: disc;
+}
+
+.admin-rich-editor trix-editor.trix-content ol {
+    list-style: decimal;
+}
+
+.admin-rich-editor trix-editor.trix-content li {
+    margin-bottom: 0.35rem;
+}
+
+.admin-rich-editor trix-editor.trix-content a {
+    color: oklch(0.546 0.245 262.881);
+    text-decoration: underline;
+}
+
+.admin-rich-editor trix-editor.trix-content blockquote {
+    border-left: 4px solid oklch(0.92 0.004 286.32);
+    padding-left: 1rem;
+    color: oklch(0.442 0.017 285.786);
+}
+
+.admin-rich-editor trix-editor.trix-content pre {
+    display: block;
+    overflow-x: auto;
+    border-radius: 0.5rem;
+    background: oklch(0.967 0.003 264.542);
+    padding: 0.875rem 1rem;
+}
+
+.admin-page-preview {
+    color: oklch(0.274 0.006 286.033);
+    line-height: 1.7;
+}
+
+.admin-page-preview h1,
+.admin-page-preview h2,
+.admin-page-preview h3,
+.admin-page-preview h4 {
+    color: oklch(0.21 0.006 285.885);
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-page-preview h1 {
+    font-size: 1.875rem;
+}
+
+.admin-page-preview h2 {
+    font-size: 1.5rem;
+}
+
+.admin-page-preview h3 {
+    font-size: 1.25rem;
+}
+
+.admin-page-preview p,
+.admin-page-preview ul,
+.admin-page-preview ol,
+.admin-page-preview blockquote {
+    margin-top: 0.875rem;
+    margin-bottom: 0.875rem;
+}
+
+.admin-page-preview ul,
+.admin-page-preview ol {
+    padding-left: 1.5rem;
+}
+
+.admin-page-preview ul {
+    list-style: disc;
+}
+
+.admin-page-preview ol {
+    list-style: decimal;
+}
+
+.admin-page-preview a {
+    color: oklch(0.546 0.245 262.881);
+    text-decoration: underline;
+}
+
+.admin-page-preview blockquote {
+    border-left: 4px solid oklch(0.92 0.004 286.32);
+    padding-left: 1rem;
+    color: oklch(0.442 0.017 285.786);
+}
+
+/* Editorial preset for long-form story content like the About page narrative. */
+.admin-rich-editor trix-editor.editorial-editor.trix-content,
+.admin-page-preview.editorial-preview {
+    color: oklch(0.348 0.02 264.665);
+    font-family: var(--font-editorial-body);
+    font-size: 1.08rem;
+    line-height: 1.9;
+    letter-spacing: 0.01em;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content h1,
+.admin-rich-editor trix-editor.editorial-editor.trix-content h2,
+.admin-rich-editor trix-editor.editorial-editor.trix-content h3,
+.admin-rich-editor trix-editor.editorial-editor.trix-content h4,
+.admin-page-preview.editorial-preview h1,
+.admin-page-preview.editorial-preview h2,
+.admin-page-preview.editorial-preview h3,
+.admin-page-preview.editorial-preview h4 {
+    color: oklch(0.21 0.034 264.665);
+    font-family: var(--font-editorial-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content h1,
+.admin-page-preview.editorial-preview h1 {
+    font-size: 2.2rem;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content h2,
+.admin-page-preview.editorial-preview h2 {
+    font-size: 1.8rem;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content h3,
+.admin-page-preview.editorial-preview h3 {
+    font-size: 1.45rem;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content p:first-of-type,
+.admin-page-preview.editorial-preview p:first-of-type {
+    color: oklch(0.21 0.034 264.665);
+    font-size: 1.25rem;
+    line-height: 1.75;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content p:first-of-type::first-letter,
+.admin-page-preview.editorial-preview p:first-of-type::first-letter {
+    float: left;
+    margin-right: 0.6rem;
+    padding-top: 0.25rem;
+    color: oklch(0.52 0.105 223.128);
+    font-family: var(--font-editorial-display);
+    font-size: 4.2rem;
+    font-weight: 700;
+    line-height: 0.78;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content blockquote,
+.admin-page-preview.editorial-preview blockquote {
+    position: relative;
+    border-left: 0;
+    padding: 0.25rem 0 0.25rem 1.5rem;
+    color: oklch(0.21 0.034 264.665);
+    font-family: var(--font-editorial-display);
+    font-size: 1.35rem;
+    line-height: 1.6;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content blockquote::before,
+.admin-page-preview.editorial-preview blockquote::before {
+    content: '"';
+    position: absolute;
+    top: -0.35rem;
+    left: 0;
+    color: color-mix(in oklab, oklch(0.52 0.105 223.128) 70%, white);
+    font-size: 2.8rem;
+    line-height: 1;
+}
+
+.admin-rich-editor trix-editor.editorial-editor.trix-content a,
+.admin-page-preview.editorial-preview a {
+    color: oklch(0.45 0.085 224.283);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
 }

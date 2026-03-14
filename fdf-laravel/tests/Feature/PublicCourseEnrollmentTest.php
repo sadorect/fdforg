@@ -26,13 +26,33 @@ class PublicCourseEnrollmentTest extends TestCase
             'price' => 0,
         ]);
 
-        $this->get('/courses')
+        $this->get(route('courses.index'))
             ->assertOk()
+            ->assertSee('Learning opportunities built for deaf learners, families, and allies.')
             ->assertSee('Public ASL Intro');
 
-        $this->get('/courses/' . $course->slug)
+        $this->get(route('courses.show', $course->slug))
             ->assertOk()
+            ->assertSee('Learning Path')
             ->assertSee('Sign In');
+    }
+
+    public function test_legacy_courses_urls_redirect_to_learning_routes(): void
+    {
+        $instructor = User::factory()->create(['is_admin' => true]);
+        $course = Course::create([
+            'title' => 'Legacy Redirect Course',
+            'slug' => 'legacy-redirect-course',
+            'description' => 'Legacy redirect course.',
+            'instructor_id' => $instructor->id,
+            'status' => 'published',
+            'difficulty_level' => 'beginner',
+            'duration_minutes' => 90,
+            'price' => 0,
+        ]);
+
+        $this->get('/courses')->assertRedirect(route('courses.index'));
+        $this->get('/courses/'.$course->slug)->assertRedirect(route('courses.show', $course->slug));
     }
 
     public function test_guest_must_sign_in_before_enrollment(): void
@@ -49,7 +69,7 @@ class PublicCourseEnrollmentTest extends TestCase
             'price' => 0,
         ]);
 
-        $response = $this->post('/courses/' . $course->slug . '/enroll');
+        $response = $this->post(route('courses.enroll', $course->slug));
 
         $response->assertRedirect('/login');
         $this->assertDatabaseCount('enrollments', 0);
@@ -75,7 +95,7 @@ class PublicCourseEnrollmentTest extends TestCase
                 'course_enroll_captcha_question' => '3 + 4',
                 'course_enroll_captcha_answer' => 7,
             ])
-            ->post('/courses/' . $course->slug . '/enroll', [
+            ->post(route('courses.enroll', $course->slug), [
                 'captcha_answer' => 7,
             ]);
         $response->assertRedirect('/dashboard');
@@ -106,7 +126,7 @@ class PublicCourseEnrollmentTest extends TestCase
                 'course_enroll_captcha_question' => '2 + 6',
                 'course_enroll_captcha_answer' => 8,
             ])
-            ->post('/courses/' . $course->slug . '/enroll', [
+            ->post(route('courses.enroll', $course->slug), [
                 'captcha_answer' => 8,
             ]);
 
@@ -114,7 +134,7 @@ class PublicCourseEnrollmentTest extends TestCase
             ->where('user_id', $learner->id)
             ->firstOrFail();
 
-        $response->assertRedirect('/dashboard/payments/' . $enrollment->id);
+        $response->assertRedirect('/dashboard/payments/'.$enrollment->id);
 
         $this->assertDatabaseHas('enrollments', [
             'course_id' => $course->id,
@@ -154,7 +174,7 @@ class PublicCourseEnrollmentTest extends TestCase
                 'course_enroll_captcha_question' => '5 + 2',
                 'course_enroll_captcha_answer' => 7,
             ])
-            ->post('/courses/' . $course->slug . '/enroll', [
+            ->post(route('courses.enroll', $course->slug), [
                 'captcha_answer' => 7,
             ])
             ->assertRedirect('/dashboard');

@@ -2,39 +2,57 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\BlogPost;
 use App\Models\Category;
 use App\Models\User;
+use App\Support\AdminPermissions;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
+use Livewire\WithPagination;
 
-class BlogManager extends Component
+class BlogManager extends AdminComponent
 {
-    use WithPagination;
     use WithFileUploads;
+    use WithPagination;
+
+    protected array $adminAbilities = [AdminPermissions::MANAGE_BLOG];
 
     public $search = '';
+
     public $category_filter = '';
+
     public $status_filter = '';
+
     public $showForm = false;
+
     public $editing = false;
+
     public $post_id;
 
     // Form fields
     public $title;
+
     public $slug;
+
     public $excerpt;
+
     public $content;
+
     public $category_id;
+
     public $author_id;
+
     public $status = 'draft';
+
     public $is_featured = false;
+
     public $published_at;
+
     public $featured_image;
+
     public $tags = [];
+
     public $new_tag;
 
     protected $rules = [
@@ -60,16 +78,16 @@ class BlogManager extends Component
     public function render()
     {
         $query = BlogPost::with(['category', 'author'])
-            ->when($this->search, function($query) {
-                $query->where(function($q) {
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
                     $q->where('title', 'like', '%'.$this->search.'%')
-                      ->orWhere('content', 'like', '%'.$this->search.'%');
+                        ->orWhere('content', 'like', '%'.$this->search.'%');
                 });
             })
-            ->when($this->category_filter, function($query) {
+            ->when($this->category_filter, function ($query) {
                 $query->where('category_id', $this->category_filter);
             })
-            ->when($this->status_filter, function($query) {
+            ->when($this->status_filter, function ($query) {
                 $query->where('status', $this->status_filter);
             })
             ->orderBy('created_at', 'desc');
@@ -107,7 +125,7 @@ class BlogManager extends Component
         $this->is_featured = $post->is_featured;
         $this->published_at = $post->published_at?->format('Y-m-d\TH:i');
         $this->tags = is_array($post->tags) ? $post->tags : [];
-        
+
         $this->showForm = true;
         $this->editing = true;
     }
@@ -115,7 +133,7 @@ class BlogManager extends Component
     public function save()
     {
         $rules = $this->rules;
-        
+
         if ($this->editing) {
             $rules['slug'] = 'required|string|max:255|unique:blog_posts,slug,'.$this->post_id;
         }
@@ -134,7 +152,7 @@ class BlogManager extends Component
             'tags' => array_values($this->tags),
         ];
 
-        if ($this->status === 'published' && !$this->published_at) {
+        if ($this->status === 'published' && ! $this->published_at) {
             $data['published_at'] = now();
         } elseif ($this->published_at) {
             $data['published_at'] = $this->published_at;
@@ -163,7 +181,7 @@ class BlogManager extends Component
         if ($post->featured_image) {
             Storage::disk('public')->delete($post->featured_image);
         }
-        
+
         $post->delete();
         $this->dispatch('blog-deleted', 'Blog post deleted successfully!');
     }
@@ -172,7 +190,7 @@ class BlogManager extends Component
     {
         $post = BlogPost::findOrFail($postId);
 
-        $post->update(['is_featured' => !$post->is_featured]);
+        $post->update(['is_featured' => ! $post->is_featured]);
         $this->dispatch('blog-updated', 'Post featured status updated!');
     }
 
@@ -181,13 +199,13 @@ class BlogManager extends Component
         $post = BlogPost::findOrFail($postId);
 
         $newPost = $post->replicate();
-        $newPost->title = $post->title . ' (Copy)';
-        $newPost->slug = $post->slug . '-copy-' . time();
+        $newPost->title = $post->title.' (Copy)';
+        $newPost->slug = $post->slug.'-copy-'.time();
         $newPost->status = 'draft';
         $newPost->published_at = null;
         $newPost->views = 0;
         $newPost->save();
-        
+
         $this->dispatch('blog-created', 'Blog post duplicated successfully!');
     }
 
@@ -199,10 +217,10 @@ class BlogManager extends Component
     public function resetForm()
     {
         $this->reset([
-            'post_id', 'title', 'slug', 'excerpt', 'content', 'category_id', 
-            'author_id', 'status', 'is_featured', 'published_at', 'featured_image', 'tags'
+            'post_id', 'title', 'slug', 'excerpt', 'content', 'category_id',
+            'author_id', 'status', 'is_featured', 'published_at', 'featured_image', 'tags',
         ]);
-        
+
         $this->showForm = false;
         $this->editing = false;
         $this->author_id = User::where('is_admin', true)->value('id') ?? User::query()->value('id');
@@ -216,7 +234,7 @@ class BlogManager extends Component
 
     public function addTag()
     {
-        if (!empty($this->new_tag) && !in_array($this->new_tag, $this->tags)) {
+        if (! empty($this->new_tag) && ! in_array($this->new_tag, $this->tags)) {
             $this->tags[] = $this->new_tag;
             $this->new_tag = '';
         }

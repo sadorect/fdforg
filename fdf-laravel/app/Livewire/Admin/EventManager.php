@@ -3,38 +3,60 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Event;
+use App\Support\AdminPermissions;
 use Illuminate\Validation\Rule;
-use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
-class EventManager extends Component
+class EventManager extends AdminComponent
 {
     use WithFileUploads;
     use WithPagination;
 
+    protected array $adminAbilities = [AdminPermissions::MANAGE_EVENTS];
+
     public $search = '';
+
     public $statusFilter = '';
+
     public $showForm = false;
+
     public $editing = false;
+
     public $eventId;
 
     public $title = '';
+
     public $slug = '';
+
     public $description = '';
+
     public $excerpt = '';
+
     public $start_date = '';
+
     public $end_date = '';
+
     public $time = '';
+
     public $location = '';
+
     public $venue = '';
+
     public $price = '';
+
     public $registration_required = false;
+
     public $image = null;
+
     public $existingImagePath = null;
+
     public $status = 'upcoming';
+
     public $is_virtual = false;
+
     public $meeting_link = '';
+
     public $max_attendees = '';
 
     protected $paginationTheme = 'tailwind';
@@ -54,9 +76,9 @@ class EventManager extends Component
         $events = Event::query()
             ->when($this->search !== '', function ($query) {
                 $query->where(function ($q) {
-                    $q->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('description', 'like', '%' . $this->search . '%')
-                        ->orWhere('location', 'like', '%' . $this->search . '%');
+                    $q->where('title', 'like', '%'.$this->search.'%')
+                        ->orWhere('description', 'like', '%'.$this->search.'%')
+                        ->orWhere('location', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->statusFilter !== '', fn ($query) => $query->where('status', $this->statusFilter))
@@ -108,7 +130,7 @@ class EventManager extends Component
     {
         $data = $this->validate($this->rules());
 
-        if (!$data['is_virtual']) {
+        if (! $data['is_virtual']) {
             $data['meeting_link'] = null;
         }
 
@@ -150,7 +172,7 @@ class EventManager extends Component
 
     public function updatedTitle(string $value): void
     {
-        if (!$this->editing) {
+        if (! $this->editing) {
             $this->slug = str($value)->slug()->toString();
         }
     }

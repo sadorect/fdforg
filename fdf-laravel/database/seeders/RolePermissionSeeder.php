@@ -4,67 +4,151 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\User;
+use App\Support\AdminPermissions;
 use Illuminate\Database\Seeder;
 
 class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $permissions = [
-            ['name' => 'Manage Content', 'slug' => 'manage-content', 'description' => 'Create and edit pages, events, blog, categories.'],
-            ['name' => 'Manage LMS', 'slug' => 'manage-lms', 'description' => 'Manage courses, lessons, enrollments, and LMS dashboards.'],
-            ['name' => 'Manage Users', 'slug' => 'manage-users', 'description' => 'Create/edit users and admin access.'],
-            ['name' => 'Manage Roles', 'slug' => 'manage-roles', 'description' => 'Manage roles and permissions.'],
-        ];
-
-        foreach ($permissions as $permissionData) {
+        foreach (AdminPermissions::definitions() as $permissionData) {
             Permission::updateOrCreate(
                 ['slug' => $permissionData['slug']],
                 $permissionData
             );
         }
 
-        $superAdmin = Role::updateOrCreate(
-            ['slug' => 'super-admin'],
+        $roleDefinitions = [
             [
+                'slug' => 'super-admin',
                 'name' => 'Super Admin',
-                'description' => 'Full administrative access.',
-                'is_system' => true,
-            ]
-        );
-
-        $contentAdmin = Role::updateOrCreate(
-            ['slug' => 'content-admin'],
+                'description' => 'Full administrative access across content, learning, analytics, and access control.',
+                'permissions' => AdminPermissions::slugs(),
+            ],
             [
+                'slug' => 'content-admin',
                 'name' => 'Content Admin',
-                'description' => 'Manages site pages and blog content.',
-                'is_system' => true,
-            ]
-        );
-
-        $lmsAdmin = Role::updateOrCreate(
-            ['slug' => 'lms-admin'],
+                'description' => 'Manages public content, storytelling, and shared site presentation.',
+                'permissions' => [
+                    AdminPermissions::VIEW_ANALYTICS,
+                    AdminPermissions::MANAGE_CONTENT,
+                    AdminPermissions::MANAGE_PAGES,
+                    AdminPermissions::MANAGE_EVENTS,
+                    AdminPermissions::MANAGE_GALLERY,
+                    AdminPermissions::MANAGE_BLOG,
+                    AdminPermissions::MANAGE_CATEGORIES,
+                    AdminPermissions::MANAGE_HERO_SLIDES,
+                    AdminPermissions::MANAGE_EMAIL_TEMPLATES,
+                    AdminPermissions::MANAGE_SITE_SETTINGS,
+                ],
+            ],
             [
+                'slug' => 'communications-editor',
+                'name' => 'Communications Editor',
+                'description' => 'Edits pages, blog posts, categories, and gallery items without access-control duties.',
+                'permissions' => [
+                    AdminPermissions::MANAGE_PAGES,
+                    AdminPermissions::MANAGE_BLOG,
+                    AdminPermissions::MANAGE_CATEGORIES,
+                    AdminPermissions::MANAGE_GALLERY,
+                ],
+            ],
+            [
+                'slug' => 'events-coordinator',
+                'name' => 'Events Coordinator',
+                'description' => 'Runs event publishing and related visual coverage.',
+                'permissions' => [
+                    AdminPermissions::VIEW_ANALYTICS,
+                    AdminPermissions::MANAGE_EVENTS,
+                    AdminPermissions::MANAGE_GALLERY,
+                ],
+            ],
+            [
+                'slug' => 'site-operator',
+                'name' => 'Site Operator',
+                'description' => 'Maintains shared site settings, hero slides, and email templates.',
+                'permissions' => [
+                    AdminPermissions::MANAGE_SITE_SETTINGS,
+                    AdminPermissions::MANAGE_HERO_SLIDES,
+                    AdminPermissions::MANAGE_EMAIL_TEMPLATES,
+                ],
+            ],
+            [
+                'slug' => 'lms-admin',
                 'name' => 'LMS Admin',
-                'description' => 'Manages courses, lessons and enrollments.',
-                'is_system' => true,
-            ]
-        );
+                'description' => 'Manages courses, lessons, enrollments, and learning operations.',
+                'permissions' => [
+                    AdminPermissions::VIEW_ANALYTICS,
+                    AdminPermissions::MANAGE_LMS,
+                    AdminPermissions::VIEW_LMS_DASHBOARD,
+                    AdminPermissions::MANAGE_COURSES,
+                    AdminPermissions::MANAGE_LESSONS,
+                    AdminPermissions::MANAGE_ENROLLMENTS,
+                ],
+            ],
+            [
+                'slug' => 'learning-coordinator',
+                'name' => 'Learning Coordinator',
+                'description' => 'Oversees course delivery, lesson publishing, and learner progress.',
+                'permissions' => [
+                    AdminPermissions::VIEW_LMS_DASHBOARD,
+                    AdminPermissions::MANAGE_COURSES,
+                    AdminPermissions::MANAGE_LESSONS,
+                    AdminPermissions::MANAGE_ENROLLMENTS,
+                ],
+            ],
+            [
+                'slug' => 'enrollment-manager',
+                'name' => 'Enrollment Manager',
+                'description' => 'Reviews learner progress and manages enrollments.',
+                'permissions' => [
+                    AdminPermissions::VIEW_LMS_DASHBOARD,
+                    AdminPermissions::MANAGE_ENROLLMENTS,
+                ],
+            ],
+            [
+                'slug' => 'analytics-viewer',
+                'name' => 'Analytics Viewer',
+                'description' => 'Reviews analytics dashboards and exports reports.',
+                'permissions' => [
+                    AdminPermissions::VIEW_ANALYTICS,
+                    AdminPermissions::EXPORT_ANALYTICS,
+                ],
+            ],
+            [
+                'slug' => 'user-manager',
+                'name' => 'User Manager',
+                'description' => 'Maintains user accounts without managing access roles.',
+                'permissions' => [
+                    AdminPermissions::MANAGE_USERS,
+                ],
+            ],
+            [
+                'slug' => 'access-admin',
+                'name' => 'Access Admin',
+                'description' => 'Manages admin roles, permissions, and access assignments.',
+                'permissions' => [
+                    AdminPermissions::MANAGE_USERS,
+                    AdminPermissions::MANAGE_ROLES,
+                    AdminPermissions::MANAGE_ROLES_PERMISSIONS,
+                ],
+            ],
+        ];
 
-        $allPermissions = Permission::pluck('id')->all();
-        $superAdmin->permissions()->sync($allPermissions);
+        foreach ($roleDefinitions as $roleDefinition) {
+            $role = Role::updateOrCreate(
+                ['slug' => $roleDefinition['slug']],
+                [
+                    'name' => $roleDefinition['name'],
+                    'description' => $roleDefinition['description'],
+                    'is_system' => true,
+                ]
+            );
 
-        $contentAdmin->permissions()->sync(
-            Permission::whereIn('slug', ['manage-content'])->pluck('id')->all()
-        );
+            $role->permissions()->sync(
+                Permission::whereIn('slug', $roleDefinition['permissions'])->pluck('id')->all()
+            );
+        }
 
-        $lmsAdmin->permissions()->sync(
-            Permission::whereIn('slug', ['manage-lms'])->pluck('id')->all()
-        );
-
-        User::where('is_admin', true)->get()->each(function (User $user) use ($superAdmin) {
-            $user->roles()->syncWithoutDetaching([$superAdmin->id]);
-        });
     }
 }

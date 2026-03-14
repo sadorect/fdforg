@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Livewire\Admin\EmailTemplateManager;
 use App\Models\EmailTemplate;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -15,7 +14,7 @@ class AdminEmailTemplateManagerTest extends TestCase
 
     public function test_admin_can_access_email_template_page(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         $this->actingAs($admin)
             ->get('/admin/email-templates')
@@ -25,7 +24,7 @@ class AdminEmailTemplateManagerTest extends TestCase
 
     public function test_admin_can_edit_email_template_content(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
         EmailTemplate::syncDefaults();
         $template = EmailTemplate::query()->where('key', 'course_enrollment_confirmation')->firstOrFail();
 

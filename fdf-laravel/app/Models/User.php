@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Support\AdminPermissions;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -55,20 +57,63 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
+    public function canAccessAdminPanel(): bool
+    {
+        return $this->is_admin;
+    }
+
     public function hasRole(string $roleSlug): bool
     {
+        if ($this->relationLoaded('roles')) {
+            return $this->roles->contains('slug', $roleSlug);
+        }
+
         return $this->roles()->where('slug', $roleSlug)->exists();
+    }
+
+    public function hasAnyPermission(array $permissionSlugs): bool
+    {
+        foreach ($permissionSlugs as $permissionSlug) {
+            if ($this->hasPermission($permissionSlug)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super-admin');
     }
 
     public function hasPermission(string $permissionSlug): bool
     {
-        if ($this->is_admin) {
+        if (! $this->canAccessAdminPanel()) {
+            return false;
+        }
+
+        if ($this->isSuperAdmin()) {
             return true;
         }
 
+        $acceptableSlugs = AdminPermissions::acceptableSlugs($permissionSlug);
+
+        if ($this->relationLoaded('roles')) {
+            return $this->roles->contains(function (Role $role) use ($acceptableSlugs) {
+                if ($role->relationLoaded('permissions')) {
+                    return $role->permissions->contains(function (Permission $permission) use ($acceptableSlugs) {
+                        return in_array($permission->slug, $acceptableSlugs, true);
+                    });
+                }
+
+                return $role->permissions()->whereIn('slug', $acceptableSlugs)->exists();
+            });
+        }
+
         return $this->roles()
-            ->whereHas('permissions', function ($query) use ($permissionSlug) {
-                $query->where('slug', $permissionSlug);
+            ->whereHas('permissions', function ($query) use ($acceptableSlugs) {
+                $query->whereIn('slug', $acceptableSlugs);
             })
             ->exists();
     }

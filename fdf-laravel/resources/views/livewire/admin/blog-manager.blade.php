@@ -68,11 +68,22 @@
                 <div class="md:col-span-2">
                     <label class="text-sm font-medium text-gray-700">Excerpt *</label>
                     <textarea wire:model="excerpt" rows="2" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <p class="mt-1 text-xs text-gray-500">Keep this as a short plain-text summary for cards, previews, and search results.</p>
                     @error('excerpt') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
                     <label class="text-sm font-medium text-gray-700">Content *</label>
-                    <textarea wire:model="content" rows="8" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <div
+                        class="admin-rich-editor mt-2"
+                        wire:ignore
+                        wire:key="blog-content-editor-{{ $editing ? $post_id : 'new' }}"
+                        x-data="richTextEditor(@entangle('content').live)"
+                        x-init="init()"
+                    >
+                        <input id="blog-content-editor-{{ $this->getId() }}" type="hidden" x-ref="input">
+                        <trix-editor class="trix-content" input="blog-content-editor-{{ $this->getId() }}" x-ref="editor" placeholder="Write the full article with headings, lists, quotes, and links..."></trix-editor>
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500">Use the rich-text toolbar to create formatted blog posts. File attachments are disabled here.</p>
                     @error('content') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>

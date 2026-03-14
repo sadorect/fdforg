@@ -21,7 +21,7 @@ class AdminLmsManagersTest extends TestCase
 
     public function test_course_manager_can_create_and_toggle_course_flags(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
         $category = Category::create([
             'name' => 'Professional Training',
             'slug' => 'professional-training',
@@ -65,7 +65,7 @@ class AdminLmsManagersTest extends TestCase
 
     public function test_lesson_manager_can_create_and_reorder_lessons(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
         $course = Course::create([
             'title' => 'ASL Basics',
             'slug' => 'asl-basics',
@@ -141,7 +141,7 @@ class AdminLmsManagersTest extends TestCase
 
     public function test_enrollment_manager_handles_create_completion_and_duplicate_guard(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
         $learner = User::factory()->create(['is_admin' => false]);
         $course = Course::create([
             'title' => 'Community Support 101',
@@ -204,7 +204,7 @@ class AdminLmsManagersTest extends TestCase
 
     public function test_lms_dashboard_shows_aggregated_lms_stats(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
         $instructor = User::factory()->create(['is_admin' => true]);
         $learnerA = User::factory()->create(['is_admin' => false]);
         $learnerB = User::factory()->create(['is_admin' => false]);

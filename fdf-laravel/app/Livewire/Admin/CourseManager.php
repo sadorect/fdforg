@@ -2,42 +2,64 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use App\Models\Course;
 use App\Models\Category;
+use App\Models\Course;
 use App\Models\User;
-use Livewire\WithFileUploads;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Str;
+use Livewire\WithFileUploads;
 
-class CourseManager extends Component
+class CourseManager extends AdminComponent
 {
     use WithFileUploads;
 
+    protected array $adminAbilities = [AdminPermissions::MANAGE_COURSES];
+
     public $courses;
+
     public $categories;
+
     public $instructors;
+
     public $selectedCourse = null;
+
     public $showCreateForm = false;
+
     public $showEditForm = false;
-    
+
     // Form fields
     public $title;
+
     public $description;
+
     public $content;
+
     public $category_id;
+
     public $instructor_id;
+
     public $featured_image;
+
     public $intro_video_url;
+
     public $difficulty_level = 'beginner';
+
     public $duration_minutes = 0;
+
     public $status = 'draft';
+
     public $pricing_model = 'paid';
+
     public $max_students;
+
     public $is_certificate_enabled = true;
+
     public $is_featured = false;
+
     public $price = 0;
+
     public $currency_code = 'USD';
-    
+
     protected $rules = [
         'title' => 'required|string|max:255',
         'description' => 'required|string|max:500',
@@ -81,7 +103,7 @@ class CourseManager extends Component
     {
         $this->validate();
 
-        $course = new Course();
+        $course = new Course;
         $course->title = $this->title;
         $course->slug = Str::slug($this->title);
         $course->description = $this->description;
@@ -97,11 +119,11 @@ class CourseManager extends Component
         $course->price = $this->pricing_model === 'free' ? 0 : $this->price;
         $course->currency_code = $this->currency_code;
         $course->is_featured = $this->is_featured;
-        
+
         if ($this->featured_image) {
             $course->featured_image = $this->featured_image->store('courses', 'public');
         }
-        
+
         $course->save();
 
         $this->showCreateForm = false;
@@ -127,7 +149,7 @@ class CourseManager extends Component
         $this->price = $this->selectedCourse->price;
         $this->currency_code = $this->selectedCourse->currency_code;
         $this->is_featured = $this->selectedCourse->is_featured;
-        
+
         $this->showEditForm = true;
         $this->showCreateForm = false;
     }
@@ -151,11 +173,11 @@ class CourseManager extends Component
         $this->selectedCourse->price = $this->pricing_model === 'free' ? 0 : $this->price;
         $this->selectedCourse->currency_code = $this->currency_code;
         $this->selectedCourse->is_featured = $this->is_featured;
-        
+
         if ($this->featured_image) {
             $this->selectedCourse->featured_image = $this->featured_image->store('courses', 'public');
         }
-        
+
         $this->selectedCourse->save();
 
         $this->showEditForm = false;
@@ -174,7 +196,7 @@ class CourseManager extends Component
     public function toggleFeatured($id)
     {
         $course = Course::findOrFail($id);
-        $course->is_featured = !$course->is_featured;
+        $course->is_featured = ! $course->is_featured;
         $course->save();
         $this->loadCourses();
     }

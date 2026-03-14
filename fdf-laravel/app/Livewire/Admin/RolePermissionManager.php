@@ -5,33 +5,49 @@ namespace App\Livewire\Admin;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Livewire\Component;
 use Livewire\WithPagination;
 
-class RolePermissionManager extends Component
+class RolePermissionManager extends AdminComponent
 {
     use WithPagination;
 
+    protected array $adminAbilities = [AdminPermissions::MANAGE_ROLES_PERMISSIONS];
+
     public $searchRoles = '';
+
     public $searchPermissions = '';
 
     public $showRoleForm = false;
+
     public $editingRole = false;
+
     public $roleId;
+
     public $role_name = '';
+
     public $role_slug = '';
+
     public $role_description = '';
+
     public $role_permission_ids = [];
+
     public $role_user_ids = [];
+
     public $role_is_system = false;
 
     public $showPermissionForm = false;
+
     public $editingPermission = false;
+
     public $permissionId;
+
     public $permission_name = '';
+
     public $permission_slug = '';
+
     public $permission_description = '';
 
     protected $paginationTheme = 'tailwind';
@@ -52,8 +68,8 @@ class RolePermissionManager extends Component
             ->withCount(['permissions', 'users'])
             ->when($this->searchRoles !== '', function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchRoles . '%')
-                        ->orWhere('slug', 'like', '%' . $this->searchRoles . '%');
+                    $q->where('name', 'like', '%'.$this->searchRoles.'%')
+                        ->orWhere('slug', 'like', '%'.$this->searchRoles.'%');
                 });
             })
             ->orderBy('name')
@@ -63,8 +79,8 @@ class RolePermissionManager extends Component
             ->withCount('roles')
             ->when($this->searchPermissions !== '', function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchPermissions . '%')
-                        ->orWhere('slug', 'like', '%' . $this->searchPermissions . '%');
+                    $q->where('name', 'like', '%'.$this->searchPermissions.'%')
+                        ->orWhere('slug', 'like', '%'.$this->searchPermissions.'%');
                 });
             })
             ->orderBy('name')
@@ -131,6 +147,7 @@ class RolePermissionManager extends Component
 
         if ($role->is_system) {
             session()->flash('error', 'System roles cannot be deleted.');
+
             return;
         }
 
@@ -185,14 +202,14 @@ class RolePermissionManager extends Component
 
     public function updatedRoleName(string $value): void
     {
-        if (!$this->editingRole || $this->role_slug === '') {
+        if (! $this->editingRole || $this->role_slug === '') {
             $this->role_slug = Str::slug($value);
         }
     }
 
     public function updatedPermissionName(string $value): void
     {
-        if (!$this->editingPermission || $this->permission_slug === '') {
+        if (! $this->editingPermission || $this->permission_slug === '') {
             $this->permission_slug = Str::slug($value);
         }
     }
@@ -205,6 +222,16 @@ class RolePermissionManager extends Component
     public function cancelPermission(): void
     {
         $this->resetPermissionForm();
+    }
+
+    public function clearRolePermissions(): void
+    {
+        $this->role_permission_ids = [];
+    }
+
+    public function clearRoleUsers(): void
+    {
+        $this->role_user_ids = [];
     }
 
     private function roleRules(): array

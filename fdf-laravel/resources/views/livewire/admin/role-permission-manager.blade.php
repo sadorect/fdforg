@@ -37,7 +37,12 @@
                             @error('role_description') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="text-xs font-medium text-gray-700">Permissions</label>
+                            <div class="flex items-center justify-between gap-3">
+                                <label class="text-xs font-medium text-gray-700">Permissions</label>
+                                <button type="button" wire:click="clearRolePermissions" class="text-xs font-semibold text-gray-500 hover:text-gray-700">
+                                    Clear all
+                                </button>
+                            </div>
                             <select wire:model="role_permission_ids" multiple class="mt-1 h-32 w-full rounded-md border-gray-300 text-sm">
                                 @foreach($allPermissions as $permission)
                                     <option value="{{ $permission->id }}">{{ $permission->name }}</option>
@@ -46,13 +51,19 @@
                             @error('role_permission_ids.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="text-xs font-medium text-gray-700">Assigned Admin Users</label>
+                            <div class="flex items-center justify-between gap-3">
+                                <label class="text-xs font-medium text-gray-700">Assigned Admin Users</label>
+                                <button type="button" wire:click="clearRoleUsers" class="text-xs font-semibold text-gray-500 hover:text-gray-700">
+                                    Clear all
+                                </button>
+                            </div>
                             <select wire:model="role_user_ids" multiple class="mt-1 h-32 w-full rounded-md border-gray-300 text-sm">
                                 @foreach($adminUsers as $adminUser)
                                     <option value="{{ $adminUser->id }}">{{ $adminUser->name }} ({{ $adminUser->email }})</option>
                                 @endforeach
                             </select>
                             @error('role_user_ids.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                            <p class="mt-2 text-xs text-gray-500">Leaving this empty detaches the role from every admin user.</p>
                         </div>
                         <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
                             <input wire:model="role_is_system" type="checkbox" class="rounded border-gray-300">

@@ -4,39 +4,58 @@ namespace App\Livewire\Admin;
 
 use App\Models\GalleryItem;
 use App\Services\GalleryImageProcessor;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
-class GalleryManager extends Component
+class GalleryManager extends AdminComponent
 {
     use WithFileUploads;
     use WithPagination;
 
+    protected array $adminAbilities = [AdminPermissions::MANAGE_GALLERY];
+
     public $search = '';
+
     public $typeFilter = '';
+
     public $statusFilter = '';
+
     public $showForm = false;
+
     public $editing = false;
+
     public $galleryId;
 
     public $title = '';
+
     public $slug = '';
+
     public $description = '';
+
     public $type = 'activity';
+
     public $event_name = '';
+
     public $captured_at = '';
+
     public $is_featured = false;
+
     public $sort_order = 0;
+
     public $status = 'published';
+
     public $images = [];
+
     public $existingImagePaths = [];
+
     public $removedImagePaths = [];
 
     protected $paginationTheme = 'tailwind';
+
     private const MAX_IMAGE_KB = 4096;
 
     public function updatingSearch(): void
@@ -59,9 +78,9 @@ class GalleryManager extends Component
         $items = GalleryItem::query()
             ->when($this->search !== '', function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('description', 'like', '%' . $this->search . '%')
-                        ->orWhere('event_name', 'like', '%' . $this->search . '%');
+                    $subQuery->where('title', 'like', '%'.$this->search.'%')
+                        ->orWhere('description', 'like', '%'.$this->search.'%')
+                        ->orWhere('event_name', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->typeFilter !== '', fn ($query) => $query->where('type', $this->typeFilter))
@@ -126,6 +145,7 @@ class GalleryManager extends Component
 
         if (count($allImagePaths) === 0) {
             $this->addError('images', 'At least one image is required.');
+
             return;
         }
 
@@ -180,14 +200,14 @@ class GalleryManager extends Component
 
     public function updatedTitle(string $value): void
     {
-        if (!$this->editing || $this->slug === '') {
+        if (! $this->editing || $this->slug === '') {
             $this->slug = Str::slug($value);
         }
     }
 
     public function removeExistingImage(int $index): void
     {
-        if (!isset($this->existingImagePaths[$index])) {
+        if (! isset($this->existingImagePaths[$index])) {
             return;
         }
 
@@ -198,7 +218,7 @@ class GalleryManager extends Component
 
     public function removeSelectedImage(int $index): void
     {
-        if (!isset($this->images[$index])) {
+        if (! isset($this->images[$index])) {
             return;
         }
 
@@ -224,7 +244,7 @@ class GalleryManager extends Component
             'sort_order' => ['required', 'integer', 'min:0', 'max:100000'],
             'status' => ['required', Rule::in(['draft', 'published', 'archived'])],
             'images' => [$this->editing ? 'nullable' : 'required', 'array', 'min:1'],
-            'images.*' => ['image', 'max:' . self::MAX_IMAGE_KB, 'mimes:jpg,jpeg,png,webp'],
+            'images.*' => ['image', 'max:'.self::MAX_IMAGE_KB, 'mimes:jpg,jpeg,png,webp'],
         ];
     }
 

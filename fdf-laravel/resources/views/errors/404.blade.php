@@ -10,7 +10,7 @@
         </p>
         <div class="mt-8 flex flex-wrap justify-center gap-3">
             <a href="{{ route('home') }}" class="rounded-md bg-white px-6 py-3 text-sm font-semibold text-blue-800 hover:bg-blue-50">Go to Homepage</a>
-            <a href="{{ route('courses.index') }}" class="rounded-md border border-white/60 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">Browse Courses</a>
+            <a href="{{ route('courses.index') }}" class="rounded-md border border-white/60 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">Browse Learning</a>
             @if(!empty($publishedPageSlugs['contact']))
                 <a href="{{ route('contact') }}" class="rounded-md border border-cyan-200/70 px-6 py-3 text-sm font-semibold text-cyan-100 hover:bg-cyan-300/10">Contact Support</a>
             @endif

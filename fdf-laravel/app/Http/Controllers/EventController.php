@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Services\TemplateEmailService;
 use App\Support\MathCaptcha;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -18,12 +19,32 @@ class EventController extends Controller
      */
     public function index(): View
     {
-        $events = Event::upcoming()
-            ->withCount('registrations')
-            ->paginate(9);
-        $pastEvents = Event::past()->take(5)->get();
+        $publicEvents = $this->publicEventsQuery()->get();
+        $spotlightEvent = $publicEvents->first();
 
-        return view('events.index', compact('events', 'pastEvents'));
+        $events = $this->publicEventsQuery()
+            ->when($spotlightEvent, function ($query) use ($spotlightEvent) {
+                $query->whereKeyNot($spotlightEvent->id);
+            })
+            ->paginate(6);
+
+        $pastEvents = Event::query()
+            ->where('start_date', '<', now())
+            ->where('status', '!=', 'cancelled')
+            ->orderBy('start_date', 'desc')
+            ->take(4)
+            ->get();
+
+        $eventStats = [
+            'upcoming_count' => $publicEvents->count(),
+            'open_registration_count' => $publicEvents
+                ->where('registration_required', true)
+                ->filter(fn (Event $event) => $event->hasAvailableCapacity())
+                ->count(),
+            'virtual_count' => $publicEvents->where('is_virtual', true)->count(),
+        ];
+
+        return view('events.index', compact('events', 'pastEvents', 'spotlightEvent', 'eventStats'));
     }
 
     /**
@@ -34,14 +55,17 @@ class EventController extends Controller
         $event = Event::where('slug', $slug)
             ->withCount('registrations')
             ->firstOrFail();
-        
-        // Get related events (upcoming events excluding current one)
-        $relatedEvents = Event::upcoming()
-                             ->where('id', '!=', $event->id)
-                             ->take(3)
-                             ->get();
 
-        return view('events.show', compact('event', 'relatedEvents'));
+        $relatedEvents = $this->publicEventsQuery()
+            ->where('id', '!=', $event->id)
+            ->take(3)
+            ->get();
+
+        $availableSlots = $event->max_attendees
+            ? max($event->max_attendees - $event->registrations_count, 0)
+            : null;
+
+        return view('events.show', compact('event', 'relatedEvents', 'availableSlots'));
     }
 
     /**
@@ -49,9 +73,10 @@ class EventController extends Controller
      */
     public function calendar(): View
     {
-        $events = Event::upcoming()->get();
-        
-        return view('events.calendar', compact('events'));
+        $events = $this->publicEventsQuery()->get();
+        $eventsByMonth = $events->groupBy(fn (Event $event) => $event->start_date->format('F Y'));
+
+        return view('events.calendar', compact('events', 'eventsByMonth'));
     }
 
     /**
@@ -61,13 +86,13 @@ class EventController extends Controller
     {
         $event = Event::where('slug', $slug)->withCount('registrations')->firstOrFail();
 
-        if (!$event->registration_required) {
+        if (! $event->registration_required) {
             return redirect()
                 ->route('events.show', $event->slug)
                 ->with('info', 'This event does not require registration.');
         }
 
-        if (!$event->hasAvailableCapacity()) {
+        if (! $event->hasAvailableCapacity()) {
             return redirect()
                 ->route('events.show', $event->slug)
                 ->withErrors(['registration' => 'Registration is closed because this event has reached capacity.']);
@@ -95,6 +120,17 @@ class EventController extends Controller
         ]);
     }
 
+    public function refreshRegistrationCaptcha(Request $request, string $slug): JsonResponse
+    {
+        Event::where('slug', $slug)->firstOrFail();
+
+        MathCaptcha::regenerate($request, 'event_registration');
+
+        return response()->json([
+            'question' => MathCaptcha::question($request, 'event_registration'),
+        ]);
+    }
+
     public function submitRegistration(
         Request $request,
         string $slug,
@@ -102,7 +138,7 @@ class EventController extends Controller
     ): RedirectResponse {
         $event = Event::where('slug', $slug)->withCount('registrations')->firstOrFail();
 
-        if (!$event->registration_required) {
+        if (! $event->registration_required) {
             return redirect()
                 ->route('events.show', $event->slug)
                 ->with('info', 'This event does not require registration.');
@@ -116,7 +152,7 @@ class EventController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'event_registration')) {
+        if (! MathCaptcha::isValid($request, 'event_registration')) {
             MathCaptcha::regenerate($request, 'event_registration');
 
             return back()
@@ -124,7 +160,7 @@ class EventController extends Controller
                 ->withInput($request->except('captcha_answer'));
         }
 
-        if (!$event->hasAvailableCapacity()) {
+        if (! $event->hasAvailableCapacity()) {
             return back()->withErrors([
                 'registration' => 'Registration is closed because this event has reached capacity.',
             ])->withInput();
@@ -173,5 +209,15 @@ class EventController extends Controller
         return redirect()
             ->route('events.show', $event->slug)
             ->with('success', 'Registration completed successfully. A confirmation email has been sent.');
+    }
+
+    private function publicEventsQuery()
+    {
+        return Event::query()
+            ->where('start_date', '>=', now())
+            ->whereIn('status', ['upcoming', 'featured'])
+            ->withCount('registrations')
+            ->orderByRaw("CASE WHEN status = 'featured' THEN 0 ELSE 1 END")
+            ->orderBy('start_date');
     }
 }

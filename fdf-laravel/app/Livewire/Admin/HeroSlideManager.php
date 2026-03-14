@@ -3,29 +3,42 @@
 namespace App\Livewire\Admin;
 
 use App\Models\HeroSlide;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
-class HeroSlideManager extends Component
+class HeroSlideManager extends AdminComponent
 {
     use WithFileUploads;
     use WithPagination;
 
+    protected array $adminAbilities = [AdminPermissions::MANAGE_HERO_SLIDES];
+
     public ?int $slideId = null;
+
     public bool $showForm = false;
+
     public bool $editing = false;
+
     public string $search = '';
 
     public string $title = '';
+
     public string $subtitle = '';
+
     public string $content = '';
+
     public string $cta_label = '';
+
     public string $cta_url = '';
+
     public $image;
+
     public ?string $existing_image_path = null;
+
     public int $sort_order = 0;
+
     public bool $is_active = true;
 
     protected function rules(): array
@@ -49,9 +62,9 @@ class HeroSlideManager extends Component
         $slides = HeroSlide::query()
             ->when($this->search !== '', function ($query) {
                 $query->where(function ($inner) {
-                    $inner->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('subtitle', 'like', '%' . $this->search . '%')
-                        ->orWhere('content', 'like', '%' . $this->search . '%');
+                    $inner->where('title', 'like', '%'.$this->search.'%')
+                        ->orWhere('subtitle', 'like', '%'.$this->search.'%')
+                        ->orWhere('content', 'like', '%'.$this->search.'%');
                 });
             })
             ->ordered()
@@ -124,7 +137,7 @@ class HeroSlideManager extends Component
     public function toggleStatus(int $id): void
     {
         $slide = HeroSlide::findOrFail($id);
-        $slide->update(['is_active' => !$slide->is_active]);
+        $slide->update(['is_active' => ! $slide->is_active]);
         session()->flash('success', 'Hero slide status updated.');
     }
 

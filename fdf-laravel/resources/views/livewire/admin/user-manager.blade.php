@@ -42,25 +42,44 @@
                     @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="space-y-2">
-                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <input wire:model="is_admin" type="checkbox" class="rounded border-gray-300">
-                        Admin
-                    </label>
+                    @if($canManageAccessAssignments)
+                        <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <input wire:model="is_admin" type="checkbox" class="rounded border-gray-300">
+                            Admin
+                        </label>
+                    @else
+                        <div class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                            Admin access and role assignment are managed in Roles &amp; Permissions.
+                        </div>
+                    @endif
                     <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
                         <input wire:model="email_verified" type="checkbox" class="rounded border-gray-300">
                         Email Verified
                     </label>
                 </div>
 
-                <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700">Assigned Roles</label>
-                    <select wire:model="role_ids" multiple class="mt-1 h-32 w-full rounded-md border-gray-300 text-sm">
-                        @foreach($roles as $role)
-                            <option value="{{ $role->id }}">{{ $role->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('role_ids.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                </div>
+                @if($canManageAccessAssignments)
+                    <div class="md:col-span-2">
+                        <div class="flex items-center justify-between gap-3">
+                            <label class="text-sm font-medium text-gray-700">Assigned Roles</label>
+                            <button type="button" wire:click="clearAssignedRoles" class="text-xs font-semibold text-gray-500 hover:text-gray-700">
+                                Clear all roles
+                            </button>
+                        </div>
+                        <select wire:model="role_ids" multiple class="mt-1 h-32 w-full rounded-md border-gray-300 text-sm">
+                            @foreach($roles as $role)
+                                <option value="{{ $role->id }}">{{ $role->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('role_ids.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        <p class="mt-2 text-xs text-gray-500">Leave this empty if the user should have no scoped admin tools yet.</p>
+                        @if($is_admin && count($role_ids) === 0)
+                            <div class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                                This account can sign into admin, but it will only see basic pages until at least one role is assigned.
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
                 <div class="md:col-span-2">
                     <label class="text-sm font-medium text-gray-700">Bio</label>
@@ -82,7 +101,7 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">User</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Role</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Access Type</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Assigned Roles</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Verified</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Created</th>

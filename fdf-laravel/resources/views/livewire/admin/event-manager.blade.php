@@ -40,12 +40,23 @@
                 </div>
                 <div class="md:col-span-2">
                     <label class="text-sm font-medium text-gray-700">Description *</label>
-                    <textarea wire:model="description" rows="4" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <div
+                        class="admin-rich-editor mt-2"
+                        wire:ignore
+                        wire:key="event-description-editor-{{ $editing ? $eventId : 'new' }}"
+                        x-data="richTextEditor(@entangle('description').live)"
+                        x-init="init()"
+                    >
+                        <input id="event-description-editor-{{ $this->getId() }}" type="hidden" x-ref="input">
+                        <trix-editor class="trix-content" input="event-description-editor-{{ $this->getId() }}" x-ref="editor" placeholder="Write a rich event description with structure, links, and helpful context..."></trix-editor>
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500">Use rich formatting for the full event story. File attachments are disabled here.</p>
                     @error('description') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
                     <label class="text-sm font-medium text-gray-700">Excerpt</label>
                     <textarea wire:model="excerpt" rows="2" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <p class="mt-1 text-xs text-gray-500">Keep this as a short plain-text summary for event cards and calendar views.</p>
                     @error('excerpt') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>

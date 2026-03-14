@@ -2,34 +2,52 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use App\Models\Enrollment;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\User;
+use App\Support\AdminPermissions;
 
-class EnrollmentManager extends Component
+class EnrollmentManager extends AdminComponent
 {
+    protected array $adminAbilities = [AdminPermissions::MANAGE_ENROLLMENTS];
+
     public $enrollments;
+
     public $courses;
+
     public $users;
+
     public $selectedEnrollment = null;
+
     public $showCreateForm = false;
+
     public $showEditForm = false;
+
     public $selectedCourseId = null;
+
     public $selectedUserId = null;
+
     public $selectedStatus = null;
-    
+
     // Form fields
     public $course_id;
+
     public $user_id;
+
     public $enrolled_at;
+
     public $completed_at;
+
     public $status = 'active';
+
     public $progress_percentage = 0;
+
     public $payment_status = 'pending';
+
     public $paid_amount = 0;
+
     public $currency_code = 'USD';
-    
+
     protected $rules = [
         'course_id' => 'required|exists:courses,id',
         'user_id' => 'required|exists:users,id',
@@ -53,19 +71,19 @@ class EnrollmentManager extends Component
     public function loadEnrollments()
     {
         $query = Enrollment::with(['course', 'user'])->orderBy('enrolled_at', 'desc');
-        
+
         if ($this->selectedCourseId) {
             $query->where('course_id', $this->selectedCourseId);
         }
-        
+
         if ($this->selectedUserId) {
             $query->where('user_id', $this->selectedUserId);
         }
-        
+
         if ($this->selectedStatus) {
             $query->where('status', $this->selectedStatus);
         }
-        
+
         $this->enrollments = $query->get();
     }
 
@@ -102,13 +120,14 @@ class EnrollmentManager extends Component
         $existingEnrollment = Enrollment::where('course_id', $this->course_id)
             ->where('user_id', $this->user_id)
             ->first();
-            
+
         if ($existingEnrollment) {
             $this->addError('duplicate', 'User is already enrolled in this course');
+
             return;
         }
 
-        $enrollment = new Enrollment();
+        $enrollment = new Enrollment;
         $enrollment->course_id = $this->course_id;
         $enrollment->user_id = $this->user_id;
         $enrollment->enrolled_at = $this->enrolled_at;
@@ -117,10 +136,10 @@ class EnrollmentManager extends Component
         $enrollment->progress_percentage = $this->progress_percentage;
         $enrollment->payment_status = $this->payment_status;
         $enrollment->paid_amount = $this->payment_status === 'paid' && $this->paid_amount == 0
-            ? $this->courses->firstWhere('id', (int)$this->course_id)?->price ?? 0
+            ? $this->courses->firstWhere('id', (int) $this->course_id)?->price ?? 0
             : $this->paid_amount;
         $enrollment->currency_code = $this->currency_code;
-        
+
         $enrollment->save();
 
         $this->showCreateForm = false;
@@ -140,7 +159,7 @@ class EnrollmentManager extends Component
         $this->payment_status = $this->selectedEnrollment->payment_status;
         $this->paid_amount = $this->selectedEnrollment->paid_amount;
         $this->currency_code = $this->selectedEnrollment->currency_code;
-        
+
         $this->showEditForm = true;
         $this->showCreateForm = false;
     }
@@ -158,7 +177,7 @@ class EnrollmentManager extends Component
         $this->selectedEnrollment->payment_status = $this->payment_status;
         $this->selectedEnrollment->paid_amount = $this->paid_amount;
         $this->selectedEnrollment->currency_code = $this->currency_code;
-        
+
         $this->selectedEnrollment->save();
 
         $this->showEditForm = false;
@@ -178,13 +197,13 @@ class EnrollmentManager extends Component
     {
         $enrollment = Enrollment::findOrFail($id);
         $enrollment->progress_percentage = $progress;
-        
+
         // Auto-complete if progress is 100%
         if ($progress >= 100) {
             $enrollment->status = 'completed';
             $enrollment->completed_at = now();
         }
-        
+
         $enrollment->save();
         $this->loadEnrollments();
         $this->dispatch('enrollment-saved', 'Progress updated successfully!');

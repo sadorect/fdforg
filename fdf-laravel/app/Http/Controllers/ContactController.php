@@ -2,11 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
+    public function refreshCaptcha(Request $request): JsonResponse
+    {
+        $this->regenerateMathCaptcha($request);
+
+        return response()
+            ->json([
+                'question' => $request->session()->get('contact_captcha_question'),
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
     public function submit(Request $request)
     {
         $request->validate([

@@ -34,6 +34,8 @@ class PublicGalleryTest extends TestCase
 
         $this->get('/gallery')
             ->assertOk()
+            ->assertSee('Images that show the people, programs, and public moments behind the mission.')
+            ->assertSee('Hero slider')
             ->assertSee('Community Sign Workshop')
             ->assertDontSee('Draft Event Photo');
     }
@@ -62,6 +64,7 @@ class PublicGalleryTest extends TestCase
 
         $this->get('/gallery?type=event')
             ->assertOk()
+            ->assertSee('Showing Event collections')
             ->assertSee('Event Snapshot')
             ->assertDontSee('Activity Snapshot');
     }

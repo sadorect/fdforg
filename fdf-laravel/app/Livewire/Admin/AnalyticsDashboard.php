@@ -3,15 +3,18 @@
 namespace App\Livewire\Admin;
 
 use App\Models\VisitLog;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Livewire\WithPagination;
 
-class AnalyticsDashboard extends Component
+class AnalyticsDashboard extends AdminComponent
 {
     use WithPagination;
 
+    protected array $adminAbilities = [AdminPermissions::VIEW_ANALYTICS];
+
     public int $rangeDays = 30;
+
     public string $pathFilter = '';
 
     protected $queryString = [
@@ -109,7 +112,7 @@ class AnalyticsDashboard extends Component
         $recentVisits = VisitLog::with('user')
             ->where('visited_at', '>=', $from)
             ->when($this->pathFilter !== '', function ($query) {
-                $query->where('path', 'like', '%' . $this->pathFilter . '%');
+                $query->where('path', 'like', '%'.$this->pathFilter.'%');
             })
             ->orderByDesc('visited_at')
             ->paginate(15);

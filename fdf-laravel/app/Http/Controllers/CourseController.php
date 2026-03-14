@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
@@ -16,18 +17,57 @@ class CourseController extends Controller
 {
     public function index(): View
     {
-        $courses = Course::with(['category', 'instructor'])
-            ->published()
+        $courseQuery = Course::query()
+            ->with(['category', 'instructor'])
+            ->withCount('publishedLessons')
+            ->published();
+
+        $courses = (clone $courseQuery)
             ->orderByDesc('is_featured')
+            ->orderByDesc('enrollment_count')
             ->orderBy('title')
             ->paginate(12);
 
-        return view('courses.index', compact('courses'));
+        $featuredLearning = (clone $courseQuery)
+            ->orderByDesc('is_featured')
+            ->orderByDesc('enrollment_count')
+            ->orderBy('title')
+            ->first();
+
+        $learningStats = [
+            'paths' => Course::published()->count(),
+            'lessons' => Lesson::query()
+                ->where('is_published', true)
+                ->whereHas('course', function ($query) {
+                    $query->published();
+                })
+                ->count(),
+            'learners' => (int) Course::published()->sum('enrollment_count'),
+            'free_paths' => Course::published()->free()->count(),
+        ];
+
+        $focusAreas = Category::query()
+            ->active()
+            ->whereHas('courses', function ($query) {
+                $query->published();
+            })
+            ->withCount([
+                'courses as published_courses_count' => function ($query) {
+                    $query->published();
+                },
+            ])
+            ->orderByDesc('published_courses_count')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->take(4)
+            ->get();
+
+        return view('courses.index', compact('courses', 'featuredLearning', 'learningStats', 'focusAreas'));
     }
 
     public function show(Request $request, Course $course): View
     {
-        if (!$course->isPublished()) {
+        if (! $course->isPublished()) {
             abort(404);
         }
 
@@ -38,10 +78,14 @@ class CourseController extends Controller
         ]);
 
         $relatedCourses = Course::published()
+            ->with(['category', 'instructor'])
+            ->withCount('publishedLessons')
             ->where('id', '!=', $course->id)
             ->when($course->category_id, function ($query) use ($course) {
                 $query->where('category_id', $course->category_id);
             })
+            ->orderByDesc('is_featured')
+            ->orderByDesc('enrollment_count')
             ->take(3)
             ->get();
 
@@ -64,11 +108,11 @@ class CourseController extends Controller
 
     public function enroll(Request $request, Course $course, TemplateEmailService $templateEmailService): RedirectResponse
     {
-        if (!$course->isPublished()) {
+        if (! $course->isPublished()) {
             abort(404);
         }
 
-        if (!$request->user()) {
+        if (! $request->user()) {
             return redirect()
                 ->route('login')
                 ->with('info', 'Sign in or create an account to enroll in courses.');
@@ -78,7 +122,7 @@ class CourseController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'course_enroll')) {
+        if (! MathCaptcha::isValid($request, 'course_enroll')) {
             MathCaptcha::regenerate($request, 'course_enroll');
 
             return back()
@@ -86,7 +130,7 @@ class CourseController extends Controller
                 ->withInput($request->except('captcha_answer'));
         }
 
-        if (!$course->hasCapacity()) {
+        if (! $course->hasCapacity()) {
             return back()->withErrors([
                 'enrollment' => 'This course is currently at full capacity.',
             ])->withInput();
@@ -142,6 +186,7 @@ class CourseController extends Controller
 
         if ($course->isFree()) {
             MathCaptcha::regenerate($request, 'course_enroll');
+
             return redirect()
                 ->route('dashboard')
                 ->with('success', 'Enrollment successful. You can start learning now.');
@@ -156,7 +201,7 @@ class CourseController extends Controller
 
     public function showLesson(Request $request, Course $course, Lesson $lesson): View|RedirectResponse
     {
-        if (!$course->isPublished() || !$lesson->is_published || $lesson->course_id !== $course->id) {
+        if (! $course->isPublished() || ! $lesson->is_published || $lesson->course_id !== $course->id) {
             abort(404);
         }
 
@@ -165,14 +210,14 @@ class CourseController extends Controller
             ? Enrollment::where('course_id', $course->id)->where('user_id', $user->id)->first()
             : null;
 
-        if (!$lesson->is_free) {
-            if (!$user) {
+        if (! $lesson->is_free) {
+            if (! $user) {
                 return redirect()
                     ->route('login')
                     ->with('info', 'Sign in to access this lesson.');
             }
 
-            if (!$enrollment || !in_array($enrollment->status, ['active', 'completed'], true)) {
+            if (! $enrollment || ! in_array($enrollment->status, ['active', 'completed'], true)) {
                 return redirect()
                     ->route('courses.show', $course->slug)
                     ->withErrors(['lesson' => 'You are not eligible to access this lesson yet.']);
@@ -241,12 +286,12 @@ class CourseController extends Controller
 
     public function completeLesson(Request $request, Course $course, Lesson $lesson): RedirectResponse
     {
-        if (!$course->isPublished() || !$lesson->is_published || $lesson->course_id !== $course->id) {
+        if (! $course->isPublished() || ! $lesson->is_published || $lesson->course_id !== $course->id) {
             abort(404);
         }
 
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
@@ -255,9 +300,9 @@ class CourseController extends Controller
             ->first();
 
         if (
-            !$enrollment
-            || !in_array($enrollment->status, ['active', 'completed'], true)
-            || !$enrollment->canAccessLesson($lesson)
+            ! $enrollment
+            || ! in_array($enrollment->status, ['active', 'completed'], true)
+            || ! $enrollment->canAccessLesson($lesson)
             || $enrollment->payment_status !== 'paid'
         ) {
             return redirect()
@@ -269,7 +314,7 @@ class CourseController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'lesson_complete')) {
+        if (! MathCaptcha::isValid($request, 'lesson_complete')) {
             MathCaptcha::regenerate($request, 'lesson_complete');
 
             return back()

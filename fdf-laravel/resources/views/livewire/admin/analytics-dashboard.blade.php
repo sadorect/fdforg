@@ -1,4 +1,5 @@
 <div class="space-y-6">
+    @php($canExportAnalytics = auth()->user()?->hasPermission(\App\Support\AdminPermissions::EXPORT_ANALYTICS))
     <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Site Analytics</h1>
@@ -17,12 +18,14 @@
                 <label class="text-xs font-semibold uppercase text-gray-500">Path filter</label>
                 <input wire:model.live.debounce.300ms="pathFilter" type="text" placeholder="/blog" class="mt-1 rounded-md border-gray-300 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
             </div>
-            <div>
-                <a href="{{ route('admin.analytics.export.pdf', ['rangeDays' => $rangeDays, 'pathFilter' => $pathFilter]) }}"
-                   class="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
-                    Export PDF
-                </a>
-            </div>
+            @if($canExportAnalytics)
+                <div>
+                    <a href="{{ route('admin.analytics.export.pdf', ['rangeDays' => $rangeDays, 'pathFilter' => $pathFilter]) }}"
+                       class="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                        Export PDF
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 

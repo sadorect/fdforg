@@ -9,6 +9,23 @@ class ContactSubmissionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_contact_captcha_can_refresh_without_reloading_page(): void
+    {
+        $response = $this->get(route('contact.captcha'));
+
+        $response->assertOk();
+        $response->assertJsonStructure(['question']);
+        $response->assertSessionHas('contact_captcha_question');
+        $response->assertSessionHas('contact_captcha_answer');
+
+        $cacheControl = (string) $response->headers->get('Cache-Control');
+        $question = $response->json('question');
+
+        $this->assertStringContainsString('no-store', $cacheControl);
+        $this->assertIsString($question);
+        $this->assertMatchesRegularExpression('/^\d+ \+ \d+$/', $question);
+    }
+
     public function test_contact_submission_succeeds_with_valid_math_captcha(): void
     {
         $response = $this->withSession([

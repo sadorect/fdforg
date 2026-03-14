@@ -1,213 +1,253 @@
 @extends('layouts.app')
 
-@section('content')
-<!-- Event Header -->
-@if($event->image)
-<section class="relative h-96 bg-cover bg-center" style="background-image: url('{{ $event->image_url }}')">
-    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-        <div class="text-white">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ $event->title }}</h1>
-            <div class="flex flex-wrap gap-4 text-lg">
-                @if($event->is_featured)
-                <span class="bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full font-semibold">Featured Event</span>
-                @endif
-                @if($event->is_virtual)
-                <span class="bg-green-500 text-green-900 px-3 py-1 rounded-full font-semibold">Virtual Event</span>
-                @else
-                <span class="bg-blue-500 text-blue-900 px-3 py-1 rounded-full font-semibold">In-Person Event</span>
-                @endif
-            </div>
-        </div>
-    </div>
-</section>
-@else
-<section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ $event->title }}</h1>
-        <div class="flex flex-wrap gap-4">
-            @if($event->is_featured)
-            <span class="bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full font-semibold">Featured Event</span>
-            @endif
-            @if($event->is_virtual)
-            <span class="bg-green-500 text-green-900 px-3 py-1 rounded-full font-semibold">Virtual Event</span>
-            @else
-            <span class="bg-blue-500 text-blue-900 px-3 py-1 rounded-full font-semibold">In-Person Event</span>
-            @endif
-        </div>
-    </div>
-</section>
-@endif
+@section('title', $event->title . ' - Events')
 
-<!-- Event Details -->
-<section class="py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <!-- Main Content -->
-            <div class="lg:col-span-2">
-                @if($event->excerpt)
-                <p class="text-xl text-gray-600 mb-8">{{ $event->excerpt }}</p>
-                @endif
-                
-                @if($event->content)
-                <div class="prose prose-lg max-w-none mb-8">
-                    {!! $event->content !!}
+@section('content')
+@php
+    $eventDescription = (string) $event->description;
+    $eventDescriptionHtml = str_contains($eventDescription, '<')
+        ? $eventDescription
+        : nl2br(e($eventDescription));
+    $statusLabel = match ($event->status) {
+        'featured' => 'Featured event',
+        'past' => 'Past event',
+        'cancelled' => 'Cancelled event',
+        default => 'Upcoming event',
+    };
+@endphp
+
+<article class="bg-slate-50 pb-20">
+    <section class="relative overflow-hidden bg-slate-950 text-white">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.16),_transparent_28rem)]"></div>
+        <div class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,_rgba(14,116,144,0.14),_transparent)]"></div>
+
+        <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+            <div class="max-w-4xl">
+                <div class="flex flex-wrap items-center gap-3 text-sm text-slate-300">
+                    <a href="{{ route('events.index') }}" class="font-semibold text-cyan-100 transition hover:text-white"><- Back to all events</a>
+                    <span class="h-1 w-1 rounded-full bg-cyan-300"></span>
+                    <span>{{ $statusLabel }}</span>
                 </div>
+
+                <div class="mt-6 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.18em]">
+                    <span class="rounded-full bg-white/10 px-3 py-1 text-cyan-100">{{ $event->is_virtual ? 'Virtual' : 'In-person' }}</span>
+                    @if($event->registration_required)
+                        <span class="rounded-full bg-emerald-500/12 px-3 py-1 text-emerald-100">{{ $event->hasAvailableCapacity() ? 'Registration open' : 'Registration closed' }}</span>
+                    @endif
+                    @if($event->event_type)
+                        <span class="rounded-full bg-white/10 px-3 py-1 text-slate-100">{{ \Illuminate\Support\Str::headline($event->event_type) }}</span>
+                    @endif
+                </div>
+
+                <h1 class="mt-5 text-4xl font-bold leading-tight text-white md:text-5xl">{{ $event->title }}</h1>
+
+                @if($event->excerpt)
+                    <p class="mt-5 max-w-3xl text-base leading-8 text-slate-200 md:text-lg">{{ $event->excerpt }}</p>
                 @endif
-                
-                <!-- Registration/Action Buttons -->
-                <div class="bg-gray-50 rounded-lg p-6 mb-8">
-                    <h3 class="text-xl font-semibold mb-4">Get Involved</h3>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        @if($event->registration_required && $event->hasAvailableCapacity())
-                            <a href="{{ route('events.register', $event->slug) }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-center">
-                                Register Now
-                            </a>
-                        @elseif($event->registration_required)
-                            <span class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold text-center">
-                                Registration Closed
-                            </span>
-                        @endif
-                        <a href="{{ route('events.index') }}" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition text-center">
-                            View All Events
-                        </a>
+
+                <div class="mt-7 grid gap-4 text-sm text-slate-200 sm:grid-cols-2 xl:grid-cols-4">
+                    <div class="rounded-2xl border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Date</p>
+                        <p class="mt-2 font-semibold text-white">{{ $event->getFormattedDateRange() }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Time</p>
+                        <p class="mt-2 font-semibold text-white">{{ $event->time ?: 'To be confirmed' }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Location</p>
+                        <p class="mt-2 font-semibold text-white">{{ $event->getDisplayLocation() }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Entry</p>
+                        <p class="mt-2 font-semibold text-white">{{ $event->getDisplayPrice() }}</p>
                     </div>
                 </div>
             </div>
-            
-            <!-- Sidebar -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-md p-6 sticky top-8">
-                    <h3 class="text-xl font-semibold mb-6">Event Details</h3>
-                    
-                    <div class="space-y-4">
-                        <!-- Date -->
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <div>
-                                <p class="font-semibold">Date</p>
-                                <p class="text-gray-600">{{ $event->getFormattedDateRange() }}</p>
+        </div>
+    </section>
+
+    <section class="relative -mt-8 sm:-mt-10">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr),20rem]">
+                <div class="space-y-6">
+                    <figure class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_70px_-45px_rgba(15,23,42,0.38)]">
+                        @if($event->image_url)
+                            <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="h-auto w-full object-cover">
+                        @else
+                            <div class="flex min-h-[20rem] items-center justify-center bg-[linear-gradient(135deg,_#cffafe,_#e0f2fe_40%,_#f8fafc)] p-10 text-center">
+                                <div class="max-w-md">
+                                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">{{ $event->is_virtual ? 'Virtual gathering' : 'Community gathering' }}</p>
+                                    <p class="mt-4 text-3xl font-semibold text-slate-900">{{ $event->title }}</p>
+                                    <p class="mt-3 text-sm leading-7 text-slate-600">{{ $event->getFormattedDateRange() }}</p>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Time -->
-                        @if($event->time)
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <div>
-                                <p class="font-semibold">Time</p>
-                                <p class="text-gray-600">{{ $event->time }}</p>
-                            </div>
-                        </div>
                         @endif
-                        
-                        <!-- Location -->
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
+                    </figure>
+
+                    <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.32)] md:p-10">
+                        <div class="flex flex-wrap items-start justify-between gap-4">
                             <div>
-                                <p class="font-semibold">Location</p>
-                                <p class="text-gray-600">{{ $event->getDisplayLocation() }}</p>
+                                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">About this event</p>
+                                <h2 class="mt-2 text-3xl font-bold text-slate-900">Why this gathering matters</h2>
                             </div>
+
+                            @if($event->registration_required)
+                                <span class="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
+                                    {{ $event->hasAvailableCapacity() ? 'Registration available' : 'Registration closed' }}
+                                </span>
+                            @endif
                         </div>
-                        
-                        <!-- Event Type -->
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                            </svg>
-                            <div>
-                                <p class="font-semibold">Event Type</p>
-                                <p class="text-gray-600">
-                                    @if($event->event_type)
-                                        {{ ucfirst($event->event_type) }}
-                                    @else
-                                        Community Event
-                                    @endif
+
+                        <div class="public-article-prose mt-8">
+                            {!! $eventDescriptionHtml !!}
+                        </div>
+                    </div>
+
+                    <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.32)] md:p-8">
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Registration and attendance</p>
+                        <div class="mt-5 grid gap-4 md:grid-cols-2">
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                <h3 class="text-lg font-semibold text-slate-900">What to expect</h3>
+                                <p class="mt-3 text-sm leading-7 text-slate-600">
+                                    {{ $event->registration_required ? 'This event uses the foundation registration form so your place can be tracked and confirmed.' : 'This event does not require advance registration, so you can focus on planning your attendance and sharing the date.' }}
+                                </p>
+                            </div>
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                <h3 class="text-lg font-semibold text-slate-900">Accessibility and participation</h3>
+                                <p class="mt-3 text-sm leading-7 text-slate-600">
+                                    {{ $event->is_virtual ? 'This event happens online, which can help more people participate from wherever they are.' : 'This event happens in person, so location and arrival details matter for a smooth experience.' }}
                                 </p>
                             </div>
                         </div>
-                        
-                        <!-- Capacity -->
-                        @if($event->max_attendees)
-                        <div class="flex items-start">
-                            <svg class="w-5 h-5 text-blue-600 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
-                            <div>
-                                <p class="font-semibold">Capacity</p>
-                                <p class="text-gray-600">{{ $event->max_attendees }} attendees</p>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                    
-                    <!-- Virtual Event Link -->
-                    @if($event->is_virtual && $event->meeting_link)
-                    <div class="mt-6 pt-6 border-t border-gray-200">
-                        <p class="font-semibold mb-2">Virtual Event Link</p>
-                        <a href="{{ $event->meeting_link }}" target="_blank" class="text-blue-600 hover:text-blue-800 break-all">
-                            {{ $event->meeting_link }}
-                        </a>
-                    </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- Related Events -->
-@if($relatedEvents->count() > 0)
-<section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Related Events</h2>
-            <p class="text-lg text-gray-600">You might also be interested in these upcoming events</p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            @foreach($relatedEvents as $relatedEvent)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-                @if($relatedEvent->image)
-                <img src="{{ $relatedEvent->image_url }}" alt="{{ $relatedEvent->title }}" class="w-full h-48 object-cover">
-                @else
-                <div class="w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                    <span class="text-blue-600 text-lg font-semibold">Event Image</span>
-                </div>
-                @endif
-                <div class="p-6">
-                    <h3 class="text-xl font-semibold mb-2">{{ $relatedEvent->title }}</h3>
-                    <p class="text-gray-600 mb-4">{{ $relatedEvent->excerpt }}</p>
-                    <div class="space-y-2 text-sm text-gray-500 mb-4">
-                        <div class="flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            {{ $relatedEvent->getFormattedDateRange() }}
-                        </div>
-                        <div class="flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            {{ $relatedEvent->getDisplayLocation() }}
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            @if($event->registration_required && $event->hasAvailableCapacity() && $event->status !== 'cancelled' && ! $event->isPast())
+                                <a href="{{ route('events.register', $event->slug) }}" class="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                                    Reserve your place
+                                </a>
+                            @elseif($event->registration_required)
+                                <span class="inline-flex items-center rounded-full border border-slate-300 bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-600">
+                                    Registration closed
+                                </span>
+                            @endif
+
+                            <a href="{{ route('events.calendar') }}" class="inline-flex items-center rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+                                View the calendar
+                            </a>
                         </div>
                     </div>
-                    <a href="{{ route('events.show', $relatedEvent->slug) }}" class="text-blue-600 hover:text-blue-800 font-medium">
-                        Learn More →
-                    </a>
                 </div>
+
+                <aside class="space-y-5 lg:sticky lg:top-24">
+                    <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_20px_45px_-34px_rgba(15,23,42,0.28)]">
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Event details</p>
+                        <dl class="mt-5 space-y-4 text-sm">
+                            <div>
+                                <dt class="font-semibold text-slate-900">Date</dt>
+                                <dd class="mt-1 text-slate-600">{{ $event->getFormattedDateRange() }}</dd>
+                            </div>
+                            <div>
+                                <dt class="font-semibold text-slate-900">Time</dt>
+                                <dd class="mt-1 text-slate-600">{{ $event->time ?: 'To be confirmed' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="font-semibold text-slate-900">Location</dt>
+                                <dd class="mt-1 text-slate-600">{{ $event->getDisplayLocation() }}</dd>
+                            </div>
+                            @if($event->venue)
+                                <div>
+                                    <dt class="font-semibold text-slate-900">Venue</dt>
+                                    <dd class="mt-1 text-slate-600">{{ $event->venue }}</dd>
+                                </div>
+                            @endif
+                            <div>
+                                <dt class="font-semibold text-slate-900">Format</dt>
+                                <dd class="mt-1 text-slate-600">{{ $event->is_virtual ? 'Virtual event' : 'In-person event' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="font-semibold text-slate-900">Entry</dt>
+                                <dd class="mt-1 text-slate-600">{{ $event->getDisplayPrice() }}</dd>
+                            </div>
+                            @if($availableSlots !== null)
+                                <div>
+                                    <dt class="font-semibold text-slate-900">Available spaces</dt>
+                                    <dd class="mt-1 text-slate-600">{{ $availableSlots }} left</dd>
+                                </div>
+                            @endif
+                        </dl>
+                    </div>
+
+                    @if($event->is_virtual && $event->meeting_link)
+                        <div class="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Virtual access</p>
+                            <p class="mt-4 text-sm leading-7 text-slate-600">Meeting details are available for online participation.</p>
+                            <a href="{{ $event->meeting_link }}" target="_blank" rel="noreferrer" class="mt-5 inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                                Open meeting link
+                            </a>
+                        </div>
+                    @endif
+
+                    <div class="rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-[0_20px_50px_-30px_rgba(15,23,42,0.55)]">
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Need more context?</p>
+                        <h2 class="mt-3 text-2xl font-semibold">Talk with the team if you need help planning attendance.</h2>
+                        <p class="mt-3 text-sm leading-7 text-slate-300">
+                            If you are not sure whether this event is the right fit, or you need clarification before attending, the team can help.
+                        </p>
+                        <div class="mt-6 flex flex-col gap-3">
+                            <a href="{{ route('contact') }}" class="inline-flex items-center justify-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                                Contact our team
+                            </a>
+                            <a href="{{ route('events.index') }}" class="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/8">
+                                See more events
+                            </a>
+                        </div>
+                    </div>
+                </aside>
             </div>
-            @endforeach
         </div>
-    </div>
-</section>
-@endif
+    </section>
+
+    @if($relatedEvents->count() > 0)
+        <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Keep participating</p>
+                    <h2 class="mt-2 text-3xl font-bold text-slate-900">More events connected to the mission</h2>
+                </div>
+                <a href="{{ route('events.index') }}" class="text-sm font-semibold text-cyan-700 transition hover:text-cyan-900">View all events</a>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+                @foreach($relatedEvents as $relatedEvent)
+                    <article class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_20px_45px_-34px_rgba(15,23,42,0.32)] transition hover:-translate-y-1 hover:shadow-[0_28px_60px_-36px_rgba(15,23,42,0.4)]">
+                        <a href="{{ route('events.show', $relatedEvent->slug) }}" class="block h-48 overflow-hidden bg-slate-200">
+                            @if($relatedEvent->image_url)
+                                <img src="{{ $relatedEvent->image_url }}" alt="{{ $relatedEvent->title }}" class="h-full w-full object-cover transition duration-500 hover:scale-[1.04]">
+                            @else
+                                <div class="flex h-full items-center justify-center bg-[linear-gradient(135deg,_#cffafe,_#e0f2fe_40%,_#f8fafc)] p-6 text-center">
+                                    <p class="text-xl font-semibold text-slate-900">{{ $relatedEvent->title }}</p>
+                                </div>
+                            @endif
+                        </a>
+                        <div class="p-5">
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em]">
+                                <span class="rounded-full bg-slate-100 px-3 py-1 text-slate-700">{{ $relatedEvent->is_virtual ? 'Virtual' : 'In-person' }}</span>
+                                @if($relatedEvent->registration_required)
+                                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-emerald-800">{{ $relatedEvent->hasAvailableCapacity() ? 'Registration open' : 'Full' }}</span>
+                                @endif
+                            </div>
+
+                            <h3 class="mt-4 text-xl font-semibold leading-tight text-slate-900">
+                                <a href="{{ route('events.show', $relatedEvent->slug) }}" class="transition hover:text-cyan-800">{{ $relatedEvent->title }}</a>
+                            </h3>
+                            <p class="mt-3 text-sm leading-7 text-slate-600">{{ \Illuminate\Support\Str::limit($relatedEvent->excerpt, 96) }}</p>
+                            <p class="mt-4 text-sm text-slate-500">{{ $relatedEvent->getFormattedDateRange() }}</p>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
+</article>
 @endsection

@@ -5,21 +5,31 @@ namespace App\Livewire\Admin;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
-use App\Models\LessonProgress;
 use App\Models\User;
-use Livewire\Component;
+use App\Support\AdminPermissions;
 
-class LmsDashboard extends Component
+class LmsDashboard extends AdminComponent
 {
+    protected array $adminAbilities = [AdminPermissions::VIEW_LMS_DASHBOARD];
+
     public $courseCount = 0;
+
     public $publishedCourseCount = 0;
+
     public $lessonCount = 0;
+
     public $enrollmentCount = 0;
+
     public $activeEnrollmentCount = 0;
+
     public $completedEnrollmentCount = 0;
+
     public $completionRate = 0;
+
     public $totalLearners = 0;
+
     public $recentEnrollments;
+
     public $topCourses;
 
     public function mount(): void

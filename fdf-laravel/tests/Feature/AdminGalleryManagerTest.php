@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Livewire\Admin\GalleryManager;
 use App\Models\GalleryItem;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +16,7 @@ class AdminGalleryManagerTest extends TestCase
 
     public function test_admin_can_access_gallery_management_page(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         $this->actingAs($admin)
             ->get('/admin/gallery')
@@ -28,7 +27,7 @@ class AdminGalleryManagerTest extends TestCase
     public function test_admin_can_create_gallery_item(): void
     {
         Storage::fake('public');
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
         $firstImage = UploadedFile::fake()->create('gallery-one.jpg', 128, 'image/jpeg');
         $secondImage = UploadedFile::fake()->create('gallery-two.jpg', 128, 'image/jpeg');
 

@@ -4,12 +4,15 @@ namespace App\Providers;
 
 use App\Models\Page;
 use App\Models\SiteSetting;
+use App\Models\User;
 use App\Models\VisitLog;
 use App\Services\SocialStatsService;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +29,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        foreach (AdminPermissions::slugs() as $permissionSlug) {
+            Gate::define($permissionSlug, function (User $user) use ($permissionSlug): bool {
+                return $user->hasPermission($permissionSlug);
+            });
+        }
+
         View::composer('layouts.app', function ($view) {
             $totalSiteVisits = 0;
             $publishedPageSlugs = [];
@@ -103,7 +112,7 @@ class AppServiceProvider extends ServiceProvider
                     ? request()->route('slug')
                     : null;
 
-                if (!empty($pageSlugForSidebar)) {
+                if (! empty($pageSlugForSidebar)) {
                     $pageSidebarSetting = Page::query()
                         ->where('slug', $pageSlugForSidebar)
                         ->value('show_media_sidebar');
@@ -125,8 +134,8 @@ class AppServiceProvider extends ServiceProvider
                 'publishedPageSlugs' => array_fill_keys($publishedPageSlugs, true),
                 'siteBranding' => [
                     'name' => $siteSettings['site_name'] ?? config('app.name'),
-                    'logo_url' => !empty($siteSettings['site_logo_path']) ? asset('storage/' . $siteSettings['site_logo_path']) : null,
-                    'favicon_url' => !empty($siteSettings['site_favicon_path']) ? asset('storage/' . $siteSettings['site_favicon_path']) : null,
+                    'logo_url' => ! empty($siteSettings['site_logo_path']) ? asset('storage/'.$siteSettings['site_logo_path']) : null,
+                    'favicon_url' => ! empty($siteSettings['site_favicon_path']) ? asset('storage/'.$siteSettings['site_favicon_path']) : null,
                 ],
                 'siteFooter' => [
                     'tagline' => $siteSettings['footer_tagline'] ?? 'Bridging the communication gap and empowering the deaf community through education, advocacy, and support.',

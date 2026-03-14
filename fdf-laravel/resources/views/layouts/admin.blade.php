@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'FDF Admin Dashboard') - Friends of The Deaf Foundation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
     @livewireStyles
 </head>
-<body class="bg-gray-100">
+<body class="admin-shell bg-gray-100">
     @php
+        $adminUser = Auth::user()?->loadMissing('roles.permissions');
         $dashboardActive = request()->routeIs('admin.dashboard');
         $analyticsActive = request()->routeIs('admin.analytics*');
         $manualActive = request()->routeIs('admin.manual*');
@@ -34,6 +38,28 @@
         $lmsActive = $lmsDashboardActive || $coursesActive || $lessonsActive || $enrollmentsActive;
         $siteSettingsActive = $siteSettingsPageActive || $heroSlidesActive || $emailTemplatesActive;
         $accessActive = $usersActive || $rolesActive;
+
+        $canViewAnalytics = $adminUser?->hasPermission(\App\Support\AdminPermissions::VIEW_ANALYTICS) ?? false;
+        $canManagePages = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_PAGES) ?? false;
+        $canManageEvents = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_EVENTS) ?? false;
+        $canManageGallery = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_GALLERY) ?? false;
+        $canManageBlog = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_BLOG) ?? false;
+        $canManageCategories = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_CATEGORIES) ?? false;
+        $canViewLmsDashboard = $adminUser?->hasPermission(\App\Support\AdminPermissions::VIEW_LMS_DASHBOARD) ?? false;
+        $canManageCourses = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_COURSES) ?? false;
+        $canManageLessons = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_LESSONS) ?? false;
+        $canManageEnrollments = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_ENROLLMENTS) ?? false;
+        $canManageSiteSettings = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_SITE_SETTINGS) ?? false;
+        $canManageHeroSlides = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_HERO_SLIDES) ?? false;
+        $canManageEmailTemplates = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_EMAIL_TEMPLATES) ?? false;
+        $canManageUsers = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_USERS) ?? false;
+        $canManageRoles = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_ROLES_PERMISSIONS) ?? false;
+
+        $showContentGroup = $canManagePages || $canManageEvents || $canManageGallery;
+        $showBlogGroup = $canManageBlog || $canManageCategories;
+        $showLmsGroup = $canViewLmsDashboard || $canManageCourses || $canManageLessons || $canManageEnrollments;
+        $showSettingsGroup = $canManageSiteSettings || $canManageHeroSlides || $canManageEmailTemplates;
+        $showAccessGroup = $canManageUsers || $canManageRoles;
     @endphp
     <!-- Admin Navigation -->
     <nav class="bg-gray-900 shadow-lg">
@@ -70,153 +96,235 @@
 
             <div class="hidden md:flex flex-wrap items-center gap-2 border-t border-gray-700 py-3">
                 <a href="{{ route('admin.dashboard') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
-                <a href="{{ route('admin.analytics') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                @if($canViewAnalytics)
+                    <a href="{{ route('admin.analytics') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                @endif
                 <a href="{{ route('admin.manual') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Admin Manual</a>
 
-                <div class="group relative">
-                    <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $contentActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="inline-flex items-center gap-1.5">
-                            Content
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </span>
-                    </button>
-                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                        <a href="{{ route('admin.pages') }}" class="block px-4 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Pages</a>
-                        <a href="{{ route('admin.events') }}" class="block px-4 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Events</a>
-                        <a href="{{ route('admin.gallery') }}" class="block px-4 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Gallery</a>
+                @if($showContentGroup)
+                    <div class="group relative">
+                        <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $contentActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                            <span class="inline-flex items-center gap-1.5">
+                                Content
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                            @if($canManagePages)
+                                <a href="{{ route('admin.pages') }}" class="block px-4 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Pages</a>
+                            @endif
+                            @if($canManageEvents)
+                                <a href="{{ route('admin.events') }}" class="block px-4 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Events</a>
+                            @endif
+                            @if($canManageGallery)
+                                <a href="{{ route('admin.gallery') }}" class="block px-4 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Gallery</a>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
 
-                <div class="group relative">
-                    <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $blogActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="inline-flex items-center gap-1.5">
-                            Blog
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </span>
-                    </button>
-                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                        <a href="{{ route('admin.blog') }}" class="block px-4 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Posts</a>
-                        <a href="{{ route('admin.categories') }}" class="block px-4 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Categories</a>
+                @if($showBlogGroup)
+                    <div class="group relative">
+                        <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $blogActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                            <span class="inline-flex items-center gap-1.5">
+                                Blog
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                            @if($canManageBlog)
+                                <a href="{{ route('admin.blog') }}" class="block px-4 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Posts</a>
+                            @endif
+                            @if($canManageCategories)
+                                <a href="{{ route('admin.categories') }}" class="block px-4 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Categories</a>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
 
-                <div class="group relative">
-                    <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $lmsActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="inline-flex items-center gap-1.5">
-                            LMS
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </span>
-                    </button>
-                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                        <a href="{{ route('admin.lms') }}" class="block px-4 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">LMS Dashboard</a>
-                        <a href="{{ route('admin.courses') }}" class="block px-4 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Courses</a>
-                        <a href="{{ route('admin.lessons') }}" class="block px-4 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Lessons</a>
-                        <a href="{{ route('admin.enrollments') }}" class="block px-4 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Enrollments</a>
+                @if($showLmsGroup)
+                    <div class="group relative">
+                        <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $lmsActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                            <span class="inline-flex items-center gap-1.5">
+                                LMS
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                            @if($canViewLmsDashboard)
+                                <a href="{{ route('admin.lms') }}" class="block px-4 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">LMS Dashboard</a>
+                            @endif
+                            @if($canManageCourses)
+                                <a href="{{ route('admin.courses') }}" class="block px-4 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Courses</a>
+                            @endif
+                            @if($canManageLessons)
+                                <a href="{{ route('admin.lessons') }}" class="block px-4 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Lessons</a>
+                            @endif
+                            @if($canManageEnrollments)
+                                <a href="{{ route('admin.enrollments') }}" class="block px-4 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Enrollments</a>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
 
-                <div class="group relative">
-                    <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $siteSettingsActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="inline-flex items-center gap-1.5">
-                            Site Settings
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </span>
-                    </button>
-                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                        <a href="{{ route('admin.site-settings') }}" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Branding & Footer</a>
-                        <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Social Media & Sidebar</a>
-                        <a href="{{ route('admin.hero-slides') }}" class="block px-4 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Hero Slides</a>
-                        <a href="{{ route('admin.email-templates') }}" class="block px-4 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Email Templates</a>
+                @if($showSettingsGroup)
+                    <div class="group relative">
+                        <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $siteSettingsActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                            <span class="inline-flex items-center gap-1.5">
+                                Site Settings
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                            @if($canManageSiteSettings)
+                                <a href="{{ route('admin.site-settings') }}" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Branding & Footer</a>
+                                <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Social Media & Sidebar</a>
+                            @endif
+                            @if($canManageHeroSlides)
+                                <a href="{{ route('admin.hero-slides') }}" class="block px-4 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Hero Slides</a>
+                            @endif
+                            @if($canManageEmailTemplates)
+                                <a href="{{ route('admin.email-templates') }}" class="block px-4 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Email Templates</a>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
 
-                <div class="group relative">
-                    <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $accessActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
-                        <span class="inline-flex items-center gap-1.5">
-                            Access
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </span>
-                    </button>
-                    <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                        <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Users</a>
-                        <a href="{{ route('admin.roles') }}" class="block px-4 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Roles & Permissions</a>
+                @if($showAccessGroup)
+                    <div class="group relative">
+                        <button type="button" class="rounded-md border px-3 py-1.5 text-sm font-semibold {{ $accessActive ? 'border-gray-300 bg-gray-100 text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">
+                            <span class="inline-flex items-center gap-1.5">
+                                Access
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                            @if($canManageUsers)
+                                <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Users</a>
+                            @endif
+                            @if($canManageRoles)
+                                <a href="{{ route('admin.roles') }}" class="block px-4 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Roles & Permissions</a>
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
 
             <div id="admin-mobile-nav" class="hidden border-t border-gray-700 py-3 md:hidden">
                 <div class="space-y-2">
                     <a href="{{ route('admin.dashboard') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
-                    <a href="{{ route('admin.analytics') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                    @if($canViewAnalytics)
+                        <a href="{{ route('admin.analytics') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                    @endif
                     <a href="{{ route('admin.manual') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Admin Manual</a>
 
-                    <details data-admin-group="content">
-                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $contentActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Content</summary>
-                        <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.pages') }}" class="block rounded-md px-3 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Pages</a>
-                            <a href="{{ route('admin.events') }}" class="block rounded-md px-3 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Events</a>
-                            <a href="{{ route('admin.gallery') }}" class="block rounded-md px-3 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Gallery</a>
-                        </div>
-                    </details>
+                    @if($showContentGroup)
+                        <details data-admin-group="content">
+                            <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $contentActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Content</summary>
+                            <div class="mt-1 space-y-1 pl-3">
+                                @if($canManagePages)
+                                    <a href="{{ route('admin.pages') }}" class="block rounded-md px-3 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Pages</a>
+                                @endif
+                                @if($canManageEvents)
+                                    <a href="{{ route('admin.events') }}" class="block rounded-md px-3 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Events</a>
+                                @endif
+                                @if($canManageGallery)
+                                    <a href="{{ route('admin.gallery') }}" class="block rounded-md px-3 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Gallery</a>
+                                @endif
+                            </div>
+                        </details>
+                    @endif
 
-                    <details data-admin-group="blog">
-                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $blogActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Blog</summary>
-                        <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.blog') }}" class="block rounded-md px-3 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Posts</a>
-                            <a href="{{ route('admin.categories') }}" class="block rounded-md px-3 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Categories</a>
-                        </div>
-                    </details>
+                    @if($showBlogGroup)
+                        <details data-admin-group="blog">
+                            <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $blogActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Blog</summary>
+                            <div class="mt-1 space-y-1 pl-3">
+                                @if($canManageBlog)
+                                    <a href="{{ route('admin.blog') }}" class="block rounded-md px-3 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Posts</a>
+                                @endif
+                                @if($canManageCategories)
+                                    <a href="{{ route('admin.categories') }}" class="block rounded-md px-3 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Categories</a>
+                                @endif
+                            </div>
+                        </details>
+                    @endif
 
-                    <details data-admin-group="lms">
-                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $lmsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">LMS</summary>
-                        <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.lms') }}" class="block rounded-md px-3 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">LMS Dashboard</a>
-                            <a href="{{ route('admin.courses') }}" class="block rounded-md px-3 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Courses</a>
-                            <a href="{{ route('admin.lessons') }}" class="block rounded-md px-3 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Lessons</a>
-                            <a href="{{ route('admin.enrollments') }}" class="block rounded-md px-3 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Enrollments</a>
-                        </div>
-                    </details>
+                    @if($showLmsGroup)
+                        <details data-admin-group="lms">
+                            <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $lmsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">LMS</summary>
+                            <div class="mt-1 space-y-1 pl-3">
+                                @if($canViewLmsDashboard)
+                                    <a href="{{ route('admin.lms') }}" class="block rounded-md px-3 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">LMS Dashboard</a>
+                                @endif
+                                @if($canManageCourses)
+                                    <a href="{{ route('admin.courses') }}" class="block rounded-md px-3 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Courses</a>
+                                @endif
+                                @if($canManageLessons)
+                                    <a href="{{ route('admin.lessons') }}" class="block rounded-md px-3 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Lessons</a>
+                                @endif
+                                @if($canManageEnrollments)
+                                    <a href="{{ route('admin.enrollments') }}" class="block rounded-md px-3 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Enrollments</a>
+                                @endif
+                            </div>
+                        </details>
+                    @endif
 
-                    <details data-admin-group="settings">
-                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $siteSettingsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Site Settings</summary>
-                        <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.site-settings') }}" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Branding & Footer</a>
-                            <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Social Media & Sidebar</a>
-                            <a href="{{ route('admin.hero-slides') }}" class="block rounded-md px-3 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Hero Slides</a>
-                            <a href="{{ route('admin.email-templates') }}" class="block rounded-md px-3 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Email Templates</a>
-                        </div>
-                    </details>
+                    @if($showSettingsGroup)
+                        <details data-admin-group="settings">
+                            <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $siteSettingsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Site Settings</summary>
+                            <div class="mt-1 space-y-1 pl-3">
+                                @if($canManageSiteSettings)
+                                    <a href="{{ route('admin.site-settings') }}" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Branding & Footer</a>
+                                    <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Social Media & Sidebar</a>
+                                @endif
+                                @if($canManageHeroSlides)
+                                    <a href="{{ route('admin.hero-slides') }}" class="block rounded-md px-3 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Hero Slides</a>
+                                @endif
+                                @if($canManageEmailTemplates)
+                                    <a href="{{ route('admin.email-templates') }}" class="block rounded-md px-3 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Email Templates</a>
+                                @endif
+                            </div>
+                        </details>
+                    @endif
 
-                    <details data-admin-group="access">
-                        <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $accessActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Access</summary>
-                        <div class="mt-1 space-y-1 pl-3">
-                            <a href="{{ route('admin.users') }}" class="block rounded-md px-3 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Users</a>
-                            <a href="{{ route('admin.roles') }}" class="block rounded-md px-3 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Roles & Permissions</a>
-                        </div>
-                    </details>
+                    @if($showAccessGroup)
+                        <details data-admin-group="access">
+                            <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $accessActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Access</summary>
+                            <div class="mt-1 space-y-1 pl-3">
+                                @if($canManageUsers)
+                                    <a href="{{ route('admin.users') }}" class="block rounded-md px-3 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Users</a>
+                                @endif
+                                @if($canManageRoles)
+                                    <a href="{{ route('admin.roles') }}" class="block rounded-md px-3 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Roles & Permissions</a>
+                                @endif
+                            </div>
+                        </details>
+                    @endif
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            @hasSection('content')
-                @yield('content')
-            @else
-                {{ $slot ?? '' }}
-            @endif
+    <main class="admin-main py-6">
+        <div class="admin-workspace max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="admin-page-shell">
+                @hasSection('content')
+                    @yield('content')
+                @else
+                    {{ $slot ?? '' }}
+                @endif
+            </div>
         </div>
     </main>
 

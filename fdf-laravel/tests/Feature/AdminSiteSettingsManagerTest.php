@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Livewire\Admin\SiteSettingsManager;
 use App\Models\SiteSetting;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +16,7 @@ class AdminSiteSettingsManagerTest extends TestCase
 
     public function test_admin_can_open_site_settings_page(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         $this->actingAs($admin)
             ->get('/admin/site-settings')
@@ -27,7 +26,7 @@ class AdminSiteSettingsManagerTest extends TestCase
 
     public function test_admin_can_update_footer_settings(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         Livewire::actingAs($admin)
             ->test(SiteSettingsManager::class)
@@ -46,7 +45,7 @@ class AdminSiteSettingsManagerTest extends TestCase
     public function test_admin_can_upload_logo_and_favicon(): void
     {
         Storage::fake('public');
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         $logo = UploadedFile::fake()->create('logo.png', 100, 'image/png');
         $favicon = UploadedFile::fake()->create('favicon.png', 20, 'image/png');
@@ -69,7 +68,7 @@ class AdminSiteSettingsManagerTest extends TestCase
 
     public function test_admin_can_update_media_sidebar_stream_settings(): void
     {
-        $admin = User::factory()->create(['is_admin' => true]);
+        $admin = $this->createAdminUser();
 
         Livewire::actingAs($admin)
             ->test(SiteSettingsManager::class)

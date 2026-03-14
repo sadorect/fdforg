@@ -38,7 +38,7 @@ class CurrencyAndEnrollmentEmailTest extends TestCase
                 'course_enroll_captcha_question' => '4 + 4',
                 'course_enroll_captcha_answer' => 8,
             ])
-            ->post('/courses/' . $course->slug . '/enroll', [
+            ->post(route('courses.enroll', $course->slug), [
                 'captcha_answer' => 8,
             ]);
 
@@ -47,7 +47,7 @@ class CurrencyAndEnrollmentEmailTest extends TestCase
             ->where('user_id', $learner->id)
             ->firstOrFail();
 
-        $response->assertRedirect('/dashboard/payments/' . $enrollment->id);
+        $response->assertRedirect('/dashboard/payments/'.$enrollment->id);
 
         $this->assertDatabaseHas('enrollments', [
             'id' => $enrollment->id,

@@ -3,52 +3,90 @@
 namespace App\Livewire\Admin;
 
 use App\Models\SiteSetting;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Component;
 use Livewire\WithFileUploads;
 
-class SiteSettingsManager extends Component
+class SiteSettingsManager extends AdminComponent
 {
     use WithFileUploads;
 
+    protected array $adminAbilities = [AdminPermissions::MANAGE_SITE_SETTINGS];
+
     public $site_name = '';
+
     public $footer_tagline = '';
+
     public $footer_phone = '';
+
     public $footer_email = '';
+
     public $footer_address = '';
+
     public $media_sidebar_title = '';
+
     public $social_facebook_url = '';
+
     public $social_instagram_url = '';
+
     public $social_x_url = '';
+
     public $social_youtube_url = '';
+
     public $social_tiktok_url = '';
+
     public $social_linkedin_url = '';
+
     public $social_facebook_page_id = '';
+
     public $social_facebook_access_token = '';
+
     public $social_instagram_user_id = '';
+
     public $social_instagram_access_token = '';
+
     public $social_youtube_channel_id = '';
+
     public $social_youtube_api_key = '';
+
     public $social_x_username = '';
+
     public $social_x_bearer_token = '';
+
     public $social_linkedin_org_id = '';
+
     public $social_linkedin_access_token = '';
+
     public $global_show_media_sidebar = true;
+
     public $show_media_sidebar_home = true;
+
     public $show_media_sidebar_about = true;
+
     public $show_media_sidebar_blog = true;
+
     public $show_media_sidebar_gallery = true;
+
     public $show_media_sidebar_contact = true;
+
     public $show_media_sidebar_events = true;
+
     public $show_media_sidebar_courses = true;
+
     public $show_media_sidebar_programs = true;
+
     public $show_media_sidebar_donations = true;
+
     public $show_media_sidebar_accessibility = true;
+
     public $gallery_show_media_sidebar = true;
 
     public $logo = null;
+
     public $favicon = null;
+
     public $logo_path = '';
+
     public $favicon_path = '';
 
     public function mount(): void
@@ -209,19 +247,19 @@ class SiteSettingsManager extends Component
         SiteSetting::setValue('social_x_bearer_token', $validated['social_x_bearer_token'] ?? '');
         SiteSetting::setValue('social_linkedin_org_id', $validated['social_linkedin_org_id'] ?? '');
         SiteSetting::setValue('social_linkedin_access_token', $validated['social_linkedin_access_token'] ?? '');
-        SiteSetting::setValue('global_show_media_sidebar', !empty($validated['global_show_media_sidebar']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_home', !empty($validated['show_media_sidebar_home']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_about', !empty($validated['show_media_sidebar_about']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_blog', !empty($validated['show_media_sidebar_blog']) ? '1' : '0');
-        $galleryVisibility = !empty($validated['show_media_sidebar_gallery']) ? '1' : '0';
+        SiteSetting::setValue('global_show_media_sidebar', ! empty($validated['global_show_media_sidebar']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_home', ! empty($validated['show_media_sidebar_home']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_about', ! empty($validated['show_media_sidebar_about']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_blog', ! empty($validated['show_media_sidebar_blog']) ? '1' : '0');
+        $galleryVisibility = ! empty($validated['show_media_sidebar_gallery']) ? '1' : '0';
 
         SiteSetting::setValue('show_media_sidebar_gallery', $galleryVisibility);
-        SiteSetting::setValue('show_media_sidebar_contact', !empty($validated['show_media_sidebar_contact']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_events', !empty($validated['show_media_sidebar_events']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_courses', !empty($validated['show_media_sidebar_courses']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_programs', !empty($validated['show_media_sidebar_programs']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_donations', !empty($validated['show_media_sidebar_donations']) ? '1' : '0');
-        SiteSetting::setValue('show_media_sidebar_accessibility', !empty($validated['show_media_sidebar_accessibility']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_contact', ! empty($validated['show_media_sidebar_contact']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_events', ! empty($validated['show_media_sidebar_events']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_courses', ! empty($validated['show_media_sidebar_courses']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_programs', ! empty($validated['show_media_sidebar_programs']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_donations', ! empty($validated['show_media_sidebar_donations']) ? '1' : '0');
+        SiteSetting::setValue('show_media_sidebar_accessibility', ! empty($validated['show_media_sidebar_accessibility']) ? '1' : '0');
         SiteSetting::setValue('gallery_show_media_sidebar', $galleryVisibility);
 
         session()->flash('success', 'Media sidebar settings updated successfully.');

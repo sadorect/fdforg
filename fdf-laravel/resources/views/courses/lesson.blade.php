@@ -3,7 +3,7 @@
 @section('content')
 <section class="bg-gradient-to-r from-slate-900 to-blue-800 py-14 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p class="text-xs uppercase tracking-wide text-blue-200">{{ $course->title }}</p>
+        <p class="text-xs uppercase tracking-wide text-blue-200">Learning Path • {{ $course->title }}</p>
         <h1 class="mt-2 text-3xl font-bold">{{ $lesson->sort_order }}. {{ $lesson->title }}</h1>
         <p class="mt-2 text-sm text-blue-100">{{ ucfirst($lesson->type) }} | {{ $lesson->formatted_duration }}</p>
     </div>
@@ -47,7 +47,7 @@
 
         <aside class="space-y-6">
             <div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">Course Lessons</h3>
+                <h3 class="text-lg font-semibold text-gray-900">Learning Roadmap</h3>
                 <ul class="mt-3 space-y-2 text-sm">
                     @foreach($course->publishedLessons as $courseLesson)
                         @php($canOpen = $courseLesson->is_free || ($enrollment && $enrollment->canAccessLesson($courseLesson) && $enrollment->payment_status === 'paid'))
@@ -74,7 +74,7 @@
                     @if($nextLesson)
                         <a href="{{ route('courses.lessons.show', [$course->slug, $nextLesson->slug]) }}" class="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700">Next</a>
                     @endif
-                    <a href="{{ route('courses.show', $course->slug) }}" class="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Back to Course</a>
+                    <a href="{{ route('courses.show', $course->slug) }}" class="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">Back to Learning</a>
                 </div>
             </div>
         </aside>

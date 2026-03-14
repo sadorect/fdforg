@@ -1,100 +1,250 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
-<section class="bg-gradient-to-r from-blue-900 via-blue-700 to-sky-600 py-16 text-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p class="inline-flex rounded-full bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide">Community Insights</p>
-        <h1 class="mt-4 text-4xl font-bold md:text-5xl">Stories, Tips, and Updates</h1>
-        <p class="mt-3 max-w-3xl text-blue-100">Explore practical ideas and community voices from Friends of the Deaf Foundation.</p>
+<section class="relative overflow-hidden bg-slate-950 text-white">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_28rem)]"></div>
+    <div class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,_rgba(14,116,144,0.15),_transparent)]"></div>
+
+    <div class="relative mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8 lg:py-24">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(18rem,0.8fr)] lg:items-end">
+            <div class="max-w-3xl">
+                <p class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
+                    Resource Hub
+                </p>
+                <h1 class="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">
+                    Stories, guidance, and community updates that deepen deaf inclusion.
+                </h1>
+                <p class="mt-5 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
+                    This space brings together practical insights, community stories, and updates from Friends of the Deaf Foundation so supporters, families, and allies can learn from the work as it unfolds.
+                </p>
+
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <a href="#latest-articles" class="inline-flex items-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                        Browse latest insights
+                    </a>
+                    <a href="{{ route('programs') }}" class="inline-flex items-center rounded-full border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/14">
+                        Explore our programs
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Published articles</p>
+                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($blogStats['article_count']) }}</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-300">Mission-aligned stories, updates, and practical guidance.</p>
+                </div>
+                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Active topics</p>
+                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($blogStats['category_count']) }}</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-300">Organized themes to help readers find the right entry point.</p>
+                </div>
+                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Contributor voices</p>
+                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($blogStats['author_count']) }}</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-300">Articles that carry lived context, updates, and organizational perspective.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="bg-white py-10">
+<section class="border-b border-slate-200 bg-white py-7">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <form method="GET" action="{{ route('blog.index') }}" class="flex flex-wrap items-end gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
-            <div>
-                <label for="category" class="text-sm font-semibold text-gray-700">Filter by category</label>
-                <select id="category" name="category" class="mt-1 block rounded-md border-gray-300 bg-white text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">All categories</option>
-                    @foreach($categories as $item)
-                        <option value="{{ $item->slug }}" @selected(optional($category)->slug === $item->slug)>{{ $item->name }}</option>
-                    @endforeach
-                </select>
+        <div class="flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Browse by topic</p>
+                    <h2 class="mt-2 text-2xl font-semibold text-slate-900">
+                        @if($category)
+                            Showing articles in {{ $category->name }}
+                        @else
+                            Explore the latest stories and practical insights
+                        @endif
+                    </h2>
+                </div>
+
+                @if($category)
+                    <a href="{{ route('blog.index') }}" class="inline-flex items-center rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100">
+                        Clear filter
+                    </a>
+                @endif
             </div>
-            <button type="submit" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Apply</button>
-            @if(request()->has('category') && request('category') !== '')
-                <a href="{{ route('blog.index') }}" class="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100">Clear</a>
-            @endif
-        </form>
+
+            <div class="flex flex-wrap gap-2">
+                <a
+                    href="{{ route('blog.index') }}"
+                    class="inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition {{ $category ? 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50' : 'border-cyan-200 bg-cyan-50 text-cyan-800' }}"
+                >
+                    All topics
+                </a>
+
+                @foreach($categories->where('published_posts_count', '>', 0) as $item)
+                    <a
+                        href="{{ route('blog.index', ['category' => $item->slug]) }}"
+                        class="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition {{ optional($category)->slug === $item->slug ? 'border-cyan-200 bg-cyan-50 text-cyan-800' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50' }}"
+                    >
+                        <span>{{ $item->name }}</span>
+                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{{ $item->published_posts_count }}</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
     </div>
 </section>
 
 @if($featuredPost)
-<section class="bg-white pb-8">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2">
-                <a href="{{ route('blog.show', $featuredPost) }}" class="block h-64 md:h-full">
-                    <img src="{{ $featuredPost->thumbnail_url }}" alt="{{ $featuredPost->title }}" class="h-full w-full object-cover">
-                </a>
-                <div class="p-6 md:p-8">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">Featured Article</p>
-                    <h2 class="mt-2 text-3xl font-bold text-gray-900">{{ $featuredPost->title }}</h2>
-                    <p class="mt-3 text-sm text-gray-600">{{ $featuredPost->excerpt }}</p>
-                    <p class="mt-4 text-xs text-gray-500">
-                        {{ $featuredPost->published_at?->format('M j, Y') }} | {{ $featuredPost->reading_time }} min read
-                    </p>
-                    <a href="{{ route('blog.show', $featuredPost) }}" class="mt-5 inline-flex text-sm font-semibold text-blue-600 hover:text-blue-800">Read article -></a>
+    <section class="bg-slate-50 py-12">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <article class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_70px_-45px_rgba(15,23,42,0.38)]">
+                <div class="grid gap-0 lg:grid-cols-[minmax(0,1.05fr),minmax(20rem,0.95fr)]">
+                    <div class="order-2 p-7 md:p-9 lg:order-1 lg:p-12">
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Featured story</p>
+                        <h2 class="mt-4 text-3xl font-bold leading-tight text-slate-900 md:text-4xl">{{ $featuredPost->title }}</h2>
+                        <p class="mt-4 max-w-2xl text-base leading-8 text-slate-600">{{ $featuredPost->excerpt }}</p>
+
+                        <div class="mt-6 flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                            <span>{{ $featuredPost->category->name ?? 'General' }}</span>
+                            <span>{{ $featuredPost->published_at?->format('M j, Y') }}</span>
+                            <span>{{ $featuredPost->reading_time }} min read</span>
+                        </div>
+
+                        <div class="mt-8 flex flex-wrap gap-3">
+                            <a href="{{ route('blog.show', $featuredPost) }}" class="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                                Read featured article
+                            </a>
+                            <a href="{{ route('contact') }}" class="inline-flex items-center rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+                                Talk with our team
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('blog.show', $featuredPost) }}" class="order-1 block h-72 bg-slate-200 lg:order-2 lg:h-full">
+                        <img src="{{ $featuredPost->thumbnail_url }}" alt="{{ $featuredPost->title }}" class="h-full w-full object-cover">
+                    </a>
                 </div>
-            </div>
-        </article>
-    </div>
-</section>
+            </article>
+        </div>
+    </section>
 @endif
 
-<section class="bg-white pb-16">
+<section id="latest-articles" class="bg-white py-16">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-900">
-                @if($category)
-                    {{ $category->name }} Articles
+        <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr),21rem]">
+            <div>
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Latest reading</p>
+                        <h2 class="mt-2 text-3xl font-bold text-slate-900">
+                            @if($category)
+                                {{ $category->name }} stories and updates
+                            @else
+                                Latest stories from the community and the organization
+                            @endif
+                        </h2>
+                    </div>
+
+                    <p class="max-w-xl text-sm leading-7 text-slate-600">
+                        These articles surface updates, lived insights, and practical context that support the mission beyond the homepage.
+                    </p>
+                </div>
+
+                @if($posts->count() > 0)
+                    <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                        @foreach($posts as $post)
+                            <article class="group overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_20px_45px_-34px_rgba(15,23,42,0.32)] transition hover:-translate-y-1 hover:shadow-[0_28px_60px_-36px_rgba(15,23,42,0.4)]">
+                                <a href="{{ route('blog.show', $post) }}" class="block h-52 overflow-hidden bg-slate-200">
+                                    <img src="{{ $post->thumbnail_url }}" alt="{{ $post->title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]">
+                                </a>
+                                <div class="p-6">
+                                    <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-700">
+                                        <span>{{ $post->category->name ?? 'General' }}</span>
+                                        <span class="h-1 w-1 rounded-full bg-cyan-500"></span>
+                                        <span>{{ $post->reading_time }} min read</span>
+                                    </div>
+
+                                    <h3 class="mt-4 text-xl font-semibold leading-tight text-slate-900">
+                                        <a href="{{ route('blog.show', $post) }}" class="transition hover:text-cyan-800">{{ $post->title }}</a>
+                                    </h3>
+
+                                    <p class="mt-3 text-sm leading-7 text-slate-600">{{ \Illuminate\Support\Str::limit($post->excerpt, 132) }}</p>
+
+                                    <div class="mt-5 flex items-center justify-between gap-3 text-sm text-slate-500">
+                                        <span>{{ $post->published_at?->format('M j, Y') }}</span>
+                                        <a href="{{ route('blog.show', $post) }}" class="font-semibold text-cyan-700 transition hover:text-cyan-900">Read article -></a>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-10">
+                        {{ $posts->links() }}
+                    </div>
                 @else
-                    Latest Articles
-                @endif
-            </h2>
-        </div>
-
-        @if($posts->count() > 0)
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                @foreach($posts as $post)
-                    <article class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                        <a href="{{ route('blog.show', $post) }}" class="block h-48">
-                            <img src="{{ $post->thumbnail_url }}" alt="{{ $post->title }}" class="h-full w-full object-cover">
+                    <div class="mt-8 rounded-[1.75rem] border border-dashed border-slate-300 bg-slate-50 px-8 py-12 text-center">
+                        <p class="text-lg font-semibold text-slate-900">No published posts were found for this topic yet.</p>
+                        <p class="mt-3 text-sm leading-7 text-slate-600">Try another topic or return to the full blog archive to continue exploring.</p>
+                        <a href="{{ route('blog.index') }}" class="mt-6 inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                            View all articles
                         </a>
-                        <div class="p-5">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-blue-600">{{ $post->category->name ?? 'General' }}</p>
-                            <h3 class="mt-2 text-xl font-semibold text-gray-900">
-                                <a href="{{ route('blog.show', $post) }}" class="hover:text-blue-700">{{ $post->title }}</a>
-                            </h3>
-                            <p class="mt-2 text-sm text-gray-600">{{ \Illuminate\Support\Str::limit($post->excerpt, 120) }}</p>
-                            <p class="mt-3 text-xs text-gray-500">
-                                {{ $post->published_at?->format('M j, Y') }} | {{ $post->reading_time }} min read
-                            </p>
-                            <a href="{{ route('blog.show', $post) }}" class="mt-4 inline-flex text-sm font-semibold text-blue-600 hover:text-blue-800">Read article -></a>
-                        </div>
-                    </article>
-                @endforeach
+                    </div>
+                @endif
             </div>
 
-            <div class="mt-8">
-                {{ $posts->links() }}
-            </div>
-        @else
-            <div class="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center">
-                <p class="text-sm text-gray-600">No published posts were found for this category yet.</p>
-            </div>
-        @endif
+            <aside class="space-y-5">
+                <div class="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">What you will find here</p>
+                    <div class="mt-5 space-y-4">
+                        <div class="rounded-2xl border border-white bg-white p-4">
+                            <h3 class="text-base font-semibold text-slate-900">Community stories</h3>
+                            <p class="mt-2 text-sm leading-7 text-slate-600">Reflections and updates that keep the human impact of the work visible.</p>
+                        </div>
+                        <div class="rounded-2xl border border-white bg-white p-4">
+                            <h3 class="text-base font-semibold text-slate-900">Practical guidance</h3>
+                            <p class="mt-2 text-sm leading-7 text-slate-600">Helpful context for families, supporters, allies, and anyone learning to show up well.</p>
+                        </div>
+                        <div class="rounded-2xl border border-white bg-white p-4">
+                            <h3 class="text-base font-semibold text-slate-900">Mission updates</h3>
+                            <p class="mt-2 text-sm leading-7 text-slate-600">News about programs, events, and the work happening behind the scenes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                @if($popularPosts->count() > 0)
+                    <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_20px_45px_-34px_rgba(15,23,42,0.28)]">
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Popular reads</p>
+                        <div class="mt-5 space-y-4">
+                            @foreach($popularPosts as $popularPost)
+                                <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                    <p class="text-xs uppercase tracking-[0.18em] text-slate-500">{{ $popularPost->published_at?->format('M j, Y') }}</p>
+                                    <h3 class="mt-2 text-base font-semibold leading-7 text-slate-900">
+                                        <a href="{{ route('blog.show', $popularPost) }}" class="transition hover:text-cyan-800">{{ $popularPost->title }}</a>
+                                    </h3>
+                                    <p class="mt-2 text-sm leading-7 text-slate-600">{{ \Illuminate\Support\Str::limit($popularPost->excerpt, 88) }}</p>
+                                </article>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <div class="rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-[0_20px_50px_-30px_rgba(15,23,42,0.55)]">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Need support or partnership?</p>
+                    <h3 class="mt-3 text-2xl font-semibold">Let the stories lead you into action.</h3>
+                    <p class="mt-3 text-sm leading-7 text-slate-300">
+                        If a story resonates with your needs or your goals, the next step can be a conversation, a program, or direct support for the mission.
+                    </p>
+                    <div class="mt-6 flex flex-col gap-3">
+                        <a href="{{ route('contact') }}" class="inline-flex items-center justify-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                            Contact our team
+                        </a>
+                        <a href="{{ route('donations') }}" class="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/8">
+                            Support the mission
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
 </section>
 @endsection
-

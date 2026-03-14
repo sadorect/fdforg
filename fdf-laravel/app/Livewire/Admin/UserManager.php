@@ -7,27 +7,39 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\AdminPermissions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Livewire\Component;
 use Livewire\WithPagination;
 
-class UserManager extends Component
+class UserManager extends AdminComponent
 {
     use WithPagination;
 
+    protected array $adminAbilities = [AdminPermissions::MANAGE_USERS];
+
     public $search = '';
+
     public $roleFilter = '';
+
     public $showForm = false;
+
     public $editing = false;
+
     public $userId;
 
     public $name = '';
+
     public $email = '';
+
     public $password = '';
+
     public $bio = '';
+
     public $is_admin = false;
+
     public $email_verified = true;
+
     public $role_ids = [];
 
     protected $paginationTheme = 'tailwind';
@@ -42,15 +54,28 @@ class UserManager extends Component
         $this->resetPage();
     }
 
+    public function updatedIsAdmin(bool $value): void
+    {
+        if ($value) {
+            return;
+        }
+
+        if (auth()->user()?->hasPermission(AdminPermissions::MANAGE_ROLES_PERMISSIONS)) {
+            $this->role_ids = [];
+        }
+    }
+
     public function render()
     {
+        $canManageAccessAssignments = auth()->user()?->hasPermission(AdminPermissions::MANAGE_ROLES_PERMISSIONS) ?? false;
+
         $users = User::query()
             ->with('roles')
             ->when($this->search !== '', function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('email', 'like', '%' . $this->search . '%')
-                        ->orWhere('bio', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('email', 'like', '%'.$this->search.'%')
+                        ->orWhere('bio', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->roleFilter !== '', function ($query) {
@@ -65,7 +90,8 @@ class UserManager extends Component
 
         return view('livewire.admin.user-manager', [
             'users' => $users,
-            'roles' => Role::orderBy('name')->get(),
+            'roles' => $canManageAccessAssignments ? Role::orderBy('name')->get() : collect(),
+            'canManageAccessAssignments' => $canManageAccessAssignments,
         ])->layout('layouts.admin')
             ->title('User Management');
     }
@@ -96,24 +122,26 @@ class UserManager extends Component
     public function save(): void
     {
         $data = $this->validate($this->rules());
+        $canManageAccessAssignments = auth()->user()?->hasPermission(AdminPermissions::MANAGE_ROLES_PERMISSIONS) ?? false;
 
         $payload = [
             'name' => $data['name'],
             'email' => $data['email'],
             'bio' => $data['bio'] ?? null,
-            'is_admin' => (bool) $data['is_admin'],
             'email_verified_at' => $data['email_verified'] ? now() : null,
         ];
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $payload['password'] = Hash::make($data['password']);
         }
 
         if ($this->editing) {
             $user = User::findOrFail($this->userId);
+            $payload['is_admin'] = $canManageAccessAssignments ? (bool) $data['is_admin'] : (bool) $user->is_admin;
             $user->update($payload);
             session()->flash('success', 'User updated successfully.');
         } else {
+            $payload['is_admin'] = $canManageAccessAssignments ? (bool) $data['is_admin'] : false;
             if (empty($data['password'])) {
                 $payload['password'] = Hash::make('password');
             }
@@ -121,7 +149,10 @@ class UserManager extends Component
             session()->flash('success', 'User created successfully.');
         }
 
-        $user->roles()->sync($data['role_ids'] ?? []);
+        if ($canManageAccessAssignments) {
+            $user->roles()->sync($payload['is_admin'] ? ($data['role_ids'] ?? []) : []);
+        }
+
         $this->resetForm();
     }
 
@@ -129,6 +160,7 @@ class UserManager extends Component
     {
         if (auth()->id() === $id) {
             session()->flash('error', 'You cannot delete your own account.');
+
             return;
         }
 
@@ -139,6 +171,7 @@ class UserManager extends Component
 
         if ($hasLinkedRecords) {
             session()->flash('error', 'Cannot delete user with linked LMS or content records.');
+
             return;
         }
 
@@ -148,18 +181,34 @@ class UserManager extends Component
 
     public function toggleAdmin(int $id): void
     {
+        if (! auth()->user()?->hasPermission(AdminPermissions::MANAGE_ROLES_PERMISSIONS)) {
+            session()->flash('error', 'Only access administrators can change admin status.');
+
+            return;
+        }
+
         if (auth()->id() === $id) {
             session()->flash('error', 'You cannot change your own admin role.');
+
             return;
         }
 
         $user = User::findOrFail($id);
-        $user->update(['is_admin' => !$user->is_admin]);
+        $user->update(['is_admin' => ! $user->is_admin]);
     }
 
     public function cancel(): void
     {
         $this->resetForm();
+    }
+
+    public function clearAssignedRoles(): void
+    {
+        if (! auth()->user()?->hasPermission(AdminPermissions::MANAGE_ROLES_PERMISSIONS)) {
+            return;
+        }
+
+        $this->role_ids = [];
     }
 
     private function rules(): array

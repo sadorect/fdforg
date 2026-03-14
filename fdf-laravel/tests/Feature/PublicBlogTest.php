@@ -60,13 +60,15 @@ class PublicBlogTest extends TestCase
 
         $this->get('/blog')
             ->assertOk()
+            ->assertSee('Stories, guidance, and community updates that deepen deaf inclusion.')
             ->assertSee('Published Community Update')
             ->assertDontSee('Draft Community Update')
             ->assertDontSee('Scheduled Community Update');
 
-        $this->get('/blog/' . $published->slug)
+        $this->get('/blog/'.$published->slug)
             ->assertOk()
-            ->assertSee('Published content body');
+            ->assertSee('Published content body')
+            ->assertSee('Take the next step');
 
         $this->get('/blog/draft-community-update')->assertNotFound();
         $this->get('/blog/scheduled-community-update')->assertNotFound();
@@ -137,6 +139,7 @@ class PublicBlogTest extends TestCase
             ->assertOk()
             ->assertSee('String tag content body')
             ->assertSee('accessibility')
-            ->assertSee('community');
+            ->assertSee('community')
+            ->assertSee('Article details');
     }
 }
