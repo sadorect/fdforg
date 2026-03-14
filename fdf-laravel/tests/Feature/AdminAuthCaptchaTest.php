@@ -16,8 +16,21 @@ class AdminAuthCaptchaTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Math CAPTCHA');
+        $response->assertSee('data-admin-captcha-status', false);
         $this->assertNotNull(session('admin_captcha_question'));
         $this->assertNotNull(session('admin_captcha_answer'));
+    }
+
+    public function test_admin_captcha_can_refresh_without_reloading_page(): void
+    {
+        $response = $this->get(route('admin.captcha'));
+
+        $response->assertOk();
+        $response->assertJsonStructure(['question']);
+        $response->assertSessionHas('admin_captcha_question');
+        $response->assertSessionHas('admin_captcha_answer');
+
+        $this->assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
     }
 
     public function test_admin_login_fails_with_invalid_math_captcha(): void

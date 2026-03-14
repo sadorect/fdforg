@@ -29,11 +29,12 @@
                 @if($enrollment && !$progress?->is_completed && $enrollment->payment_status === 'paid')
                     <form action="{{ route('courses.lessons.complete', [$course->slug, $lesson->slug]) }}" method="POST" class="space-y-2">
                         @csrf
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Math CAPTCHA: What is {{ $captchaQuestion }}?</label>
-                            <div class="mt-1 flex items-center gap-3">
-                                <input type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required class="w-full max-w-xs rounded-md border-gray-300">
-                                <a href="{{ route('courses.lessons.show', ['course' => $course->slug, 'lesson' => $lesson->slug, 'refresh_captcha' => 1]) }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">New CAPTCHA</a>
+                        <div data-captcha-block>
+                            <label for="lesson-complete-captcha-answer" class="block text-sm font-medium text-gray-700">Math CAPTCHA: What is <span data-captcha-question>{{ $captchaQuestion }}</span>?</label>
+                            <p class="sr-only" data-captcha-status aria-live="polite" aria-atomic="true"></p>
+                            <div class="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center">
+                                <input id="lesson-complete-captcha-answer" type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required data-captcha-input class="w-full max-w-xs rounded-md border-gray-300">
+                                <button type="button" data-captcha-refresh data-refresh-url="{{ route('courses.lessons.captcha', [$course->slug, $lesson->slug]) }}" data-fallback-url="{{ route('courses.lessons.show', ['course' => $course->slug, 'lesson' => $lesson->slug, 'refresh_captcha' => 1]) }}" class="text-left text-sm font-semibold text-blue-600 hover:text-blue-800">New CAPTCHA</button>
                             </div>
                             @error('captcha_answer') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>

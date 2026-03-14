@@ -31,7 +31,8 @@ class CourseLessonAccessTest extends TestCase
             ->get(route('courses.lessons.show', [$course->slug, $lesson->slug]))
             ->assertOk()
             ->assertSee('Lesson Content')
-            ->assertSee('Paid lesson body');
+            ->assertSee('Paid lesson body')
+            ->assertSee('data-captcha-status', false);
     }
 
     public function test_pending_payment_user_is_redirected_to_payment_for_paid_lesson(): void
@@ -132,6 +133,28 @@ class CourseLessonAccessTest extends TestCase
         $this->actingAs($learner)
             ->get("/dashboard/enrollments/{$enrollment->id}/continue")
             ->assertRedirect(route('courses.lessons.show', [$course->slug, $lesson->slug]));
+    }
+
+    public function test_paid_lesson_completion_captcha_can_refresh_without_reloading_page(): void
+    {
+        [$course, $lesson, $learner] = $this->createPaidCourseWithLesson();
+
+        Enrollment::create([
+            'user_id' => $learner->id,
+            'course_id' => $course->id,
+            'status' => 'active',
+            'enrolled_at' => now(),
+            'progress_percentage' => 0,
+            'payment_status' => 'paid',
+            'paid_amount' => $course->price,
+        ]);
+
+        $response = $this->actingAs($learner)->getJson(route('courses.lessons.captcha', [$course->slug, $lesson->slug]));
+
+        $response->assertOk();
+        $response->assertJsonStructure(['question']);
+        $response->assertSessionHas('lesson_complete_captcha_question');
+        $response->assertSessionHas('lesson_complete_captcha_answer');
     }
 
     private function createPaidCourseWithLesson(): array

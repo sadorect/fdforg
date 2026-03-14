@@ -16,8 +16,21 @@ class UserAuthCaptchaTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Math CAPTCHA');
+        $response->assertSee('data-captcha-status', false);
         $this->assertNotNull(session('user_auth_captcha_question'));
         $this->assertNotNull(session('user_auth_captcha_answer'));
+    }
+
+    public function test_auth_captcha_can_refresh_without_reloading_page(): void
+    {
+        $response = $this->get(route('auth.captcha'));
+
+        $response->assertOk();
+        $response->assertJsonStructure(['question']);
+        $response->assertSessionHas('user_auth_captcha_question');
+        $response->assertSessionHas('user_auth_captcha_answer');
+
+        $this->assertStringContainsString('no-store', (string) $response->headers->get('Cache-Control'));
     }
 
     public function test_login_fails_with_invalid_math_captcha(): void

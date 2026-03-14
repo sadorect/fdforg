@@ -46,7 +46,9 @@ class AdminNavigationTest extends TestCase
         $this->actingAs($admin)
             ->get('/admin/courses')
             ->assertOk()
-            ->assertSee('href="'.route('admin.courses').'" class="block px-4 py-2 text-sm bg-blue-50 font-semibold text-blue-700"', false);
+            ->assertSee('href="'.route('admin.courses').'"', false)
+            ->assertSee('aria-current="page"', false)
+            ->assertSee('aria-controls="admin-mobile-nav"', false);
     }
 
     public function test_scoped_admin_navigation_only_shows_allowed_sections(): void

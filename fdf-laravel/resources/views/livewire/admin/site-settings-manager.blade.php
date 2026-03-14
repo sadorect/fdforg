@@ -11,6 +11,7 @@
             <a href="#branding-assets" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm ring-1 ring-blue-200 hover:bg-blue-100">Branding Assets</a>
             <a href="#footer-settings" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm ring-1 ring-blue-200 hover:bg-blue-100">Footer Settings</a>
             <a href="#media-sidebar-settings" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm ring-1 ring-blue-200 hover:bg-blue-100">Social Media & Sidebar</a>
+            <a href="{{ route('admin.content-transfer') }}" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm ring-1 ring-blue-200 hover:bg-blue-100">Content Transfer</a>
         </div>
     </section>
 

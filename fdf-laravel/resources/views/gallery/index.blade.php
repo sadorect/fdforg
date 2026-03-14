@@ -51,8 +51,12 @@
                     id="gallery-hero-slider"
                     data-slides='@json($heroSlides)'
                     class="relative overflow-hidden rounded-[2rem] border border-white/12 bg-white/8 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)] backdrop-blur-sm"
+                    role="region"
+                    aria-roledescription="carousel"
+                    aria-label="Gallery highlights"
                 >
-                    <button type="button" class="open-gallery block w-full text-left" id="gallery-hero-slide-link" data-slide-index="{{ $heroSlides[0]['slide_index'] }}">
+                    <p id="gallery-hero-slider-status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+                    <button type="button" class="open-gallery block w-full text-left" id="gallery-hero-slide-link" data-slide-index="{{ $heroSlides[0]['slide_index'] }}" aria-label="Open gallery highlight: {{ $heroSlides[0]['title'] }}">
                         <div class="relative aspect-[4/5] overflow-hidden sm:aspect-[16/11] lg:aspect-[4/5]">
                             <img id="gallery-hero-slide-image" src="{{ $heroSlides[0]['url'] }}" alt="{{ $heroSlides[0]['title'] }}" class="h-full w-full object-cover">
                             <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.12)_0%,rgba(15,23,42,0.28)_45%,rgba(15,23,42,0.85)_100%)]"></div>
@@ -88,16 +92,17 @@
                                         type="button"
                                         class="{{ $index === 0 ? 'bg-white' : 'bg-white/35' }} h-2.5 w-2.5 rounded-full transition"
                                         data-gallery-hero-dot="{{ $index }}"
-                                        aria-label="Show hero slide {{ $index + 1 }}"
+                                        aria-label="Show hero slide {{ $index + 1 }} of {{ $heroSlides->count() }}"
+                                        aria-pressed="{{ $index === 0 ? 'true' : 'false' }}"
                                     ></button>
                                 @endforeach
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <button type="button" id="gallery-hero-slider-prev" class="rounded-full border border-white/15 bg-black/25 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/40">
+                                <button type="button" id="gallery-hero-slider-prev" class="rounded-full border border-white/15 bg-black/25 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/40" aria-label="Show previous gallery highlight">
                                     Prev
                                 </button>
-                                <button type="button" id="gallery-hero-slider-next" class="rounded-full border border-white/15 bg-black/25 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/40">
+                                <button type="button" id="gallery-hero-slider-next" class="rounded-full border border-white/15 bg-black/25 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/40" aria-label="Show next gallery highlight">
                                     Next
                                 </button>
                             </div>
@@ -205,7 +210,7 @@
                         @endif
                     </div>
 
-                    <button type="button" class="open-gallery order-1 block min-h-[18rem] bg-slate-200 lg:order-2" data-slide-index="{{ $spotlightSlideStart }}">
+                    <button type="button" class="open-gallery order-1 block min-h-[18rem] bg-slate-200 lg:order-2" data-slide-index="{{ $spotlightSlideStart }}" aria-label="Open spotlight collection: {{ $spotlightItem->title }}">
                         @if(count($spotlightImageUrls) > 0)
                             <div class="relative h-full">
                                 <img src="{{ $spotlightImageUrls[0] }}" alt="{{ $spotlightItem->title }}" class="h-full w-full object-cover">
@@ -251,7 +256,7 @@
                             @php($slideStartIndex += count($itemImageUrls))
                             <article class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_20px_45px_-34px_rgba(15,23,42,0.32)] transition hover:-translate-y-1 hover:shadow-[0_28px_60px_-36px_rgba(15,23,42,0.4)]">
                                 @if(count($itemImageUrls) > 0)
-                                    <button type="button" class="open-gallery group relative block h-60 w-full overflow-hidden bg-slate-200" data-slide-index="{{ $itemSlideStart }}">
+                                    <button type="button" class="open-gallery group relative block h-60 w-full overflow-hidden bg-slate-200" data-slide-index="{{ $itemSlideStart }}" aria-label="Open gallery collection: {{ $item->title }}">
                                         <img src="{{ $itemImageUrls[0] }}" alt="{{ $item->title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]">
                                         <div class="absolute inset-0 bg-black/0 transition group-hover:bg-black/12"></div>
                                         <span class="absolute right-4 top-4 rounded-full bg-black/65 px-3 py-1 text-xs font-semibold text-white">
@@ -289,7 +294,7 @@
                                     @if(count($itemImageUrls) > 1)
                                         <div class="grid grid-cols-4 gap-2">
                                             @foreach(array_slice($itemImageUrls, 1, 4) as $thumbIndex => $thumbUrl)
-                                                <button type="button" class="open-gallery overflow-hidden rounded-xl border border-slate-200 bg-slate-50" data-slide-index="{{ $itemSlideStart + $thumbIndex + 1 }}">
+                                                <button type="button" class="open-gallery overflow-hidden rounded-xl border border-slate-200 bg-slate-50" data-slide-index="{{ $itemSlideStart + $thumbIndex + 1 }}" aria-label="Open image {{ $thumbIndex + 2 }} from {{ $item->title }}">
                                                     <img src="{{ $thumbUrl }}" alt="{{ $item->title }} thumbnail {{ $thumbIndex + 2 }}" class="h-16 w-full object-cover">
                                                 </button>
                                             @endforeach
@@ -382,16 +387,19 @@
             const previousButton = document.getElementById('gallery-hero-slider-prev');
             const nextButton = document.getElementById('gallery-hero-slider-next');
             const dots = Array.from(document.querySelectorAll('[data-gallery-hero-dot]'));
+            const status = document.getElementById('gallery-hero-slider-status');
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
             let activeIndex = 0;
             let intervalId = null;
 
-            function renderSlide() {
+            function renderSlide(announce = false) {
                 const slide = slides[activeIndex];
 
                 image.src = slide.url;
                 image.alt = slide.title || 'Gallery highlight';
                 link.dataset.slideIndex = slide.slide_index ?? 0;
+                link.setAttribute('aria-label', 'Open gallery highlight: ' + (slide.title || 'Gallery highlight'));
                 type.textContent = slide.type || 'Gallery';
                 eventName.textContent = slide.event_name || 'Community archive';
                 title.textContent = slide.title || '';
@@ -400,16 +408,21 @@
                 dots.forEach(function (dot, index) {
                     dot.classList.toggle('bg-white', index === activeIndex);
                     dot.classList.toggle('bg-white/35', index !== activeIndex);
+                    dot.setAttribute('aria-pressed', index === activeIndex ? 'true' : 'false');
                 });
+
+                if (announce && status) {
+                    status.textContent = 'Showing slide ' + (activeIndex + 1) + ' of ' + slides.length + ': ' + (slide.title || 'Gallery highlight') + '.';
+                }
             }
 
-            function goToSlide(index) {
+            function goToSlide(index, options = {}) {
                 activeIndex = (index + slides.length) % slides.length;
-                renderSlide();
+                renderSlide(options.announce === true);
             }
 
             function startAutoPlay() {
-                if (slides.length < 2) {
+                if (slides.length < 2 || reducedMotion.matches) {
                     return;
                 }
 
@@ -427,24 +440,30 @@
             }
 
             previousButton?.addEventListener('click', function () {
-                goToSlide(activeIndex - 1);
+                goToSlide(activeIndex - 1, { announce: true });
                 startAutoPlay();
             });
 
             nextButton?.addEventListener('click', function () {
-                goToSlide(activeIndex + 1);
+                goToSlide(activeIndex + 1, { announce: true });
                 startAutoPlay();
             });
 
             dots.forEach(function (dot, index) {
                 dot.addEventListener('click', function () {
-                    goToSlide(index);
+                    goToSlide(index, { announce: true });
                     startAutoPlay();
                 });
             });
 
             slider.addEventListener('mouseenter', stopAutoPlay);
             slider.addEventListener('mouseleave', startAutoPlay);
+            slider.addEventListener('focusin', stopAutoPlay);
+            slider.addEventListener('focusout', function (event) {
+                if (!slider.contains(event.relatedTarget)) {
+                    startAutoPlay();
+                }
+            });
 
             document.addEventListener('visibilitychange', function () {
                 if (document.hidden) {
@@ -454,6 +473,16 @@
                 }
             });
 
+            if (typeof reducedMotion.addEventListener === 'function') {
+                reducedMotion.addEventListener('change', function () {
+                    if (reducedMotion.matches) {
+                        stopAutoPlay();
+                    } else {
+                        startAutoPlay();
+                    }
+                });
+            }
+
             renderSlide();
             startAutoPlay();
         });
@@ -461,10 +490,11 @@
 @endif
 
 @if($lightboxSlides->count() > 0)
-    <div id="gallery-lightbox" class="fixed inset-0 z-50 hidden bg-slate-950/95 p-4 sm:p-8">
-        <button type="button" id="gallery-close" class="absolute right-4 top-4 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20">Close</button>
-        <button type="button" id="gallery-prev" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-white transition hover:bg-white/20">&larr;</button>
-        <button type="button" id="gallery-next" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-white transition hover:bg-white/20">&rarr;</button>
+    <div id="gallery-lightbox" class="fixed inset-0 z-50 hidden bg-slate-950/95 p-4 sm:p-8" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="gallery-title" aria-describedby="gallery-index gallery-description" tabindex="-1">
+        <p id="gallery-lightbox-status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+        <button type="button" id="gallery-close" class="absolute right-4 top-4 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20" aria-label="Close gallery dialog">Close</button>
+        <button type="button" id="gallery-prev" class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-white transition hover:bg-white/20" aria-label="Show previous gallery image">&larr;</button>
+        <button type="button" id="gallery-next" class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-white transition hover:bg-white/20" aria-label="Show next gallery image">&rarr;</button>
 
         <div class="mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center">
             <img id="gallery-image" src="" alt="" class="max-h-[70vh] w-auto max-w-full rounded-[1.75rem] object-contain shadow-2xl">
@@ -489,6 +519,7 @@
             const meta = document.getElementById('gallery-meta');
             const description = document.getElementById('gallery-description');
             const indexLabel = document.getElementById('gallery-index');
+            const liveStatus = document.getElementById('gallery-lightbox-status');
             const openers = document.querySelectorAll('.open-gallery');
 
             if (!lightbox || slides.length === 0) {
@@ -496,6 +527,13 @@
             }
 
             let activeIndex = 0;
+            let lastFocusedElement = null;
+
+            function getFocusableElements() {
+                return Array.from(lightbox.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')).filter(function (element) {
+                    return !element.hasAttribute('hidden');
+                });
+            }
 
             function renderSlide() {
                 const slide = slides[activeIndex];
@@ -506,18 +544,30 @@
                 meta.textContent = metaParts.join(' | ');
                 description.textContent = slide.description || '';
                 indexLabel.textContent = 'Image ' + (activeIndex + 1) + ' of ' + slides.length;
+
+                if (liveStatus) {
+                    liveStatus.textContent = 'Viewing image ' + (activeIndex + 1) + ' of ' + slides.length + ': ' + (slide.title || 'Gallery image') + '.';
+                }
             }
 
-            function openLightbox(index) {
+            function openLightbox(index, opener) {
                 activeIndex = index;
+                lastFocusedElement = opener || document.activeElement;
                 renderSlide();
                 lightbox.classList.remove('hidden');
+                lightbox.setAttribute('aria-hidden', 'false');
                 document.body.classList.add('overflow-hidden');
+                closeBtn.focus();
             }
 
             function closeLightbox() {
                 lightbox.classList.add('hidden');
+                lightbox.setAttribute('aria-hidden', 'true');
                 document.body.classList.remove('overflow-hidden');
+
+                if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                    lastFocusedElement.focus();
+                }
             }
 
             function nextSlide() {
@@ -533,7 +583,7 @@
             openers.forEach(function (opener) {
                 opener.addEventListener('click', function () {
                     const index = Number(opener.getAttribute('data-slide-index') || '0');
-                    openLightbox(index);
+                    openLightbox(index, opener);
                 });
             });
 
@@ -547,17 +597,35 @@
                 }
             });
 
-            document.addEventListener('keydown', function (event) {
-                if (lightbox.classList.contains('hidden')) {
-                    return;
-                }
-
+            lightbox.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape') {
+                    event.preventDefault();
                     closeLightbox();
                 } else if (event.key === 'ArrowRight') {
+                    event.preventDefault();
                     nextSlide();
                 } else if (event.key === 'ArrowLeft') {
+                    event.preventDefault();
                     previousSlide();
+                } else if (event.key === 'Tab') {
+                    const focusableElements = getFocusableElements();
+
+                    if (focusableElements.length === 0) {
+                        event.preventDefault();
+                        lightbox.focus();
+                        return;
+                    }
+
+                    const firstFocusable = focusableElements[0];
+                    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+                    if (event.shiftKey && document.activeElement === firstFocusable) {
+                        event.preventDefault();
+                        lastFocusable.focus();
+                    } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+                        event.preventDefault();
+                        firstFocusable.focus();
+                    }
                 }
             });
         });

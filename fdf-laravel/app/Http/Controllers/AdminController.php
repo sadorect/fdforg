@@ -3,11 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Support\MathCaptcha;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+    public function refreshCaptcha(Request $request): JsonResponse
+    {
+        MathCaptcha::regenerate($request, 'admin');
+
+        return response()
+            ->json(['question' => MathCaptcha::question($request, 'admin')])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
     /**
      * Show the admin login form.
      */

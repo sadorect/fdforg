@@ -15,25 +15,26 @@
                 @csrf
 
                 <div class="rounded-lg border border-gray-200 bg-slate-50 p-4">
-                    <label class="text-sm font-semibold text-gray-800">Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required class="mt-2 w-full rounded-md border-2 border-slate-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="login-email" class="text-sm font-semibold text-gray-800">Email</label>
+                    <input id="login-email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" class="mt-2 w-full rounded-md border-2 border-slate-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                     @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="rounded-lg border border-gray-200 bg-slate-50 p-4">
                     <div class="flex items-center justify-between">
-                        <label class="text-sm font-semibold text-gray-800">Password</label>
+                        <label for="login-password" class="text-sm font-semibold text-gray-800">Password</label>
                         <a href="{{ route('password.request') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800">Forgot password?</a>
                     </div>
-                    <input type="password" name="password" required class="mt-2 w-full rounded-md border-2 border-slate-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
+                    <input id="login-password" type="password" name="password" required autocomplete="current-password" class="mt-2 w-full rounded-md border-2 border-slate-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                     @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="rounded-md border border-gray-200 bg-gray-50 p-4">
-                    <label class="block text-sm font-medium text-gray-700">Math CAPTCHA: What is {{ $captchaQuestion }}?</label>
+                <div class="rounded-md border border-gray-200 bg-gray-50 p-4" data-captcha-block>
+                    <label for="login-captcha-answer" class="block text-sm font-medium text-gray-700">Math CAPTCHA: What is <span data-captcha-question>{{ $captchaQuestion }}</span>?</label>
+                    <p class="sr-only" data-captcha-status aria-live="polite" aria-atomic="true"></p>
                     <div class="mt-2 flex items-center gap-3">
-                        <input type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required class="w-full rounded-md border-2 border-slate-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                        <a href="{{ route('login', ['refresh_captcha' => 1]) }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">New CAPTCHA</a>
+                        <input id="login-captcha-answer" type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required data-captcha-input class="w-full rounded-md border-2 border-slate-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
+                        <button type="button" data-captcha-refresh data-refresh-url="{{ route('auth.captcha') }}" data-fallback-url="{{ route('login', ['refresh_captcha' => 1]) }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">New CAPTCHA</button>
                     </div>
                     @error('captcha_answer') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>

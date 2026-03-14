@@ -109,10 +109,16 @@
                             </p>
                             <form action="{{ route('courses.enroll', $course->slug) }}" method="POST" class="mt-6 space-y-4">
                                 @csrf
-                                <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">Math CAPTCHA</label>
-                                    <p class="mt-2 text-sm text-slate-200">What is {{ $captchaQuestion }}?</p>
-                                    <input type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required class="mt-3 w-full rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white placeholder-slate-400 focus:border-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-200/40">
+                                <div data-captcha-block>
+                                    <label for="course-enroll-captcha-answer" class="block text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">Math CAPTCHA</label>
+                                    <p class="mt-2 text-sm text-slate-200">What is <span data-captcha-question>{{ $captchaQuestion }}</span>?</p>
+                                    <p class="sr-only" data-captcha-status aria-live="polite" aria-atomic="true"></p>
+                                    <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+                                        <input id="course-enroll-captcha-answer" type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required data-captcha-input class="w-full rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white placeholder-slate-400 focus:border-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-200/40">
+                                        <button type="button" data-captcha-refresh data-refresh-url="{{ route('courses.captcha', $course->slug) }}" data-fallback-url="{{ route('courses.show', ['course' => $course->slug, 'refresh_captcha' => 1]) }}" class="inline-flex shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+                                            New CAPTCHA
+                                        </button>
+                                    </div>
                                     @error('captcha_answer')
                                         <p class="mt-2 text-xs text-rose-200">{{ $message }}</p>
                                     @enderror

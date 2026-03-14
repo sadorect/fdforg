@@ -281,25 +281,25 @@
                 </div>
 
                 <div class="hidden flex-1 items-center justify-end gap-1 lg:flex">
-                    <a href="{{ route('home') }}" class="{{ $primaryNavBase }} {{ $homeActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="home" data-nav-active="{{ $homeActive ? 'true' : 'false' }}">Home</a>
+                    <a href="{{ route('home') }}" class="{{ $primaryNavBase }} {{ $homeActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="home" data-nav-active="{{ $homeActive ? 'true' : 'false' }}" @if($homeActive) aria-current="page" @endif>Home</a>
                     @if(!empty($publishedPageSlugs['about']))
-                        <a href="{{ route('about') }}" class="{{ $primaryNavBase }} {{ $aboutActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="about" data-nav-active="{{ $aboutActive ? 'true' : 'false' }}">About</a>
+                        <a href="{{ route('about') }}" class="{{ $primaryNavBase }} {{ $aboutActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="about" data-nav-active="{{ $aboutActive ? 'true' : 'false' }}" @if($aboutActive) aria-current="page" @endif>About</a>
                     @endif
                     @if(!empty($publishedPageSlugs['programs']))
-                        <a href="{{ route('programs') }}" class="{{ $primaryNavBase }} {{ $programsActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="programs" data-nav-active="{{ $programsActive ? 'true' : 'false' }}">Programs</a>
+                        <a href="{{ route('programs') }}" class="{{ $primaryNavBase }} {{ $programsActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="programs" data-nav-active="{{ $programsActive ? 'true' : 'false' }}" @if($programsActive) aria-current="page" @endif>Programs</a>
                     @endif
-                    <a href="{{ route('events.index') }}" class="{{ $primaryNavBase }} {{ $eventsActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="events" data-nav-active="{{ $eventsActive ? 'true' : 'false' }}">Events</a>
-                    <a href="{{ route('blog.index') }}" class="{{ $primaryNavBase }} {{ $blogActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="blog" data-nav-active="{{ $blogActive ? 'true' : 'false' }}">Blog</a>
-                    <a href="{{ route('gallery') }}" class="{{ $primaryNavBase }} {{ $galleryActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="gallery" data-nav-active="{{ $galleryActive ? 'true' : 'false' }}">Gallery</a>
-                    <a href="{{ route('courses.index') }}" class="{{ $primaryNavBase }} {{ $coursesActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="courses" data-nav-active="{{ $coursesActive ? 'true' : 'false' }}">Learning</a>
+                    <a href="{{ route('events.index') }}" class="{{ $primaryNavBase }} {{ $eventsActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="events" data-nav-active="{{ $eventsActive ? 'true' : 'false' }}" @if($eventsActive) aria-current="page" @endif>Events</a>
+                    <a href="{{ route('blog.index') }}" class="{{ $primaryNavBase }} {{ $blogActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="blog" data-nav-active="{{ $blogActive ? 'true' : 'false' }}" @if($blogActive) aria-current="page" @endif>Blog</a>
+                    <a href="{{ route('gallery') }}" class="{{ $primaryNavBase }} {{ $galleryActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="gallery" data-nav-active="{{ $galleryActive ? 'true' : 'false' }}" @if($galleryActive) aria-current="page" @endif>Gallery</a>
+                    <a href="{{ route('courses.index') }}" class="{{ $primaryNavBase }} {{ $coursesActive ? $primaryNavActive : $primaryNavInactive }}" data-nav-item="courses" data-nav-active="{{ $coursesActive ? 'true' : 'false' }}" @if($coursesActive) aria-current="page" @endif>Learning</a>
                     @if(!empty($publishedPageSlugs['contact']))
-                        <a href="{{ route('contact') }}" class="{{ $quickLinkBase }} {{ $contactActive ? $quickLinkActive : $quickLinkInactive }}" data-nav-item="contact" data-nav-active="{{ $contactActive ? 'true' : 'false' }}">Contact</a>
+                        <a href="{{ route('contact') }}" class="{{ $quickLinkBase }} {{ $contactActive ? $quickLinkActive : $quickLinkInactive }}" data-nav-item="contact" data-nav-active="{{ $contactActive ? 'true' : 'false' }}" @if($contactActive) aria-current="page" @endif>Contact</a>
                     @endif
                     @if(!empty($publishedPageSlugs['donations']))
-                        <a href="{{ route('donations') }}" class="{{ $ctaLinkClasses }} {{ $donationsActive ? 'bg-blue-700' : '' }}" data-nav-item="donations" data-nav-active="{{ $donationsActive ? 'true' : 'false' }}">Donate</a>
+                        <a href="{{ route('donations') }}" class="{{ $ctaLinkClasses }} {{ $donationsActive ? 'bg-blue-700' : '' }}" data-nav-item="donations" data-nav-active="{{ $donationsActive ? 'true' : 'false' }}" @if($donationsActive) aria-current="page" @endif>Donate</a>
                     @endif
                     @auth
-                        <a href="{{ route('dashboard') }}" class="{{ $quickLinkBase }} {{ $dashboardActive ? $quickLinkActive : $quickLinkInactive }}">Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="{{ $quickLinkBase }} {{ $dashboardActive ? $quickLinkActive : $quickLinkInactive }}" @if($dashboardActive) aria-current="page" @endif>Dashboard</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-900">Logout</button>
@@ -308,7 +308,7 @@
                 </div>
 
                 <div class="lg:hidden">
-                    <button id="public-mobile-toggle" type="button" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2 text-slate-700 shadow-sm transition hover:border-blue-200 hover:text-blue-700" aria-label="Toggle mobile menu" aria-expanded="false">
+                    <button id="public-mobile-toggle" type="button" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2 text-slate-700 shadow-sm transition hover:border-blue-200 hover:text-blue-700" aria-label="Toggle mobile menu" aria-controls="public-mobile-nav" aria-expanded="false">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -316,22 +316,22 @@
                 </div>
             </div>
 
-            <div id="public-mobile-nav" class="mt-4 hidden border-t border-slate-200/80 pt-4 lg:hidden">
+            <div id="public-mobile-nav" class="mt-4 hidden border-t border-slate-200/80 pt-4 lg:hidden" aria-hidden="true">
                 <div class="space-y-5">
                     <div>
                         <p class="px-1 text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-500">Explore</p>
                         <div class="mt-2 grid gap-2">
-                            <a href="{{ route('home') }}" class="{{ $mobileNavBase }} {{ $homeActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Home</a>
+                            <a href="{{ route('home') }}" class="{{ $mobileNavBase }} {{ $homeActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($homeActive) aria-current="page" @endif>Home</a>
                             @if(!empty($publishedPageSlugs['about']))
-                                <a href="{{ route('about') }}" class="{{ $mobileNavBase }} {{ $aboutActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">About</a>
+                                <a href="{{ route('about') }}" class="{{ $mobileNavBase }} {{ $aboutActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($aboutActive) aria-current="page" @endif>About</a>
                             @endif
                             @if(!empty($publishedPageSlugs['programs']))
-                                <a href="{{ route('programs') }}" class="{{ $mobileNavBase }} {{ $programsActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Programs</a>
+                                <a href="{{ route('programs') }}" class="{{ $mobileNavBase }} {{ $programsActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($programsActive) aria-current="page" @endif>Programs</a>
                             @endif
-                            <a href="{{ route('events.index') }}" class="{{ $mobileNavBase }} {{ $eventsActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Events</a>
-                            <a href="{{ route('blog.index') }}" class="{{ $mobileNavBase }} {{ $blogActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Blog</a>
-                            <a href="{{ route('gallery') }}" class="{{ $mobileNavBase }} {{ $galleryActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Gallery</a>
-                            <a href="{{ route('courses.index') }}" class="{{ $mobileNavBase }} {{ $coursesActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Learning</a>
+                            <a href="{{ route('events.index') }}" class="{{ $mobileNavBase }} {{ $eventsActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($eventsActive) aria-current="page" @endif>Events</a>
+                            <a href="{{ route('blog.index') }}" class="{{ $mobileNavBase }} {{ $blogActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($blogActive) aria-current="page" @endif>Blog</a>
+                            <a href="{{ route('gallery') }}" class="{{ $mobileNavBase }} {{ $galleryActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($galleryActive) aria-current="page" @endif>Gallery</a>
+                            <a href="{{ route('courses.index') }}" class="{{ $mobileNavBase }} {{ $coursesActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($coursesActive) aria-current="page" @endif>Learning</a>
                         </div>
                     </div>
 
@@ -339,10 +339,10 @@
                         <p class="px-1 text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-500">Connect</p>
                         <div class="mt-2 grid gap-2">
                             @if(!empty($publishedPageSlugs['contact']))
-                                <a href="{{ route('contact') }}" class="{{ $mobileNavBase }} {{ $contactActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Contact</a>
+                                <a href="{{ route('contact') }}" class="{{ $mobileNavBase }} {{ $contactActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($contactActive) aria-current="page" @endif>Contact</a>
                             @endif
                             @if(!empty($publishedPageSlugs['donations']))
-                                <a href="{{ route('donations') }}" class="block rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700" data-mobile-nav-link="true">Donate</a>
+                                <a href="{{ route('donations') }}" class="block rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700" data-mobile-nav-link="true" @if($donationsActive) aria-current="page" @endif>Donate</a>
                             @endif
                         </div>
                     </div>
@@ -351,7 +351,7 @@
                         <div>
                             <p class="px-1 text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-500">Account</p>
                             <div class="mt-2 grid gap-2">
-                                <a href="{{ route('dashboard') }}" class="{{ $mobileNavBase }} {{ $dashboardActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true">Dashboard</a>
+                                <a href="{{ route('dashboard') }}" class="{{ $mobileNavBase }} {{ $dashboardActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($dashboardActive) aria-current="page" @endif>Dashboard</a>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="block w-full rounded-2xl border border-slate-300 px-4 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Logout</button>
@@ -369,17 +369,17 @@
         @if (session('success') || session('info') || $errors->any())
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
                 @if (session('success'))
-                    <div class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                    <div class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700" role="status" aria-live="polite">
                         {{ session('success') }}
                     </div>
                 @endif
                 @if (session('info'))
-                    <div class="mb-4 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                    <div class="mb-4 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700" role="status" aria-live="polite">
                         {{ session('info') }}
                     </div>
                 @endif
                 @if ($errors->any())
-                    <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert" aria-live="assertive">
                         {{ $errors->first() }}
                     </div>
                 @endif
@@ -478,9 +478,14 @@
             const backToTopButton = document.getElementById('back-to-top');
 
             if (mobileMenuButton && mobileMenu) {
-                const setMobileMenuState = function (isOpen) {
+                const setMobileMenuState = function (isOpen, options = {}) {
                     mobileMenu.classList.toggle('hidden', !isOpen);
                     mobileMenuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    mobileMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+
+                    if (!isOpen && options.returnFocus) {
+                        mobileMenuButton.focus();
+                    }
                 };
 
                 setMobileMenuState(false);
@@ -500,7 +505,83 @@
                         setMobileMenuState(false);
                     }
                 });
+
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape' && mobileMenuButton.getAttribute('aria-expanded') === 'true') {
+                        setMobileMenuState(false, { returnFocus: true });
+                    }
+                });
             }
+
+            document.querySelectorAll('[data-captcha-block]').forEach(function (captchaBlock) {
+                const refreshButton = captchaBlock.querySelector('[data-captcha-refresh]');
+                const questionNode = captchaBlock.querySelector('[data-captcha-question]');
+                const answerInput = captchaBlock.querySelector('[data-captcha-input]');
+                const statusNode = captchaBlock.querySelector('[data-captcha-status]');
+
+                if (!refreshButton || !questionNode || refreshButton.getAttribute('data-captcha-bound') === 'true') {
+                    return;
+                }
+
+                refreshButton.setAttribute('data-captcha-bound', 'true');
+
+                refreshButton.addEventListener('click', async function () {
+                    const refreshUrl = refreshButton.getAttribute('data-refresh-url');
+                    const fallbackUrl = refreshButton.getAttribute('data-fallback-url');
+                    const originalLabel = refreshButton.textContent;
+                    const loadingLabel = refreshButton.getAttribute('data-loading-label') || 'Refreshing...';
+
+                    refreshButton.disabled = true;
+                    refreshButton.textContent = loadingLabel;
+
+                    if (statusNode) {
+                        statusNode.textContent = 'Refreshing the CAPTCHA question.';
+                    }
+
+                    try {
+                        const response = await fetch(refreshUrl, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            credentials: 'same-origin',
+                            cache: 'no-store',
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to refresh CAPTCHA.');
+                        }
+
+                        const payload = await response.json();
+
+                        if (!payload.question) {
+                            throw new Error('Captcha question missing.');
+                        }
+
+                        questionNode.textContent = payload.question;
+
+                        if (answerInput) {
+                            answerInput.value = '';
+                            answerInput.focus();
+                        }
+
+                        if (statusNode) {
+                            statusNode.textContent = 'New CAPTCHA question loaded: What is ' + payload.question + '?';
+                        }
+                    } catch (error) {
+                        if (statusNode) {
+                            statusNode.textContent = 'Refreshing the CAPTCHA failed. Reloading the page now.';
+                        }
+
+                        if (fallbackUrl) {
+                            window.location.href = fallbackUrl;
+                        }
+                    } finally {
+                        refreshButton.disabled = false;
+                        refreshButton.textContent = originalLabel;
+                    }
+                });
+            });
 
             const updatePageChrome = function () {
                 const hasScrolled = window.scrollY > 24;
@@ -552,5 +633,6 @@
             window.addEventListener('resize', updatePageChrome);
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\TemplateEmailService;
 use App\Support\MathCaptcha;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,15 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    public function refreshCaptcha(Request $request): JsonResponse
+    {
+        MathCaptcha::regenerate($request, 'user_auth');
+
+        return response()
+            ->json(['question' => MathCaptcha::question($request, 'user_auth')])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
     public function showLoginForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -39,7 +49,7 @@ class AuthController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'user_auth')) {
+        if (! MathCaptcha::isValid($request, 'user_auth')) {
             MathCaptcha::regenerate($request, 'user_auth');
 
             return back()
@@ -47,7 +57,7 @@ class AuthController extends Controller
                 ->withInput($request->except('password', 'captcha_answer'));
         }
 
-        if (!Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
+        if (! Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
             MathCaptcha::regenerate($request, 'user_auth');
 
             return back()
@@ -83,7 +93,7 @@ class AuthController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'user_auth')) {
+        if (! MathCaptcha::isValid($request, 'user_auth')) {
             MathCaptcha::regenerate($request, 'user_auth');
 
             return back()
@@ -91,7 +101,7 @@ class AuthController extends Controller
                 ->withInput($request->except('password', 'password_confirmation', 'captcha_answer'));
         }
 
-        $user = \App\Models\User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -147,7 +157,7 @@ class AuthController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'user_auth')) {
+        if (! MathCaptcha::isValid($request, 'user_auth')) {
             MathCaptcha::regenerate($request, 'user_auth');
 
             return back()
@@ -191,7 +201,7 @@ class AuthController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'user_auth')) {
+        if (! MathCaptcha::isValid($request, 'user_auth')) {
             MathCaptcha::regenerate($request, 'user_auth');
 
             return back()

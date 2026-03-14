@@ -18,6 +18,7 @@ class UserPasswordResetCaptchaTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Math CAPTCHA');
+        $response->assertSee('data-captcha-status', false);
     }
 
     public function test_forgot_password_request_fails_with_invalid_captcha(): void

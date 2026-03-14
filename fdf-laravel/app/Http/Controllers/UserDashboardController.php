@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
 use App\Support\MathCaptcha;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -51,6 +52,17 @@ class UserDashboardController extends Controller
         ]);
     }
 
+    public function refreshPaymentCaptcha(Request $request, Enrollment $enrollment): JsonResponse
+    {
+        $this->authorizeEnrollment($request, $enrollment);
+
+        MathCaptcha::regenerate($request, 'payment_action');
+
+        return response()
+            ->json(['question' => MathCaptcha::question($request, 'payment_action')])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
     public function processPayment(Request $request, Enrollment $enrollment): RedirectResponse
     {
         $this->authorizeEnrollment($request, $enrollment);
@@ -63,7 +75,7 @@ class UserDashboardController extends Controller
             'captcha_answer' => ['required', 'integer'],
         ]);
 
-        if (!MathCaptcha::isValid($request, 'payment_action')) {
+        if (! MathCaptcha::isValid($request, 'payment_action')) {
             MathCaptcha::regenerate($request, 'payment_action');
 
             return back()
@@ -101,7 +113,7 @@ class UserDashboardController extends Controller
                 return $enrollment->canAccessLesson($item);
             });
 
-        if (!$lesson) {
+        if (! $lesson) {
             return redirect()
                 ->route('courses.show', $enrollment->course->slug)
                 ->with('info', 'No published lessons are currently available.');

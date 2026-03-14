@@ -20,35 +20,36 @@
                 @csrf
 
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Cardholder Name</label>
-                    <input type="text" name="card_name" value="{{ old('card_name') }}" required class="mt-1 w-full rounded-md border-gray-300">
+                    <label for="payment-card-name" class="text-sm font-medium text-gray-700">Cardholder Name</label>
+                    <input id="payment-card-name" type="text" name="card_name" value="{{ old('card_name') }}" required autocomplete="cc-name" class="mt-1 w-full rounded-md border-gray-300">
                     @error('card_name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Card Number</label>
-                    <input type="text" name="card_number" value="{{ old('card_number') }}" required maxlength="16" class="mt-1 w-full rounded-md border-gray-300" placeholder="4242424242424242">
+                    <label for="payment-card-number" class="text-sm font-medium text-gray-700">Card Number</label>
+                    <input id="payment-card-number" type="text" name="card_number" value="{{ old('card_number') }}" required autocomplete="cc-number" maxlength="16" class="mt-1 w-full rounded-md border-gray-300" placeholder="4242424242424242">
                     @error('card_number') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-sm font-medium text-gray-700">Expiry (MM/YY)</label>
-                        <input type="text" name="expiry" value="{{ old('expiry') }}" required class="mt-1 w-full rounded-md border-gray-300" placeholder="12/30">
+                        <label for="payment-expiry" class="text-sm font-medium text-gray-700">Expiry (MM/YY)</label>
+                        <input id="payment-expiry" type="text" name="expiry" value="{{ old('expiry') }}" required autocomplete="cc-exp" class="mt-1 w-full rounded-md border-gray-300" placeholder="12/30">
                         @error('expiry') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-700">CVV</label>
-                        <input type="password" name="cvv" value="{{ old('cvv') }}" required class="mt-1 w-full rounded-md border-gray-300" maxlength="4" placeholder="123">
+                        <label for="payment-cvv" class="text-sm font-medium text-gray-700">CVV</label>
+                        <input id="payment-cvv" type="password" name="cvv" value="{{ old('cvv') }}" required autocomplete="cc-csc" class="mt-1 w-full rounded-md border-gray-300" maxlength="4" placeholder="123">
                         @error('cvv') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Math CAPTCHA: What is {{ $captchaQuestion }}?</label>
-                    <div class="mt-1 flex items-center gap-3">
-                        <input type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required class="w-full rounded-md border-gray-300">
-                        <a href="{{ route('dashboard.pay', ['enrollment' => $enrollment->id, 'refresh_captcha' => 1]) }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">New CAPTCHA</a>
+                <div data-captcha-block>
+                    <label for="payment-captcha-answer" class="text-sm font-medium text-gray-700">Math CAPTCHA: What is <span data-captcha-question>{{ $captchaQuestion }}</span>?</label>
+                    <p class="sr-only" data-captcha-status aria-live="polite" aria-atomic="true"></p>
+                    <div class="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <input id="payment-captcha-answer" type="number" name="captcha_answer" value="{{ old('captcha_answer') }}" required data-captcha-input class="w-full rounded-md border-gray-300">
+                        <button type="button" data-captcha-refresh data-refresh-url="{{ route('dashboard.pay.captcha', $enrollment->id) }}" data-fallback-url="{{ route('dashboard.pay', ['enrollment' => $enrollment->id, 'refresh_captcha' => 1]) }}" class="text-left text-sm font-semibold text-blue-600 hover:text-blue-800">New CAPTCHA</button>
                     </div>
                     @error('captcha_answer') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>

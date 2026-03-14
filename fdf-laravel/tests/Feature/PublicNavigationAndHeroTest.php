@@ -552,7 +552,12 @@ class PublicNavigationAndHeroTest extends TestCase
 
         $this->get('/events')
             ->assertOk()
-            ->assertSee('data-nav-item="events" data-nav-active="true"', false);
+            ->assertSeeInOrder([
+                'data-nav-item="events"',
+                'data-nav-active="true"',
+                'aria-current="page"',
+            ], false)
+            ->assertSee('aria-controls="public-mobile-nav"', false);
     }
 
     public function test_public_layout_renders_back_to_top_button(): void

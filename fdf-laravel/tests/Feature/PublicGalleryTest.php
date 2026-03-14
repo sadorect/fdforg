@@ -36,6 +36,9 @@ class PublicGalleryTest extends TestCase
             ->assertOk()
             ->assertSee('Images that show the people, programs, and public moments behind the mission.')
             ->assertSee('Hero slider')
+            ->assertSee('aria-roledescription="carousel"', false)
+            ->assertSee('role="dialog"', false)
+            ->assertSee('aria-modal="true"', false)
             ->assertSee('Community Sign Workshop')
             ->assertDontSee('Draft Event Photo');
     }

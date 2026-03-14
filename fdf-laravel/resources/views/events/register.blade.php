@@ -73,15 +73,16 @@
                     @error('notes') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5" data-captcha-block>
                     <label for="captcha_answer" class="text-sm font-medium text-slate-800">
-                        Verification challenge: What is <span data-event-captcha-question>{{ $captchaQuestion }}</span>?
+                        Verification challenge: What is <span data-captcha-question>{{ $captchaQuestion }}</span>?
                     </label>
+                    <p class="sr-only" data-captcha-status aria-live="polite" aria-atomic="true"></p>
                     <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <input id="captcha_answer" name="captcha_answer" type="number" required value="{{ old('captcha_answer') }}" class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-cyan-500 focus:ring-cyan-500">
+                        <input id="captcha_answer" name="captcha_answer" type="number" required value="{{ old('captcha_answer') }}" data-captcha-input class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-cyan-500 focus:ring-cyan-500">
                         <button
                             type="button"
-                            data-event-captcha-refresh
+                            data-captcha-refresh
                             data-refresh-url="{{ route('events.captcha', $event->slug) }}"
                             data-fallback-url="{{ route('events.register', ['slug' => $event->slug, 'refresh_captcha' => 1]) }}"
                             class="inline-flex shrink-0 items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100"
@@ -159,44 +160,3 @@
     </div>
 </section>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const refreshButton = document.querySelector('[data-event-captcha-refresh]');
-            const questionTarget = document.querySelector('[data-event-captcha-question]');
-
-            if (!refreshButton || !questionTarget) {
-                return;
-            }
-
-            refreshButton.addEventListener('click', async function () {
-                const refreshUrl = refreshButton.dataset.refreshUrl;
-                const fallbackUrl = refreshButton.dataset.fallbackUrl;
-
-                try {
-                    refreshButton.disabled = true;
-
-                    const response = await fetch(refreshUrl, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json',
-                        },
-                        credentials: 'same-origin',
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Unable to refresh captcha.');
-                    }
-
-                    const data = await response.json();
-                    questionTarget.textContent = data.question ?? '0 + 0';
-                } catch (error) {
-                    window.location.assign(fallbackUrl);
-                } finally {
-                    refreshButton.disabled = false;
-                }
-            });
-        });
-    </script>
-@endpush

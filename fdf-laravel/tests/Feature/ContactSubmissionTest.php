@@ -2,12 +2,28 @@
 
 namespace Tests\Feature;
 
+use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ContactSubmissionTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_contact_page_exposes_captcha_live_region_markup(): void
+    {
+        Page::create([
+            'title' => 'Contact',
+            'slug' => 'contact',
+            'content' => '<p>Contact page content.</p>',
+            'status' => 'published',
+        ]);
+
+        $this->get(route('contact'))
+            ->assertOk()
+            ->assertSee('data-captcha-status', false)
+            ->assertSee('aria-live="polite"', false);
+    }
 
     public function test_contact_captcha_can_refresh_without_reloading_page(): void
     {

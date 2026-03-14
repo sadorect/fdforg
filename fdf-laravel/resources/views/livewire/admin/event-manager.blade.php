@@ -9,12 +9,12 @@
 
     <div class="grid grid-cols-1 gap-4 rounded-lg bg-white p-4 shadow sm:grid-cols-3">
         <div>
-            <label class="text-sm font-medium text-gray-700">Search</label>
-            <input wire:model.live="search" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Title, location...">
+            <label for="event-search" class="text-sm font-medium text-gray-700">Search</label>
+            <input id="event-search" wire:model.live="search" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Title, location...">
         </div>
         <div>
-            <label class="text-sm font-medium text-gray-700">Status</label>
-            <select wire:model.live="statusFilter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+            <label for="event-status-filter" class="text-sm font-medium text-gray-700">Status</label>
+            <select id="event-status-filter" wire:model.live="statusFilter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">All statuses</option>
                 <option value="upcoming">Upcoming</option>
                 <option value="featured">Featured</option>
@@ -29,13 +29,13 @@
             <h2 class="mb-4 text-lg font-semibold">{{ $editing ? 'Edit Event' : 'Create Event' }}</h2>
             <form wire:submit="save" class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Title *</label>
-                    <input wire:model="title" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="event-form-title" class="text-sm font-medium text-gray-700">Title *</label>
+                    <input id="event-form-title" wire:model="title" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('title') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Slug *</label>
-                    <input wire:model="slug" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="event-form-slug" class="text-sm font-medium text-gray-700">Slug *</label>
+                    <input id="event-form-slug" wire:model="slug" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('slug') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
@@ -54,29 +54,29 @@
                     @error('description') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700">Excerpt</label>
-                    <textarea wire:model="excerpt" rows="2" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <label for="event-form-excerpt" class="text-sm font-medium text-gray-700">Excerpt</label>
+                    <textarea id="event-form-excerpt" wire:model="excerpt" rows="2" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
                     <p class="mt-1 text-xs text-gray-500">Keep this as a short plain-text summary for event cards and calendar views.</p>
                     @error('excerpt') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Start Date *</label>
-                    <input wire:model="start_date" type="datetime-local" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="event-form-start-date" class="text-sm font-medium text-gray-700">Start Date *</label>
+                    <input id="event-form-start-date" wire:model="start_date" type="datetime-local" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('start_date') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">End Date</label>
-                    <input wire:model="end_date" type="datetime-local" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="event-form-end-date" class="text-sm font-medium text-gray-700">End Date</label>
+                    <input id="event-form-end-date" wire:model="end_date" type="datetime-local" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('end_date') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Time Label</label>
-                    <input wire:model="time" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g. 10:00 AM - 2:00 PM">
+                    <label for="event-form-time" class="text-sm font-medium text-gray-700">Time Label</label>
+                    <input id="event-form-time" wire:model="time" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g. 10:00 AM - 2:00 PM">
                     @error('time') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Status *</label>
-                    <select wire:model="status" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="event-form-status" class="text-sm font-medium text-gray-700">Status *</label>
+                    <select id="event-form-status" wire:model="status" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                         <option value="upcoming">Upcoming</option>
                         <option value="featured">Featured</option>
                         <option value="past">Past</option>
@@ -85,35 +85,35 @@
                     @error('status') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Location</label>
-                    <input wire:model="location" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="event-form-location" class="text-sm font-medium text-gray-700">Location</label>
+                    <input id="event-form-location" wire:model="location" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('location') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Venue</label>
-                    <input wire:model="venue" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="event-form-venue" class="text-sm font-medium text-gray-700">Venue</label>
+                    <input id="event-form-venue" wire:model="venue" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('venue') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Price</label>
-                    <input wire:model="price" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Free / $25">
+                    <label for="event-form-price" class="text-sm font-medium text-gray-700">Price</label>
+                    <input id="event-form-price" wire:model="price" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Free / $25">
                     @error('price') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Max Attendees</label>
-                    <input wire:model="max_attendees" type="number" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" min="1">
+                    <label for="event-form-max-attendees" class="text-sm font-medium text-gray-700">Max Attendees</label>
+                    <input id="event-form-max-attendees" wire:model="max_attendees" type="number" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" min="1">
                     @error('max_attendees') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <input wire:model="registration_required" type="checkbox" class="rounded border-gray-300">
+                    <label for="event-form-registration-required" class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input id="event-form-registration-required" wire:model="registration_required" type="checkbox" class="rounded border-gray-300">
                         Registration Required
                     </label>
                     <p class="mt-1 text-xs text-gray-500">When enabled, the public event page shows an internal registration form.</p>
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Event Image</label>
-                    <input wire:model="image" type="file" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" accept="image/png,image/jpeg,image/webp">
+                    <label for="event-form-image" class="text-sm font-medium text-gray-700">Event Image</label>
+                    <input id="event-form-image" wire:model="image" type="file" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" accept="image/png,image/jpeg,image/webp">
                     @error('image') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     @if($image)
                         <p class="mt-1 text-xs text-green-700">Selected: {{ $image->getClientOriginalName() }}</p>
@@ -122,15 +122,15 @@
                     @endif
                 </div>
                 <div class="md:col-span-2">
-                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <input wire:model="is_virtual" type="checkbox" class="rounded border-gray-300">
+                    <label for="event-form-is-virtual" class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input id="event-form-is-virtual" wire:model="is_virtual" type="checkbox" class="rounded border-gray-300">
                         Virtual Event
                     </label>
                 </div>
                 @if($is_virtual)
                     <div class="md:col-span-2">
-                        <label class="text-sm font-medium text-gray-700">Meeting Link</label>
-                        <input wire:model="meeting_link" type="url" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                        <label for="event-form-meeting-link" class="text-sm font-medium text-gray-700">Meeting Link</label>
+                        <input id="event-form-meeting-link" wire:model="meeting_link" type="url" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                         @error('meeting_link') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 @endif
@@ -176,8 +176,8 @@
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $event->is_virtual ? 'Virtual' : 'In-person' }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="inline-flex gap-2">
-                                <button wire:click="edit({{ $event->id }})" class="text-sm text-blue-600 hover:text-blue-800">Edit</button>
-                                <button wire:click="delete({{ $event->id }})" class="text-sm text-red-600 hover:text-red-800">Delete</button>
+                                <button wire:click="edit({{ $event->id }})" class="text-sm text-blue-600 hover:text-blue-800" aria-label="Edit event {{ $event->title }}">Edit</button>
+                                <button wire:click="delete({{ $event->id }})" class="text-sm text-red-600 hover:text-red-800" aria-label="Delete event {{ $event->title }}">Delete</button>
                             </div>
                         </td>
                     </tr>

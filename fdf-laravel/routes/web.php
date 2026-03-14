@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminAnalyticsExportController;
+use App\Http\Controllers\AdminContentTransferController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminProfileController;
 use App\Http\Controllers\AuthController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Livewire\Admin\AnalyticsDashboard;
 use App\Livewire\Admin\BlogManager;
 use App\Livewire\Admin\CategoryManager;
+use App\Livewire\Admin\ContentTransferManager;
 use App\Livewire\Admin\CourseManager;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\EmailTemplateManager;
@@ -34,6 +36,7 @@ use Illuminate\Support\Facades\Route;
 
 // Admin Authentication Routes
 Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/captcha', [AdminController::class, 'refreshCaptcha'])->name('captcha');
     Route::get('/login', [AdminController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminController::class, 'login'])->name('login.submit');
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
@@ -67,6 +70,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('can:'.AdminPermissions::MANAGE_SITE_SETTINGS)->group(function () {
             Route::get('/site-settings', SiteSettingsManager::class)->name('site-settings');
         });
+        Route::get('/content-transfer', ContentTransferManager::class)->name('content-transfer');
+        Route::middleware('can:'.AdminPermissions::MANAGE_PAGES)->group(function () {
+            Route::get('/content-transfer/pages/export', [AdminContentTransferController::class, 'exportPages'])->name('content-transfer.pages.export');
+            Route::get('/content-transfer/pages/{page}/export', [AdminContentTransferController::class, 'exportPage'])->name('content-transfer.page.export');
+        });
+        Route::middleware('can:'.AdminPermissions::MANAGE_SITE_SETTINGS)->group(function () {
+            Route::get('/content-transfer/site-settings/export', [AdminContentTransferController::class, 'exportSiteSettings'])->name('content-transfer.site-settings.export');
+        });
+        Route::get('/content-transfer/bundles/{bundle}/export', [AdminContentTransferController::class, 'exportBundle'])->name('content-transfer.bundle.export');
 
         // LMS Management Routes
         Route::middleware('can:'.AdminPermissions::VIEW_LMS_DASHBOARD)->group(function () {
@@ -104,6 +116,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Public Authentication Routes
 Route::middleware('guest')->group(function () {
+    Route::get('/auth/captcha', [AuthController::class, 'refreshCaptcha'])->name('auth.captcha');
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -121,6 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/enrollments/{enrollment}/continue', [UserDashboardController::class, 'continueLearning'])
         ->name('dashboard.enrollments.continue');
     Route::get('/dashboard/payments/{enrollment}', [UserDashboardController::class, 'showPayment'])->name('dashboard.pay');
+    Route::get('/dashboard/payments/{enrollment}/captcha', [UserDashboardController::class, 'refreshPaymentCaptcha'])->name('dashboard.pay.captcha');
     Route::post('/dashboard/payments/{enrollment}', [UserDashboardController::class, 'processPayment'])->name('dashboard.pay.submit');
 });
 
@@ -147,7 +161,11 @@ Route::prefix('blog')->name('blog.')->group(function () {
 Route::prefix('learning')->name('courses.')->group(function () {
     Route::get('/', [CourseController::class, 'index'])->name('index');
     Route::get('/{course:slug}', [CourseController::class, 'show'])->name('show');
+    Route::get('/{course:slug}/captcha', [CourseController::class, 'refreshEnrollmentCaptcha'])->middleware('auth')->name('captcha');
     Route::get('/{course:slug}/lessons/{lesson:slug}', [CourseController::class, 'showLesson'])->name('lessons.show');
+    Route::get('/{course:slug}/lessons/{lesson:slug}/captcha', [CourseController::class, 'refreshLessonCaptcha'])
+        ->middleware('auth')
+        ->name('lessons.captcha');
     Route::post('/{course:slug}/lessons/{lesson:slug}/complete', [CourseController::class, 'completeLesson'])
         ->middleware('auth')
         ->name('lessons.complete');

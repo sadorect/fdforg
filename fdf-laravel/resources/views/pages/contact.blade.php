@@ -248,21 +248,23 @@
                         @error('message') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="rounded-2xl border border-gray-200 bg-slate-50 p-4">
+                    <div class="rounded-2xl border border-gray-200 bg-slate-50 p-4" data-captcha-block>
                         <label for="captcha_answer" class="block text-sm font-medium text-gray-700">
-                            Math CAPTCHA: What is <span data-contact-captcha-question>{{ $captchaQuestion ?? '0 + 0' }}</span>?
+                            Math CAPTCHA: What is <span data-captcha-question>{{ $captchaQuestion ?? '0 + 0' }}</span>?
                         </label>
+                        <p class="sr-only" data-captcha-status aria-live="polite" aria-atomic="true"></p>
                         <div class="mt-3 flex flex-col gap-3 sm:flex-row">
                             <input
                                 type="number"
                                 id="captcha_answer"
                                 name="captcha_answer"
                                 required
+                                data-captcha-input
                                 class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500"
                                 placeholder="Enter result">
                             <button
                                 type="button"
-                                data-contact-captcha-refresh
+                                data-captcha-refresh
                                 data-refresh-url="{{ route('contact.captcha') }}"
                                 data-fallback-url="{{ route('contact', ['refresh_captcha' => 1]) }}"
                                 class="inline-flex items-center justify-center rounded-xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-300 whitespace-nowrap">
@@ -296,52 +298,4 @@
     </div>
 </section>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const refreshButton = document.querySelector('[data-contact-captcha-refresh]');
-        const questionNode = document.querySelector('[data-contact-captcha-question]');
-
-        if (!refreshButton || !questionNode) {
-            return;
-        }
-
-        refreshButton.addEventListener('click', async function () {
-            const refreshUrl = refreshButton.getAttribute('data-refresh-url');
-            const fallbackUrl = refreshButton.getAttribute('data-fallback-url');
-            const originalLabel = refreshButton.textContent;
-
-            refreshButton.disabled = true;
-            refreshButton.textContent = 'Refreshing...';
-
-            try {
-                const response = await fetch(refreshUrl, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    credentials: 'same-origin',
-                    cache: 'no-store',
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to refresh captcha.');
-                }
-
-                const payload = await response.json();
-
-                if (!payload.question) {
-                    throw new Error('Captcha question missing.');
-                }
-
-                questionNode.textContent = payload.question;
-            } catch (error) {
-                window.location.href = fallbackUrl;
-                return;
-            } finally {
-                refreshButton.disabled = false;
-                refreshButton.textContent = originalLabel;
-            }
-        });
-    });
-</script>
 @endsection

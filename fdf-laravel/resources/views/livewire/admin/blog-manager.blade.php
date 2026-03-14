@@ -9,12 +9,12 @@
 
     <div class="grid grid-cols-1 gap-4 rounded-lg bg-white p-4 shadow md:grid-cols-3">
         <div>
-            <label class="text-sm font-medium text-gray-700">Search</label>
-            <input wire:model.live="search" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Title or content">
+            <label for="blog-search" class="text-sm font-medium text-gray-700">Search</label>
+            <input id="blog-search" wire:model.live="search" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Title or content">
         </div>
         <div>
-            <label class="text-sm font-medium text-gray-700">Category</label>
-            <select wire:model.live="category_filter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+            <label for="blog-category-filter" class="text-sm font-medium text-gray-700">Category</label>
+            <select id="blog-category-filter" wire:model.live="category_filter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">All categories</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -22,8 +22,8 @@
             </select>
         </div>
         <div>
-            <label class="text-sm font-medium text-gray-700">Status</label>
-            <select wire:model.live="status_filter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+            <label for="blog-status-filter" class="text-sm font-medium text-gray-700">Status</label>
+            <select id="blog-status-filter" wire:model.live="status_filter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">All statuses</option>
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -56,18 +56,18 @@
             <h2 class="mb-4 text-lg font-semibold">{{ $editing ? 'Edit Post' : 'Create Post' }}</h2>
             <form wire:submit="save" class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Title *</label>
-                    <input wire:model="title" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="blog-form-title" class="text-sm font-medium text-gray-700">Title *</label>
+                    <input id="blog-form-title" wire:model="title" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('title') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Slug *</label>
-                    <input wire:model="slug" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="blog-form-slug" class="text-sm font-medium text-gray-700">Slug *</label>
+                    <input id="blog-form-slug" wire:model="slug" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('slug') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700">Excerpt *</label>
-                    <textarea wire:model="excerpt" rows="2" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <label for="blog-form-excerpt" class="text-sm font-medium text-gray-700">Excerpt *</label>
+                    <textarea id="blog-form-excerpt" wire:model="excerpt" rows="2" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
                     <p class="mt-1 text-xs text-gray-500">Keep this as a short plain-text summary for cards, previews, and search results.</p>
                     @error('excerpt') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
@@ -87,8 +87,8 @@
                     @error('content') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Category</label>
-                    <select wire:model="category_id" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="blog-form-category" class="text-sm font-medium text-gray-700">Category</label>
+                    <select id="blog-form-category" wire:model="category_id" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                         <option value="">No category</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -97,8 +97,8 @@
                     @error('category_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Author *</label>
-                    <select wire:model="author_id" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="blog-form-author" class="text-sm font-medium text-gray-700">Author *</label>
+                    <select id="blog-form-author" wire:model="author_id" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                         <option value="">Select author</option>
                         @foreach($authors as $author)
                             <option value="{{ $author->id }}">{{ $author->name }}</option>
@@ -107,31 +107,31 @@
                     @error('author_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Status</label>
-                    <select wire:model="status" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="blog-form-status" class="text-sm font-medium text-gray-700">Status</label>
+                    <select id="blog-form-status" wire:model="status" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                         <option value="draft">Draft</option>
                         <option value="published">Published</option>
                         <option value="archived">Archived</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Publish At</label>
-                    <input wire:model="published_at" type="datetime-local" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="blog-form-published-at" class="text-sm font-medium text-gray-700">Publish At</label>
+                    <input id="blog-form-published-at" wire:model="published_at" type="datetime-local" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('published_at') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Featured Image</label>
-                    <input wire:model="featured_image" type="file" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="blog-form-featured-image" class="text-sm font-medium text-gray-700">Featured Image</label>
+                    <input id="blog-form-featured-image" wire:model="featured_image" type="file" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('featured_image') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <input wire:model="is_featured" type="checkbox" class="rounded border-gray-300">
+                    <label for="blog-form-featured" class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input id="blog-form-featured" wire:model="is_featured" type="checkbox" class="rounded border-gray-300">
                         Featured
                     </label>
                 </div>
                 <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700">Tags</label>
+                    <label for="blog-form-new-tag" class="text-sm font-medium text-gray-700">Tags</label>
                     <div class="mt-1 flex flex-wrap gap-2">
                         @foreach($tags as $tag)
                             <span class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-700">
@@ -141,7 +141,7 @@
                         @endforeach
                     </div>
                     <div class="mt-2 flex gap-2">
-                        <input wire:model="new_tag" type="text" class="w-full rounded-md border-gray-300" placeholder="Add tag">
+                        <input id="blog-form-new-tag" wire:model="new_tag" type="text" class="w-full rounded-md border-gray-300" placeholder="Add tag">
                         <button type="button" wire:click="addTag" class="rounded-md bg-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-300">Add</button>
                     </div>
                 </div>
@@ -180,12 +180,12 @@
                         </td>
                         <td class="px-4 py-3 text-right">
                             <div class="inline-flex gap-2">
-                                <button wire:click="edit({{ $post->id }})" class="text-sm text-blue-600 hover:text-blue-800">Edit</button>
-                                <button wire:click="toggleFeatured({{ $post->id }})" class="text-sm text-indigo-600 hover:text-indigo-800">
+                                <button wire:click="edit({{ $post->id }})" class="text-sm text-blue-600 hover:text-blue-800" aria-label="Edit blog post {{ $post->title }}">Edit</button>
+                                <button wire:click="toggleFeatured({{ $post->id }})" class="text-sm text-indigo-600 hover:text-indigo-800" aria-label="{{ $post->is_featured ? 'Remove featured status from' : 'Mark as featured' }} blog post {{ $post->title }}">
                                     {{ $post->is_featured ? 'Unfeature' : 'Feature' }}
                                 </button>
-                                <button wire:click="duplicate({{ $post->id }})" class="text-sm text-green-600 hover:text-green-800">Copy</button>
-                                <button wire:click="delete({{ $post->id }})" class="text-sm text-red-600 hover:text-red-800">Delete</button>
+                                <button wire:click="duplicate({{ $post->id }})" class="text-sm text-green-600 hover:text-green-800" aria-label="Duplicate blog post {{ $post->title }}">Copy</button>
+                                <button wire:click="delete({{ $post->id }})" class="text-sm text-red-600 hover:text-red-800" aria-label="Delete blog post {{ $post->title }}">Delete</button>
                             </div>
                         </td>
                     </tr>

@@ -111,7 +111,9 @@ class PublicEventRegistrationFlowTest extends TestCase
         $this->get('/events/'.$event->slug.'/register')
             ->assertOk()
             ->assertSee('Reserve your place for Community Accessibility Workshop')
-            ->assertSee('Tell us who is attending');
+            ->assertSee('Tell us who is attending')
+            ->assertSee('data-captcha-status', false)
+            ->assertSee('aria-live="polite"', false);
 
         $this->withSession([
             'event_registration_captcha_question' => '2 + 6',

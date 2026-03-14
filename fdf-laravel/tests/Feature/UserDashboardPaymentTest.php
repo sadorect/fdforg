@@ -50,16 +50,22 @@ class UserDashboardPaymentTest extends TestCase
             ->assertSee('Paid Course');
 
         $this->actingAs($learner)
-            ->get('/dashboard/payments/' . $enrollment->id)
+            ->get('/dashboard/payments/'.$enrollment->id)
             ->assertOk()
-            ->assertSee('Complete Payment');
+            ->assertSee('Complete Payment')
+            ->assertSee('data-captcha-status', false);
+
+        $this->actingAs($learner)
+            ->getJson(route('dashboard.pay.captcha', $enrollment->id))
+            ->assertOk()
+            ->assertJsonStructure(['question']);
 
         $this->actingAs($learner)
             ->withSession([
                 'payment_action_captcha_question' => '2 + 5',
                 'payment_action_captcha_answer' => 7,
             ])
-            ->post('/dashboard/payments/' . $enrollment->id, [
+            ->post('/dashboard/payments/'.$enrollment->id, [
                 'card_name' => 'Test Learner',
                 'card_number' => '4242424242424242',
                 'expiry' => '12/30',

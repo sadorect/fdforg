@@ -90,6 +90,11 @@ class PublicCourseEnrollmentTest extends TestCase
             'price' => 0,
         ]);
 
+        $this->actingAs($learner)
+            ->get(route('courses.show', $course->slug))
+            ->assertOk()
+            ->assertSee('data-captcha-status', false);
+
         $response = $this->actingAs($learner)
             ->withSession([
                 'course_enroll_captcha_question' => '3 + 4',
@@ -104,6 +109,29 @@ class PublicCourseEnrollmentTest extends TestCase
             'user_id' => $learner->id,
             'payment_status' => 'paid',
         ]);
+    }
+
+    public function test_authenticated_course_enrollment_captcha_can_refresh_without_reloading_page(): void
+    {
+        $instructor = User::factory()->create(['is_admin' => true]);
+        $learner = User::factory()->create(['is_admin' => false]);
+        $course = Course::create([
+            'title' => 'Accessible Enrollment',
+            'slug' => 'accessible-enrollment',
+            'description' => 'Accessible enrollment course',
+            'instructor_id' => $instructor->id,
+            'status' => 'published',
+            'difficulty_level' => 'beginner',
+            'duration_minutes' => 60,
+            'price' => 0,
+        ]);
+
+        $response = $this->actingAs($learner)->getJson(route('courses.captcha', $course->slug));
+
+        $response->assertOk();
+        $response->assertJsonStructure(['question']);
+        $response->assertSessionHas('course_enroll_captcha_question');
+        $response->assertSessionHas('course_enroll_captcha_answer');
     }
 
     public function test_authenticated_user_is_redirected_to_payment_for_paid_course(): void

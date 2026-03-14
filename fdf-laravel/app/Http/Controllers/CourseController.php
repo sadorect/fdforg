@@ -8,6 +8,7 @@ use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Services\TemplateEmailService;
 use App\Support\MathCaptcha;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,19 @@ use Illuminate\View\View;
 
 class CourseController extends Controller
 {
+    public function refreshEnrollmentCaptcha(Request $request, Course $course): JsonResponse
+    {
+        if (! $course->isPublished()) {
+            abort(404);
+        }
+
+        MathCaptcha::regenerate($request, 'course_enroll');
+
+        return response()
+            ->json(['question' => MathCaptcha::question($request, 'course_enroll')])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
     public function index(): View
     {
         $courseQuery = Course::query()
@@ -282,6 +296,26 @@ class CourseController extends Controller
                 ? MathCaptcha::question($request, 'lesson_complete')
                 : null,
         ]);
+    }
+
+    public function refreshLessonCaptcha(Request $request, Course $course, Lesson $lesson): JsonResponse
+    {
+        if (! $course->isPublished() || ! $lesson->is_published || $lesson->course_id !== $course->id) {
+            abort(404);
+        }
+
+        $user = $request->user();
+        $enrollment = $user
+            ? Enrollment::where('course_id', $course->id)->where('user_id', $user->id)->first()
+            : null;
+
+        abort_unless($user && $enrollment && $enrollment->payment_status === 'paid', 403);
+
+        MathCaptcha::regenerate($request, 'lesson_complete');
+
+        return response()
+            ->json(['question' => MathCaptcha::question($request, 'lesson_complete')])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
     public function completeLesson(Request $request, Course $course, Lesson $lesson): RedirectResponse

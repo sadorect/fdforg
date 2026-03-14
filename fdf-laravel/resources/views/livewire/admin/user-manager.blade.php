@@ -9,12 +9,12 @@
 
     <div class="grid grid-cols-1 gap-4 rounded-lg bg-white p-4 shadow sm:grid-cols-3">
         <div>
-            <label class="text-sm font-medium text-gray-700">Search</label>
-            <input wire:model.live="search" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Name, email, bio">
+            <label for="user-search" class="text-sm font-medium text-gray-700">Search</label>
+            <input id="user-search" wire:model.live="search" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500" placeholder="Name, email, bio">
         </div>
         <div>
-            <label class="text-sm font-medium text-gray-700">Role</label>
-            <select wire:model.live="roleFilter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+            <label for="user-role-filter" class="text-sm font-medium text-gray-700">Role</label>
+            <select id="user-role-filter" wire:model.live="roleFilter" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">All users</option>
                 <option value="admin">Admins</option>
                 <option value="user">Non-admins</option>
@@ -27,24 +27,24 @@
             <h2 class="mb-4 text-lg font-semibold">{{ $editing ? 'Edit User' : 'Create User' }}</h2>
             <form wire:submit="save" class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Name *</label>
-                    <input wire:model="name" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="user-form-name" class="text-sm font-medium text-gray-700">Name *</label>
+                    <input id="user-form-name" wire:model="name" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('name') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">Email *</label>
-                    <input wire:model="email" type="email" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="user-form-email" class="text-sm font-medium text-gray-700">Email *</label>
+                    <input id="user-form-email" wire:model="email" type="email" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-medium text-gray-700">{{ $editing ? 'New Password (optional)' : 'Password *' }}</label>
-                    <input wire:model="password" type="password" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
+                    <label for="user-form-password" class="text-sm font-medium text-gray-700">{{ $editing ? 'New Password (optional)' : 'Password *' }}</label>
+                    <input id="user-form-password" wire:model="password" type="password" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500">
                     @error('password') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="space-y-2">
                     @if($canManageAccessAssignments)
-                        <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <input wire:model="is_admin" type="checkbox" class="rounded border-gray-300">
+                        <label for="user-form-is-admin" class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <input id="user-form-is-admin" wire:model="is_admin" type="checkbox" class="rounded border-gray-300">
                             Admin
                         </label>
                     @else
@@ -52,8 +52,8 @@
                             Admin access and role assignment are managed in Roles &amp; Permissions.
                         </div>
                     @endif
-                    <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <input wire:model="email_verified" type="checkbox" class="rounded border-gray-300">
+                    <label for="user-form-email-verified" class="inline-flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <input id="user-form-email-verified" wire:model="email_verified" type="checkbox" class="rounded border-gray-300">
                         Email Verified
                     </label>
                 </div>
@@ -61,12 +61,12 @@
                 @if($canManageAccessAssignments)
                     <div class="md:col-span-2">
                         <div class="flex items-center justify-between gap-3">
-                            <label class="text-sm font-medium text-gray-700">Assigned Roles</label>
+                            <label for="user-form-role-ids" class="text-sm font-medium text-gray-700">Assigned Roles</label>
                             <button type="button" wire:click="clearAssignedRoles" class="text-xs font-semibold text-gray-500 hover:text-gray-700">
                                 Clear all roles
                             </button>
                         </div>
-                        <select wire:model="role_ids" multiple class="mt-1 h-32 w-full rounded-md border-gray-300 text-sm">
+                        <select id="user-form-role-ids" wire:model="role_ids" multiple class="mt-1 h-32 w-full rounded-md border-gray-300 text-sm">
                             @foreach($roles as $role)
                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
                             @endforeach
@@ -82,8 +82,8 @@
                 @endif
 
                 <div class="md:col-span-2">
-                    <label class="text-sm font-medium text-gray-700">Bio</label>
-                    <textarea wire:model="bio" rows="4" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <label for="user-form-bio" class="text-sm font-medium text-gray-700">Bio</label>
+                    <textarea id="user-form-bio" wire:model="bio" rows="4" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"></textarea>
                     @error('bio') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2 flex gap-3">
@@ -133,8 +133,8 @@
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $user->created_at->format('M j, Y') }}</td>
                         <td class="px-4 py-3 text-right">
                             <div class="inline-flex gap-2">
-                                <button wire:click="edit({{ $user->id }})" class="text-sm text-blue-600 hover:text-blue-800">Edit</button>
-                                <button wire:click="delete({{ $user->id }})" class="text-sm text-red-600 hover:text-red-800">Delete</button>
+                                <button wire:click="edit({{ $user->id }})" class="text-sm text-blue-600 hover:text-blue-800" aria-label="Edit user {{ $user->name }}">Edit</button>
+                                <button wire:click="delete({{ $user->id }})" class="text-sm text-red-600 hover:text-red-800" aria-label="Delete user {{ $user->name }}">Delete</button>
                             </div>
                         </td>
                     </tr>

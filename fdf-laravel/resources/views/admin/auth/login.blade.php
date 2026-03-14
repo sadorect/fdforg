@@ -7,7 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <a href="#admin-login-main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-gray-900 focus:px-4 focus:py-2 focus:text-white">Skip to main content</a>
+    <main id="admin-login-main" class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <div>
                 <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-indigo-100">
@@ -23,7 +24,7 @@
                 @csrf
 
                 @if ($errors->any())
-                    <div class="rounded-md bg-red-50 p-4">
+                    <div class="rounded-md bg-red-50 p-4" role="alert" aria-live="assertive">
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -55,23 +56,25 @@
                     </div>
                 </div>
 
-                <div class="rounded-md border border-gray-200 bg-white p-4">
+                <div class="rounded-md border border-gray-200 bg-white p-4" data-admin-captcha-block>
                     <label for="captcha_answer" class="block text-sm font-medium text-gray-700">
-                        Math CAPTCHA: What is {{ $captchaQuestion ?? '0 + 0' }}?
+                        Math CAPTCHA: What is <span data-admin-captcha-question>{{ $captchaQuestion ?? '0 + 0' }}</span>?
                     </label>
+                    <p class="sr-only" data-admin-captcha-status aria-live="polite" aria-atomic="true"></p>
                     <div class="mt-2 flex items-center gap-3">
                         <input
                             id="captcha_answer"
                             name="captcha_answer"
                             type="number"
                             required
+                            data-admin-captcha-input
                             class="w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                             placeholder="Enter answer"
                             value="{{ old('captcha_answer') }}"
                         >
-                        <a href="{{ route('admin.login', ['refresh_captcha' => 1]) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                        <button type="button" data-admin-captcha-refresh data-refresh-url="{{ route('admin.captcha') }}" data-fallback-url="{{ route('admin.login', ['refresh_captcha' => 1]) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
                             New CAPTCHA
-                        </a>
+                        </button>
                     </div>
                     @error('captcha_answer') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
@@ -89,11 +92,78 @@
 
                 <div class="text-center">
                     <a href="{{ route('home') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                        <- Back to website
+                        &larr; Back to website
                     </a>
                 </div>
             </form>
         </div>
-    </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const refreshButton = document.querySelector('[data-admin-captcha-refresh]');
+            const questionNode = document.querySelector('[data-admin-captcha-question]');
+            const answerInput = document.querySelector('[data-admin-captcha-input]');
+            const statusNode = document.querySelector('[data-admin-captcha-status]');
+
+            if (!refreshButton || !questionNode) {
+                return;
+            }
+
+            refreshButton.addEventListener('click', async function () {
+                const refreshUrl = refreshButton.getAttribute('data-refresh-url');
+                const fallbackUrl = refreshButton.getAttribute('data-fallback-url');
+                const originalLabel = refreshButton.textContent;
+
+                refreshButton.disabled = true;
+                refreshButton.textContent = 'Refreshing...';
+
+                if (statusNode) {
+                    statusNode.textContent = 'Refreshing the CAPTCHA question.';
+                }
+
+                try {
+                    const response = await fetch(refreshUrl, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        credentials: 'same-origin',
+                        cache: 'no-store',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to refresh CAPTCHA.');
+                    }
+
+                    const payload = await response.json();
+
+                    if (!payload.question) {
+                        throw new Error('Captcha question missing.');
+                    }
+
+                    questionNode.textContent = payload.question;
+
+                    if (answerInput) {
+                        answerInput.value = '';
+                        answerInput.focus();
+                    }
+
+                    if (statusNode) {
+                        statusNode.textContent = 'New CAPTCHA question loaded: What is ' + payload.question + '?';
+                    }
+                } catch (error) {
+                    if (statusNode) {
+                        statusNode.textContent = 'Refreshing the CAPTCHA failed. Reloading the page now.';
+                    }
+
+                    window.location.href = fallbackUrl;
+                } finally {
+                    refreshButton.disabled = false;
+                    refreshButton.textContent = originalLabel;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

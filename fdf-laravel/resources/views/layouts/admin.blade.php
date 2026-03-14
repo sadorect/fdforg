@@ -12,11 +12,13 @@
     @livewireStyles
 </head>
 <body class="admin-shell bg-gray-100">
+    <a href="#admin-main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-slate-950 focus:px-4 focus:py-2 focus:text-white">Skip to main content</a>
     @php
         $adminUser = Auth::user()?->loadMissing('roles.permissions');
         $dashboardActive = request()->routeIs('admin.dashboard');
         $analyticsActive = request()->routeIs('admin.analytics*');
         $manualActive = request()->routeIs('admin.manual*');
+        $contentTransferActive = request()->routeIs('admin.content-transfer*');
 
         $pagesActive = request()->routeIs('admin.pages*');
         $eventsActive = request()->routeIs('admin.events*');
@@ -54,6 +56,16 @@
         $canManageEmailTemplates = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_EMAIL_TEMPLATES) ?? false;
         $canManageUsers = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_USERS) ?? false;
         $canManageRoles = $adminUser?->hasPermission(\App\Support\AdminPermissions::MANAGE_ROLES_PERMISSIONS) ?? false;
+        $canAccessContentTransfer = $canManagePages
+            || $canManageSiteSettings
+            || $canManageBlog
+            || $canManageCategories
+            || $canManageEvents
+            || $canManageGallery
+            || $canManageCourses
+            || $canManageLessons
+            || $canManageHeroSlides
+            || $canManageEmailTemplates;
 
         $showContentGroup = $canManagePages || $canManageEvents || $canManageGallery;
         $showBlogGroup = $canManageBlog || $canManageCategories;
@@ -62,7 +74,7 @@
         $showAccessGroup = $canManageUsers || $canManageRoles;
     @endphp
     <!-- Admin Navigation -->
-    <nav class="bg-gray-900 shadow-lg">
+    <nav class="bg-gray-900 shadow-lg" aria-label="Admin navigation">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between gap-3 py-3">
                 <a href="{{ route('admin.dashboard') }}" class="text-white font-bold text-xl">
@@ -70,11 +82,11 @@
                 </a>
 
                 <div class="flex items-center gap-2">
-                    <button id="admin-mobile-toggle" type="button" class="md:hidden rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-xs font-semibold text-gray-100 hover:bg-gray-700">
+                    <button id="admin-mobile-toggle" type="button" class="md:hidden rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-xs font-semibold text-gray-100 hover:bg-gray-700" aria-label="Toggle admin menu" aria-controls="admin-mobile-nav" aria-expanded="false">
                         Menu
                     </button>
-                    <details class="relative">
-                        <summary class="list-none cursor-pointer rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 hover:bg-gray-700">
+                    <details id="admin-profile-menu" class="relative">
+                        <summary class="list-none cursor-pointer rounded-lg border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 hover:bg-gray-700" aria-label="Open profile menu">
                             <span class="font-semibold">{{ Auth::user()->name }}</span>
                             <span class="ml-2 text-xs text-gray-300">Profile</span>
                         </summary>
@@ -95,11 +107,14 @@
             </div>
 
             <div class="hidden md:flex flex-wrap items-center gap-2 border-t border-gray-700 py-3">
-                <a href="{{ route('admin.dashboard') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($dashboardActive) aria-current="page" @endif>Dashboard</a>
                 @if($canViewAnalytics)
-                    <a href="{{ route('admin.analytics') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                    <a href="{{ route('admin.analytics') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($analyticsActive) aria-current="page" @endif>Analytics</a>
                 @endif
-                <a href="{{ route('admin.manual') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Admin Manual</a>
+                <a href="{{ route('admin.manual') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($manualActive) aria-current="page" @endif>Admin Manual</a>
+                @if($canAccessContentTransfer)
+                    <a href="{{ route('admin.content-transfer') }}" class="rounded-md px-3 py-1.5 text-sm font-semibold {{ $contentTransferActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($contentTransferActive) aria-current="page" @endif>Content Transfer</a>
+                @endif
 
                 @if($showContentGroup)
                     <div class="group relative">
@@ -113,13 +128,13 @@
                         </button>
                         <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                             @if($canManagePages)
-                                <a href="{{ route('admin.pages') }}" class="block px-4 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Pages</a>
+                                <a href="{{ route('admin.pages') }}" class="block px-4 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($pagesActive) aria-current="page" @endif>Pages</a>
                             @endif
                             @if($canManageEvents)
-                                <a href="{{ route('admin.events') }}" class="block px-4 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Events</a>
+                                <a href="{{ route('admin.events') }}" class="block px-4 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($eventsActive) aria-current="page" @endif>Events</a>
                             @endif
                             @if($canManageGallery)
-                                <a href="{{ route('admin.gallery') }}" class="block px-4 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Gallery</a>
+                                <a href="{{ route('admin.gallery') }}" class="block px-4 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($galleryActive) aria-current="page" @endif>Gallery</a>
                             @endif
                         </div>
                     </div>
@@ -137,10 +152,10 @@
                         </button>
                         <div class="invisible absolute left-0 top-full z-20 mt-0 w-52 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                             @if($canManageBlog)
-                                <a href="{{ route('admin.blog') }}" class="block px-4 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Posts</a>
+                                <a href="{{ route('admin.blog') }}" class="block px-4 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($postsActive) aria-current="page" @endif>Posts</a>
                             @endif
                             @if($canManageCategories)
-                                <a href="{{ route('admin.categories') }}" class="block px-4 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Categories</a>
+                                <a href="{{ route('admin.categories') }}" class="block px-4 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($categoriesActive) aria-current="page" @endif>Categories</a>
                             @endif
                         </div>
                     </div>
@@ -158,16 +173,16 @@
                         </button>
                         <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                             @if($canViewLmsDashboard)
-                                <a href="{{ route('admin.lms') }}" class="block px-4 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">LMS Dashboard</a>
+                                <a href="{{ route('admin.lms') }}" class="block px-4 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($lmsDashboardActive) aria-current="page" @endif>LMS Dashboard</a>
                             @endif
                             @if($canManageCourses)
-                                <a href="{{ route('admin.courses') }}" class="block px-4 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Courses</a>
+                                <a href="{{ route('admin.courses') }}" class="block px-4 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($coursesActive) aria-current="page" @endif>Courses</a>
                             @endif
                             @if($canManageLessons)
-                                <a href="{{ route('admin.lessons') }}" class="block px-4 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Lessons</a>
+                                <a href="{{ route('admin.lessons') }}" class="block px-4 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($lessonsActive) aria-current="page" @endif>Lessons</a>
                             @endif
                             @if($canManageEnrollments)
-                                <a href="{{ route('admin.enrollments') }}" class="block px-4 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Enrollments</a>
+                                <a href="{{ route('admin.enrollments') }}" class="block px-4 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($enrollmentsActive) aria-current="page" @endif>Enrollments</a>
                             @endif
                         </div>
                     </div>
@@ -185,14 +200,14 @@
                         </button>
                         <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                             @if($canManageSiteSettings)
-                                <a href="{{ route('admin.site-settings') }}" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Branding & Footer</a>
-                                <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Social Media & Sidebar</a>
+                                <a href="{{ route('admin.site-settings') }}" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($siteSettingsPageActive) aria-current="page" @endif>Branding & Footer</a>
+                                <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block px-4 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($siteSettingsPageActive) aria-current="page" @endif>Social Media & Sidebar</a>
                             @endif
                             @if($canManageHeroSlides)
-                                <a href="{{ route('admin.hero-slides') }}" class="block px-4 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Hero Slides</a>
+                                <a href="{{ route('admin.hero-slides') }}" class="block px-4 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($heroSlidesActive) aria-current="page" @endif>Hero Slides</a>
                             @endif
                             @if($canManageEmailTemplates)
-                                <a href="{{ route('admin.email-templates') }}" class="block px-4 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Email Templates</a>
+                                <a href="{{ route('admin.email-templates') }}" class="block px-4 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($emailTemplatesActive) aria-current="page" @endif>Email Templates</a>
                             @endif
                         </div>
                     </div>
@@ -210,36 +225,39 @@
                         </button>
                         <div class="invisible absolute left-0 top-full z-20 mt-0 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                             @if($canManageUsers)
-                                <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Users</a>
+                                <a href="{{ route('admin.users') }}" class="block px-4 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($usersActive) aria-current="page" @endif>Users</a>
                             @endif
                             @if($canManageRoles)
-                                <a href="{{ route('admin.roles') }}" class="block px-4 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}">Roles & Permissions</a>
+                                <a href="{{ route('admin.roles') }}" class="block px-4 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-700 hover:bg-gray-50' }}" @if($rolesActive) aria-current="page" @endif>Roles & Permissions</a>
                             @endif
                         </div>
                     </div>
                 @endif
             </div>
 
-            <div id="admin-mobile-nav" class="hidden border-t border-gray-700 py-3 md:hidden">
+            <div id="admin-mobile-nav" class="hidden border-t border-gray-700 py-3 md:hidden" aria-hidden="true">
                 <div class="space-y-2">
-                    <a href="{{ route('admin.dashboard') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Dashboard</a>
+                    <a href="{{ route('admin.dashboard') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $dashboardActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($dashboardActive) aria-current="page" @endif>Dashboard</a>
                     @if($canViewAnalytics)
-                        <a href="{{ route('admin.analytics') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Analytics</a>
+                        <a href="{{ route('admin.analytics') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $analyticsActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($analyticsActive) aria-current="page" @endif>Analytics</a>
                     @endif
-                    <a href="{{ route('admin.manual') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Admin Manual</a>
+                    <a href="{{ route('admin.manual') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $manualActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($manualActive) aria-current="page" @endif>Admin Manual</a>
+                    @if($canAccessContentTransfer)
+                        <a href="{{ route('admin.content-transfer') }}" class="block rounded-md px-3 py-2 text-sm font-semibold {{ $contentTransferActive ? 'bg-white text-gray-900' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($contentTransferActive) aria-current="page" @endif>Content Transfer</a>
+                    @endif
 
                     @if($showContentGroup)
                         <details data-admin-group="content">
                             <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $contentActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Content</summary>
                             <div class="mt-1 space-y-1 pl-3">
                                 @if($canManagePages)
-                                    <a href="{{ route('admin.pages') }}" class="block rounded-md px-3 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Pages</a>
+                                    <a href="{{ route('admin.pages') }}" class="block rounded-md px-3 py-2 text-sm {{ $pagesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($pagesActive) aria-current="page" @endif>Pages</a>
                                 @endif
                                 @if($canManageEvents)
-                                    <a href="{{ route('admin.events') }}" class="block rounded-md px-3 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Events</a>
+                                    <a href="{{ route('admin.events') }}" class="block rounded-md px-3 py-2 text-sm {{ $eventsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($eventsActive) aria-current="page" @endif>Events</a>
                                 @endif
                                 @if($canManageGallery)
-                                    <a href="{{ route('admin.gallery') }}" class="block rounded-md px-3 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Gallery</a>
+                                    <a href="{{ route('admin.gallery') }}" class="block rounded-md px-3 py-2 text-sm {{ $galleryActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($galleryActive) aria-current="page" @endif>Gallery</a>
                                 @endif
                             </div>
                         </details>
@@ -250,10 +268,10 @@
                             <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $blogActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Blog</summary>
                             <div class="mt-1 space-y-1 pl-3">
                                 @if($canManageBlog)
-                                    <a href="{{ route('admin.blog') }}" class="block rounded-md px-3 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Posts</a>
+                                    <a href="{{ route('admin.blog') }}" class="block rounded-md px-3 py-2 text-sm {{ $postsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($postsActive) aria-current="page" @endif>Posts</a>
                                 @endif
                                 @if($canManageCategories)
-                                    <a href="{{ route('admin.categories') }}" class="block rounded-md px-3 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Categories</a>
+                                    <a href="{{ route('admin.categories') }}" class="block rounded-md px-3 py-2 text-sm {{ $categoriesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($categoriesActive) aria-current="page" @endif>Categories</a>
                                 @endif
                             </div>
                         </details>
@@ -264,16 +282,16 @@
                             <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $lmsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">LMS</summary>
                             <div class="mt-1 space-y-1 pl-3">
                                 @if($canViewLmsDashboard)
-                                    <a href="{{ route('admin.lms') }}" class="block rounded-md px-3 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">LMS Dashboard</a>
+                                    <a href="{{ route('admin.lms') }}" class="block rounded-md px-3 py-2 text-sm {{ $lmsDashboardActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($lmsDashboardActive) aria-current="page" @endif>LMS Dashboard</a>
                                 @endif
                                 @if($canManageCourses)
-                                    <a href="{{ route('admin.courses') }}" class="block rounded-md px-3 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Courses</a>
+                                    <a href="{{ route('admin.courses') }}" class="block rounded-md px-3 py-2 text-sm {{ $coursesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($coursesActive) aria-current="page" @endif>Courses</a>
                                 @endif
                                 @if($canManageLessons)
-                                    <a href="{{ route('admin.lessons') }}" class="block rounded-md px-3 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Lessons</a>
+                                    <a href="{{ route('admin.lessons') }}" class="block rounded-md px-3 py-2 text-sm {{ $lessonsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($lessonsActive) aria-current="page" @endif>Lessons</a>
                                 @endif
                                 @if($canManageEnrollments)
-                                    <a href="{{ route('admin.enrollments') }}" class="block rounded-md px-3 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Enrollments</a>
+                                    <a href="{{ route('admin.enrollments') }}" class="block rounded-md px-3 py-2 text-sm {{ $enrollmentsActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($enrollmentsActive) aria-current="page" @endif>Enrollments</a>
                                 @endif
                             </div>
                         </details>
@@ -284,14 +302,14 @@
                             <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $siteSettingsActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Site Settings</summary>
                             <div class="mt-1 space-y-1 pl-3">
                                 @if($canManageSiteSettings)
-                                    <a href="{{ route('admin.site-settings') }}" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Branding & Footer</a>
-                                    <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Social Media & Sidebar</a>
+                                    <a href="{{ route('admin.site-settings') }}" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($siteSettingsPageActive) aria-current="page" @endif>Branding & Footer</a>
+                                    <a href="{{ route('admin.site-settings') }}#media-sidebar-settings" class="block rounded-md px-3 py-2 text-sm {{ $siteSettingsPageActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($siteSettingsPageActive) aria-current="page" @endif>Social Media & Sidebar</a>
                                 @endif
                                 @if($canManageHeroSlides)
-                                    <a href="{{ route('admin.hero-slides') }}" class="block rounded-md px-3 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Hero Slides</a>
+                                    <a href="{{ route('admin.hero-slides') }}" class="block rounded-md px-3 py-2 text-sm {{ $heroSlidesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($heroSlidesActive) aria-current="page" @endif>Hero Slides</a>
                                 @endif
                                 @if($canManageEmailTemplates)
-                                    <a href="{{ route('admin.email-templates') }}" class="block rounded-md px-3 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Email Templates</a>
+                                    <a href="{{ route('admin.email-templates') }}" class="block rounded-md px-3 py-2 text-sm {{ $emailTemplatesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($emailTemplatesActive) aria-current="page" @endif>Email Templates</a>
                                 @endif
                             </div>
                         </details>
@@ -302,10 +320,10 @@
                             <summary class="cursor-pointer rounded-md border px-3 py-2 text-sm font-semibold {{ $accessActive ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-gray-700 hover:text-white' }}">Access</summary>
                             <div class="mt-1 space-y-1 pl-3">
                                 @if($canManageUsers)
-                                    <a href="{{ route('admin.users') }}" class="block rounded-md px-3 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Users</a>
+                                    <a href="{{ route('admin.users') }}" class="block rounded-md px-3 py-2 text-sm {{ $usersActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($usersActive) aria-current="page" @endif>Users</a>
                                 @endif
                                 @if($canManageRoles)
-                                    <a href="{{ route('admin.roles') }}" class="block rounded-md px-3 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}">Roles & Permissions</a>
+                                    <a href="{{ route('admin.roles') }}" class="block rounded-md px-3 py-2 text-sm {{ $rolesActive ? 'bg-blue-50 font-semibold text-blue-700' : 'text-gray-200 hover:bg-gray-700 hover:text-white' }}" @if($rolesActive) aria-current="page" @endif>Roles & Permissions</a>
                                 @endif
                             </div>
                         </details>
@@ -316,7 +334,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="admin-main py-6">
+    <main id="admin-main-content" class="admin-main py-6">
         <div class="admin-workspace max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="admin-page-shell">
                 @hasSection('content')
@@ -330,13 +348,13 @@
 
     <!-- Flash Messages -->
     @if (session()->has('success'))
-        <div class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg z-50">
+        <div class="fixed top-4 right-4 z-50 rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700 shadow-lg" role="status" aria-live="polite">
             {{ session('success') }}
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-lg z-50">
+        <div class="fixed top-4 right-4 z-50 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700 shadow-lg" role="alert" aria-live="assertive">
             {{ session('error') }}
         </div>
     @endif
@@ -346,12 +364,25 @@
         document.addEventListener('DOMContentLoaded', function () {
             const toggle = document.getElementById('admin-mobile-toggle');
             const nav = document.getElementById('admin-mobile-nav');
+            const profileMenu = document.getElementById('admin-profile-menu');
             if (!toggle || !nav) {
                 return;
             }
 
+            const setAdminMenuState = function (isOpen, options = {}) {
+                nav.classList.toggle('hidden', !isOpen);
+                nav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+                toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+                if (!isOpen && options.returnFocus) {
+                    toggle.focus();
+                }
+            };
+
+            setAdminMenuState(false);
+
             toggle.addEventListener('click', function () {
-                nav.classList.toggle('hidden');
+                setAdminMenuState(nav.classList.contains('hidden'));
             });
 
             const mobileGroups = nav.querySelectorAll('details[data-admin-group]');
@@ -371,11 +402,23 @@
 
             nav.querySelectorAll('a').forEach(function (link) {
                 link.addEventListener('click', function () {
-                    nav.classList.add('hidden');
+                    setAdminMenuState(false);
                     mobileGroups.forEach(function (group) {
                         group.open = false;
                     });
                 });
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    if (toggle.getAttribute('aria-expanded') === 'true') {
+                        setAdminMenuState(false, { returnFocus: true });
+                    }
+
+                    if (profileMenu?.open) {
+                        profileMenu.open = false;
+                    }
+                }
             });
         });
     </script>
