@@ -7,6 +7,17 @@
         <button wire:click="create" class="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">New User</button>
     </div>
 
+    @if($statusMessage)
+        <div class="rounded-lg border px-4 py-3 shadow-sm {{ $statusType === 'error' ? 'border-red-200 bg-red-50 text-red-800' : 'border-green-200 bg-green-50 text-green-800' }}" role="{{ $statusType === 'error' ? 'alert' : 'status' }}" aria-live="{{ $statusType === 'error' ? 'assertive' : 'polite' }}">
+            <div class="flex items-start justify-between gap-4">
+                <p class="text-sm font-medium">{{ $statusMessage }}</p>
+                <button type="button" wire:click="dismissStatus" class="text-xs font-semibold uppercase tracking-wide {{ $statusType === 'error' ? 'text-red-700 hover:text-red-900' : 'text-green-700 hover:text-green-900' }}">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 gap-4 rounded-lg bg-white p-4 shadow sm:grid-cols-3">
         <div>
             <label for="user-search" class="text-sm font-medium text-gray-700">Search</label>
@@ -19,6 +30,49 @@
                 <option value="admin">Admins</option>
                 <option value="user">Non-admins</option>
             </select>
+        </div>
+    </div>
+
+    @php($selectedCount = count($selectedUsers))
+    <div class="rounded-lg bg-white p-4 shadow">
+        <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+                <h2 class="text-sm font-semibold text-gray-900">Bulk Actions</h2>
+                <p class="text-xs text-gray-500">
+                    {{ $selectedCount }} user{{ $selectedCount === 1 ? '' : 's' }} selected.
+                    Use the row checkboxes or select everyone on the current page.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" wire:click="selectVisibleUsers" class="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">
+                    Select Page ({{ $users->count() }})
+                </button>
+                <button type="button" wire:click="clearSelection" class="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">
+                    Clear
+                </button>
+                <button type="button" wire:click="bulkMarkEmailVerified" class="rounded-md bg-emerald-100 px-3 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-200">
+                    Verify Email
+                </button>
+                <button type="button" wire:click="bulkMarkEmailUnverified" class="rounded-md bg-amber-100 px-3 py-2 text-sm font-medium text-amber-800 hover:bg-amber-200">
+                    Mark Unverified
+                </button>
+                @if($canManageAccessAssignments)
+                    <button type="button" wire:click="bulkGrantAdmin" class="rounded-md bg-indigo-100 px-3 py-2 text-sm font-medium text-indigo-800 hover:bg-indigo-200">
+                        Grant Admin
+                    </button>
+                    <button type="button" wire:click="bulkRevokeAdmin" class="rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-200">
+                        Remove Admin
+                    </button>
+                @endif
+                <button
+                    type="button"
+                    wire:click="bulkDeleteUsers"
+                    wire:confirm="Delete the selected users? Protected accounts will be skipped."
+                    class="rounded-md bg-red-100 px-3 py-2 text-sm font-medium text-red-800 hover:bg-red-200"
+                >
+                    Delete Selected
+                </button>
+            </div>
         </div>
     </div>
 
@@ -100,6 +154,7 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
+                    <th class="w-12 px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Select</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">User</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Access Type</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-600">Assigned Roles</th>
@@ -111,6 +166,15 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($users as $user)
                     <tr>
+                        <td class="px-4 py-3 align-top">
+                            <input
+                                type="checkbox"
+                                wire:model.live="selectedUsers"
+                                value="{{ $user->id }}"
+                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                aria-label="Select user {{ $user->name }}"
+                            >
+                        </td>
                         <td class="px-4 py-3">
                             <p class="font-medium text-gray-900">{{ $user->name }}</p>
                             <p class="text-xs text-gray-500">{{ $user->email }}</p>
@@ -134,13 +198,18 @@
                         <td class="px-4 py-3 text-right">
                             <div class="inline-flex gap-2">
                                 <button wire:click="edit({{ $user->id }})" class="text-sm text-blue-600 hover:text-blue-800" aria-label="Edit user {{ $user->name }}">Edit</button>
-                                <button wire:click="delete({{ $user->id }})" class="text-sm text-red-600 hover:text-red-800" aria-label="Delete user {{ $user->name }}">Delete</button>
+                                @if($canManageAccessAssignments)
+                                    <button wire:click="toggleAdmin({{ $user->id }})" class="text-sm text-indigo-600 hover:text-indigo-800" aria-label="{{ $user->is_admin ? 'Remove admin access for' : 'Grant admin access to' }} user {{ $user->name }}">
+                                        {{ $user->is_admin ? 'Remove Admin' : 'Make Admin' }}
+                                    </button>
+                                @endif
+                                <button wire:click="deleteUser({{ $user->id }})" wire:confirm="Delete {{ $user->name }}?" class="text-sm text-red-600 hover:text-red-800" aria-label="Delete user {{ $user->name }}">Delete</button>
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">No users found.</td>
+                        <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">No users found.</td>
                     </tr>
                 @endforelse
             </tbody>

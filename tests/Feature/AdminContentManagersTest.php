@@ -9,6 +9,7 @@ use App\Livewire\Admin\PageManager;
 use App\Livewire\Admin\UserManager;
 use App\Models\BlogPost;
 use App\Models\Category;
+use App\Models\Course;
 use App\Models\Event;
 use App\Models\Page;
 use App\Models\Permission;
@@ -391,6 +392,38 @@ class AdminContentManagersTest extends TestCase
         ]);
     }
 
+    public function test_user_manager_can_edit_user(): void
+    {
+        $admin = $this->createAdminUser();
+        $user = User::factory()->create([
+            'name' => 'Original User',
+            'email' => 'original-user@example.com',
+            'bio' => 'Original bio',
+            'is_admin' => false,
+            'email_verified_at' => null,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(UserManager::class)
+            ->call('edit', $user->id)
+            ->set('name', 'Updated User')
+            ->set('email', 'updated-user@example.com')
+            ->set('bio', 'Updated bio')
+            ->set('email_verified', true)
+            ->call('save')
+            ->assertHasNoErrors()
+            ->assertSee('User updated successfully.');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'Updated User',
+            'email' => 'updated-user@example.com',
+            'bio' => 'Updated bio',
+        ]);
+
+        $this->assertNotNull($user->fresh()->email_verified_at);
+    }
+
     public function test_scoped_user_manager_cannot_grant_admin_access_or_assign_roles(): void
     {
         $scopedAdmin = User::factory()->create(['is_admin' => true]);
@@ -434,6 +467,109 @@ class AdminContentManagersTest extends TestCase
             ->call('toggleAdmin', $createdUser->id);
 
         $this->assertFalse((bool) $createdUser->fresh()->is_admin);
+    }
+
+    public function test_user_manager_shows_feedback_when_delete_is_blocked_by_linked_records(): void
+    {
+        $admin = $this->createAdminUser();
+        $instructor = User::factory()->create(['is_admin' => false]);
+
+        Course::create([
+            'title' => 'Linked Instructor Course',
+            'slug' => 'linked-instructor-course',
+            'description' => 'Course linked to the instructor account.',
+            'instructor_id' => $instructor->id,
+            'status' => 'published',
+            'difficulty_level' => 'beginner',
+            'duration_minutes' => 60,
+            'price' => 0,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(UserManager::class)
+            ->call('deleteUser', $instructor->id)
+            ->assertSee('Cannot delete user with linked LMS or content records.');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $instructor->id,
+        ]);
+    }
+
+    public function test_user_manager_can_delete_user_when_no_protected_links_exist(): void
+    {
+        $admin = $this->createAdminUser();
+        $user = User::factory()->create([
+            'email' => 'deletable-user@example.com',
+            'is_admin' => false,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(UserManager::class)
+            ->call('deleteUser', $user->id)
+            ->assertSee('User deleted successfully.');
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $user->id,
+        ]);
+    }
+
+    public function test_user_manager_can_bulk_verify_and_bulk_delete_selected_users(): void
+    {
+        $admin = $this->createAdminUser();
+        $firstLearner = User::factory()->create([
+            'email' => 'first-learner@example.com',
+            'email_verified_at' => null,
+            'is_admin' => false,
+        ]);
+        $secondLearner = User::factory()->create([
+            'email' => 'second-learner@example.com',
+            'email_verified_at' => null,
+            'is_admin' => false,
+        ]);
+        $protectedInstructor = User::factory()->create([
+            'email' => 'protected-instructor@example.com',
+            'is_admin' => false,
+        ]);
+
+        Course::create([
+            'title' => 'Protected Instructor Course',
+            'slug' => 'protected-instructor-course',
+            'description' => 'This course keeps the instructor from being deleted.',
+            'instructor_id' => $protectedInstructor->id,
+            'status' => 'published',
+            'difficulty_level' => 'beginner',
+            'duration_minutes' => 90,
+            'price' => 0,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(UserManager::class)
+            ->set('selectedUsers', [$firstLearner->id, $secondLearner->id])
+            ->call('bulkMarkEmailVerified')
+            ->assertSee('Verified email for 2 users.');
+
+        $this->assertNotNull($firstLearner->fresh()->email_verified_at);
+        $this->assertNotNull($secondLearner->fresh()->email_verified_at);
+
+        Livewire::actingAs($admin)
+            ->test(UserManager::class)
+            ->set('selectedUsers', [$firstLearner->id, $protectedInstructor->id, $admin->id])
+            ->call('bulkDeleteUsers')
+            ->assertSee('Deleted 1 user.')
+            ->assertSee('Skipped 1 user with linked LMS or content records.')
+            ->assertSee('Skipped 1 current account.');
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $firstLearner->id,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $protectedInstructor->id,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $admin->id,
+        ]);
     }
 
     public function test_blog_manager_can_create_post(): void
