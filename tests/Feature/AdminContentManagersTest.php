@@ -647,4 +647,39 @@ class AdminContentManagersTest extends TestCase
             'status' => 'published',
         ]);
     }
+
+    public function test_blog_manager_can_clear_post_category_when_editing(): void
+    {
+        $admin = $this->createAdminUser();
+        $category = Category::create([
+            'name' => 'Insights',
+            'slug' => 'insights',
+            'type' => 'blog',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        $post = BlogPost::create([
+            'title' => 'Category Reset Story',
+            'slug' => 'category-reset-story',
+            'excerpt' => 'Original excerpt',
+            'content' => 'Original content',
+            'category_id' => $category->id,
+            'author_id' => $admin->id,
+            'status' => 'draft',
+            'tags' => ['accessibility'],
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(BlogManager::class)
+            ->call('edit', $post->id)
+            ->set('category_id', '')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('blog_posts', [
+            'id' => $post->id,
+            'category_id' => null,
+        ]);
+    }
 }

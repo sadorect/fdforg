@@ -108,7 +108,7 @@ class CourseManager extends AdminComponent
         $course->slug = Str::slug($this->title);
         $course->description = $this->description;
         $course->content = $this->content;
-        $course->category_id = $this->category_id;
+        $course->category_id = $this->normalizeNullableForeignKey($this->category_id);
         $course->instructor_id = $this->instructor_id;
         $course->intro_video_url = $this->intro_video_url;
         $course->difficulty_level = $this->difficulty_level;
@@ -162,7 +162,7 @@ class CourseManager extends AdminComponent
         $this->selectedCourse->slug = Str::slug($this->title);
         $this->selectedCourse->description = $this->description;
         $this->selectedCourse->content = $this->content;
-        $this->selectedCourse->category_id = $this->category_id;
+        $this->selectedCourse->category_id = $this->normalizeNullableForeignKey($this->category_id);
         $this->selectedCourse->instructor_id = $this->instructor_id;
         $this->selectedCourse->intro_video_url = $this->intro_video_url;
         $this->selectedCourse->difficulty_level = $this->difficulty_level;
@@ -256,5 +256,14 @@ class CourseManager extends AdminComponent
         return view('livewire.admin.course-manager')
             ->layout('layouts.admin')
             ->title('Course Management');
+    }
+
+    private function normalizeNullableForeignKey(mixed $value): ?int
+    {
+        if ($value === '' || $value === null) {
+            return null;
+        }
+
+        return (int) $value;
     }
 }

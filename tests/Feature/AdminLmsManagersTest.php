@@ -63,6 +63,44 @@ class AdminLmsManagersTest extends TestCase
         ]);
     }
 
+    public function test_course_manager_can_clear_category_when_updating(): void
+    {
+        $admin = $this->createAdminUser();
+        $category = Category::create([
+            'name' => 'Leadership',
+            'slug' => 'leadership',
+            'description' => 'Course category for update tests',
+            'type' => 'course',
+            'is_active' => true,
+            'sort_order' => 1,
+        ]);
+
+        $course = Course::create([
+            'title' => 'Facilitator Essentials',
+            'slug' => 'facilitator-essentials',
+            'description' => 'Course description',
+            'content' => 'Course content',
+            'category_id' => $category->id,
+            'instructor_id' => $admin->id,
+            'status' => 'draft',
+            'difficulty_level' => 'beginner',
+            'duration_minutes' => 90,
+            'price' => 0,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CourseManager::class)
+            ->call('editCourse', $course->id)
+            ->set('category_id', '')
+            ->call('updateCourse')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('courses', [
+            'id' => $course->id,
+            'category_id' => null,
+        ]);
+    }
+
     public function test_lesson_manager_can_create_and_reorder_lessons(): void
     {
         $admin = $this->createAdminUser();

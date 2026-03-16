@@ -145,7 +145,7 @@ class BlogManager extends AdminComponent
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
-            'category_id' => $this->category_id,
+            'category_id' => $this->normalizeNullableForeignKey($this->category_id),
             'author_id' => $this->author_id,
             'status' => $this->status,
             'is_featured' => $this->is_featured,
@@ -263,5 +263,14 @@ class BlogManager extends AdminComponent
     public function getFeaturedCountProperty()
     {
         return BlogPost::where('is_featured', true)->count();
+    }
+
+    private function normalizeNullableForeignKey(mixed $value): ?int
+    {
+        if ($value === '' || $value === null) {
+            return null;
+        }
+
+        return (int) $value;
     }
 }
