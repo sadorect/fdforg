@@ -107,7 +107,8 @@ The events system includes:
 ## Project Structure
 
 ```
-fdf-laravel/
+./
+├── docs/
 ├── app/
 │   ├── Http/Controllers/
 │   │   ├── PageController.php     # Page management
