@@ -255,14 +255,14 @@ class LMSSeeder extends Seeder
                 'enrollment_count' => 0,
                 'rating' => 4.8,
                 'review_count' => 25,
-                'prerequisites' => json_encode([]),
-                'learning_outcomes' => json_encode([
+                'prerequisites' => [],
+                'learning_outcomes' => [
                     'Master basic ASL vocabulary',
                     'Learn proper finger spelling',
                     'Understand basic ASL grammar',
                     'Engage in simple conversations',
                     'Appreciate deaf culture',
-                ]),
+                ],
             ],
             [
                 'title' => 'Advanced ASL Conversation Skills',
@@ -283,14 +283,14 @@ class LMSSeeder extends Seeder
                 'enrollment_count' => 0,
                 'rating' => 4.9,
                 'review_count' => 18,
-                'prerequisites' => json_encode(['Basic ASL knowledge', 'Completion of beginner course']),
-                'learning_outcomes' => json_encode([
+                'prerequisites' => ['Basic ASL knowledge', 'Completion of beginner course'],
+                'learning_outcomes' => [
                     'Master advanced ASL vocabulary',
                     'Develop fluent conversation skills',
                     'Understand cultural nuances',
                     'Learn storytelling techniques',
                     'Achieve conversational fluency',
-                ]),
+                ],
             ],
             [
                 'title' => 'Teaching Deaf Students: Educational Strategies',
@@ -311,14 +311,14 @@ class LMSSeeder extends Seeder
                 'enrollment_count' => 0,
                 'rating' => 4.7,
                 'review_count' => 12,
-                'prerequisites' => json_encode(['Basic teaching experience', 'Understanding of educational principles']),
-                'learning_outcomes' => json_encode([
+                'prerequisites' => ['Basic teaching experience', 'Understanding of educational principles'],
+                'learning_outcomes' => [
                     'Understand deaf education principles',
                     'Implement effective teaching strategies',
                     'Use assistive technology effectively',
                     'Create inclusive learning environments',
                     'Assess deaf student progress',
-                ]),
+                ],
             ],
         ];
 

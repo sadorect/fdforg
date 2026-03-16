@@ -45,8 +45,6 @@ class Course extends Model
         'price' => 'decimal:2',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'prerequisites' => 'array',
-        'learning_outcomes' => 'array',
         'is_certificate_enabled' => 'boolean',
         'is_featured' => 'boolean',
         'enrollment_count' => 'integer',
@@ -242,8 +240,86 @@ class Course extends Model
         return $this->prerequisites ?? [];
     }
 
+    public function getPrerequisitesAttribute($value): array
+    {
+        return $this->normalizeListAttribute($value);
+    }
+
+    public function setPrerequisitesAttribute($value): void
+    {
+        $normalized = $this->normalizeListAttribute($value);
+
+        $this->attributes['prerequisites'] = $normalized === []
+            ? null
+            : json_encode($normalized);
+    }
+
     public function getLearningOutcomesListAttribute(): array
     {
         return $this->learning_outcomes ?? [];
+    }
+
+    public function getLearningOutcomesAttribute($value): array
+    {
+        return $this->normalizeListAttribute($value);
+    }
+
+    public function setLearningOutcomesAttribute($value): void
+    {
+        $normalized = $this->normalizeListAttribute($value);
+
+        $this->attributes['learning_outcomes'] = $normalized === []
+            ? null
+            : json_encode($normalized);
+    }
+
+    private function normalizeListAttribute($value): array
+    {
+        if (is_array($value)) {
+            return $this->cleanList($value);
+        }
+
+        if (! is_string($value)) {
+            return [];
+        }
+
+        $value = trim($value);
+
+        if ($value === '' || strtolower($value) === 'null') {
+            return [];
+        }
+
+        $decoded = json_decode($value, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            if (is_array($decoded)) {
+                return $this->cleanList($decoded);
+            }
+
+            if (is_string($decoded)) {
+                return $this->normalizeListAttribute($decoded);
+            }
+        }
+
+        $lines = preg_split('/\r\n|\r|\n/', $value) ?: [];
+
+        if (count(array_filter($lines, static fn ($line) => trim($line) !== '')) > 1) {
+            return $this->cleanList($lines);
+        }
+
+        return [$value];
+    }
+
+    private function cleanList(array $items): array
+    {
+        return array_values(array_filter(array_map(static function ($item) {
+            if (! is_scalar($item) && $item !== null) {
+                return null;
+            }
+
+            $item = trim((string) $item);
+
+            return $item === '' ? null : $item;
+        }, $items)));
     }
 }
