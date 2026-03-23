@@ -214,6 +214,10 @@
             transition: opacity 0.22s ease, transform 0.22s ease;
         }
 
+        body[data-crisp-enabled="true"] #back-to-top {
+            bottom: 7rem;
+        }
+
         #back-to-top[data-visible="true"] {
             opacity: 1;
             pointer-events: auto;
@@ -235,8 +239,9 @@
             }
         }
     </style>
+    @include('partials.crisp-chat')
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-gray-50 text-gray-900" data-crisp-enabled="{{ filled(config('services.crisp.website_id')) ? 'true' : 'false' }}">
     @php
         $homeActive = request()->routeIs('home');
         $coursesActive = request()->routeIs('courses.*');

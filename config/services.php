@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'crisp' => [
+        'website_id' => env('CRISP_WEBSITE_ID'),
+    ],
+
 ];

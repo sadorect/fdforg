@@ -58,6 +58,17 @@ A modern Laravel-based CMS for the Friends of the Deaf Foundation, built with ac
    php artisan db:seed
    ```
 
+### Local MySQL Helper (Windows + XAMPP)
+
+If you want an isolated local MySQL/MariaDB instance for this project without using XAMPP's shared `C:\xampp\mysql\data` directory, use:
+
+```bash
+composer db:start-local
+composer db:stop-local
+```
+
+The helper starts a project-local MariaDB instance on `127.0.0.1:3307` with data stored under `%LOCALAPPDATA%\Codex\fdf-laravel-mysql-v2`.
+
 6. **Create storage link**
    ```bash
    php artisan storage:link
