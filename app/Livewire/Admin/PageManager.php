@@ -298,6 +298,25 @@ class PageManager extends AdminComponent
         unset($this->partnerLogoUploads[$index]);
     }
 
+    public function addHomepageTestimonial(): void
+    {
+        $items = $this->homeSections['testimonials']['items'] ?? [];
+        $items[] = [
+            'quote' => '',
+            'name' => '',
+            'role' => '',
+        ];
+
+        $this->homeSections['testimonials']['items'] = array_values($items);
+    }
+
+    public function removeHomepageTestimonial(int $index): void
+    {
+        unset($this->homeSections['testimonials']['items'][$index]);
+
+        $this->homeSections['testimonials']['items'] = array_values($this->homeSections['testimonials']['items'] ?? []);
+    }
+
     public function cancel()
     {
         $this->resetForm();
@@ -513,6 +532,22 @@ class PageManager extends AdminComponent
             'sections.identity.vision_body' => 'nullable|string|max:500',
             'sections.identity.approach_title' => 'nullable|string|max:80',
             'sections.identity.approach_body' => 'nullable|string|max:500',
+            'sections.analytics.eyebrow' => 'nullable|string|max:80',
+            'sections.analytics.title' => 'nullable|string|max:255',
+            'sections.analytics.intro' => 'nullable|string|max:500',
+            'sections.analytics.cta_label' => 'nullable|string|max:80',
+            'sections.analytics.cta_url' => 'nullable|string|max:255',
+            'sections.analytics.cards' => 'array|size:6',
+            'sections.analytics.cards.*.value' => 'nullable|string|max:80',
+            'sections.analytics.cards.*.label' => 'nullable|string|max:120',
+            'sections.analytics.cards.*.description' => 'nullable|string|max:300',
+            'sections.testimonials.eyebrow' => 'nullable|string|max:80',
+            'sections.testimonials.title' => 'nullable|string|max:255',
+            'sections.testimonials.intro' => 'nullable|string|max:500',
+            'sections.testimonials.items' => 'array|max:12',
+            'sections.testimonials.items.*.quote' => 'nullable|string|max:500',
+            'sections.testimonials.items.*.name' => 'nullable|string|max:120',
+            'sections.testimonials.items.*.role' => 'nullable|string|max:120',
             'sections.services.eyebrow' => 'nullable|string|max:80',
             'sections.services.title' => 'nullable|string|max:255',
             'sections.services.intro' => 'nullable|string|max:500',
@@ -780,6 +815,26 @@ class PageManager extends AdminComponent
         }
 
         $sections['trust']['partners'] = $partners;
+
+        $testimonials = [];
+
+        foreach ($sections['testimonials']['items'] ?? [] as $testimonial) {
+            $quote = trim((string) ($testimonial['quote'] ?? ''));
+            $name = trim((string) ($testimonial['name'] ?? ''));
+            $role = trim((string) ($testimonial['role'] ?? ''));
+
+            if ($quote === '' && $name === '' && $role === '') {
+                continue;
+            }
+
+            $testimonials[] = [
+                'quote' => $quote,
+                'name' => $name,
+                'role' => $role,
+            ];
+        }
+
+        $sections['testimonials']['items'] = $testimonials;
 
         foreach (array_unique($this->partnerLogoPathsToDelete) as $path) {
             if (

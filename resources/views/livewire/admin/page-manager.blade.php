@@ -309,6 +309,112 @@
                                     </details>
 
                                     <details class="px-5 py-4">
+                                        <summary class="cursor-pointer text-sm font-semibold text-gray-900">Analytics Snapshot and Courses CTA</summary>
+                                        <div class="mt-4 grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label class="text-sm font-medium text-gray-700">Section Eyebrow</label>
+                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.eyebrow">
+                                            </div>
+                                            <div>
+                                                <label class="text-sm font-medium text-gray-700">Section Title</label>
+                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.title">
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label class="text-sm font-medium text-gray-700">Section Intro</label>
+                                                <textarea rows="3" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.intro"></textarea>
+                                            </div>
+                                            <div>
+                                                <label class="text-sm font-medium text-gray-700">Courses CTA Label</label>
+                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.cta_label">
+                                            </div>
+                                            <div>
+                                                <label class="text-sm font-medium text-gray-700">Courses CTA URL</label>
+                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.cta_url" placeholder="/learning">
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-5 grid gap-4 xl:grid-cols-3">
+                                            @foreach($homeSections['analytics']['cards'] as $index => $card)
+                                                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                                                    <p class="text-xs font-semibold uppercase tracking-wide text-cyan-700">Analytics Card {{ $loop->iteration }}</p>
+                                                    <label class="mt-3 block text-sm font-medium text-gray-700">Value</label>
+                                                    <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.cards.{{ $index }}.value">
+                                                    <label class="mt-3 block text-sm font-medium text-gray-700">Label</label>
+                                                    <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.cards.{{ $index }}.label">
+                                                    <label class="mt-3 block text-sm font-medium text-gray-700">Description</label>
+                                                    <textarea rows="3" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.analytics.cards.{{ $index }}.description"></textarea>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </details>
+
+                                    <details class="px-5 py-4">
+                                        <summary class="cursor-pointer text-sm font-semibold text-gray-900">Horizontal Testimonials</summary>
+                                        <div class="mt-4 grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label class="text-sm font-medium text-gray-700">Section Eyebrow</label>
+                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.eyebrow">
+                                            </div>
+                                            <div>
+                                                <label class="text-sm font-medium text-gray-700">Section Title</label>
+                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.title">
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label class="text-sm font-medium text-gray-700">Section Intro</label>
+                                                <textarea rows="3" class="mt-1 w-full rounded-md border-gray-300 bg-white text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.intro"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+                                            <p class="text-sm text-gray-500">These cards render in a horizontal scroll row on the homepage.</p>
+                                            <button
+                                                type="button"
+                                                wire:click="addHomepageTestimonial"
+                                                class="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+                                            >
+                                                Add Testimonial
+                                            </button>
+                                        </div>
+
+                                        @if(! empty($homeSections['testimonials']['items']))
+                                            <div class="mt-4 grid gap-4 xl:grid-cols-2">
+                                                @foreach($homeSections['testimonials']['items'] as $index => $item)
+                                                    <div class="rounded-xl border border-gray-200 bg-white p-4" wire:key="homepage-testimonial-{{ $index }}">
+                                                        <div class="flex flex-wrap items-start justify-between gap-3">
+                                                            <p class="text-xs font-semibold uppercase tracking-wide text-cyan-700">Testimonial {{ $loop->iteration }}</p>
+                                                            <button
+                                                                type="button"
+                                                                wire:click="removeHomepageTestimonial({{ $index }})"
+                                                                class="text-sm font-medium text-red-600 hover:text-red-700"
+                                                            >
+                                                                Remove
+                                                            </button>
+                                                        </div>
+
+                                                        <label class="mt-3 block text-sm font-medium text-gray-700">Quote</label>
+                                                        <textarea rows="4" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.items.{{ $index }}.quote"></textarea>
+
+                                                        <div class="mt-3 grid gap-3 md:grid-cols-2">
+                                                            <div>
+                                                                <label class="text-sm font-medium text-gray-700">Name</label>
+                                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.items.{{ $index }}.name">
+                                                            </div>
+                                                            <div>
+                                                                <label class="text-sm font-medium text-gray-700">Role / Context</label>
+                                                                <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.items.{{ $index }}.role">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="mt-4 rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-sm text-gray-500">
+                                                No testimonials added yet. Use <span class="font-semibold text-gray-700">Add Testimonial</span> to create the horizontal scroll section.
+                                            </div>
+                                        @endif
+                                    </details>
+
+                                    <details class="px-5 py-4">
                                         <summary class="cursor-pointer text-sm font-semibold text-gray-900">Mission, Vision, and Approach</summary>
                                         <div class="mt-4 grid gap-4 lg:grid-cols-3">
                                             <div>

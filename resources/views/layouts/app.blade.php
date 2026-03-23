@@ -18,9 +18,8 @@
     @if(isset($page->meta_image))
     <meta property="og:image" content="{{ $page->meta_image }}">
     @endif
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Custom Styles -->
     <style>

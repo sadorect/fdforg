@@ -4,6 +4,8 @@
 @php
     $homeSections = \App\Models\Page::mergeHomeSections($page->sections);
     $landing = $homeSections['landing'];
+    $analytics = $homeSections['analytics'];
+    $testimonials = $homeSections['testimonials'];
     $identity = $homeSections['identity'];
     $services = $homeSections['services'];
     $impact = $homeSections['impact'];
@@ -43,6 +45,12 @@
         $closingCta['secondary_url'] ?? null,
         ! empty($publishedPageSlugs['contact']) ? route('contact') : route('events.index')
     );
+    $analyticsCtaUrl = $resolveUrl(
+        $analytics['cta_url'] ?? null,
+        route('courses.index')
+    );
+    $testimonialItems = array_values($testimonials['items'] ?? []);
+    $shouldLoopTestimonials = count($testimonialItems) > 1;
 @endphp
 
 <section class="relative isolate overflow-hidden bg-slate-950 text-white">
@@ -131,6 +139,94 @@
         </div>
     </div>
 </section>
+
+<section class="relative bg-white py-20">
+    <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-slate-950 to-transparent"></div>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="rounded-[2rem] border border-cyan-100 bg-[linear-gradient(180deg,rgba(236,254,255,0.95),rgba(248,250,252,0.95))] p-8 shadow-[0_28px_100px_-48px_rgba(8,145,178,0.35)] md:p-10">
+            <div class="flex flex-wrap items-end justify-between gap-6">
+                <div class="max-w-3xl">
+                    <p class="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-700">{{ $analytics['eyebrow'] ?: 'Impact Snapshot' }}</p>
+                    <h2 class="mt-4 text-3xl font-bold text-slate-900 md:text-4xl">{{ $analytics['title'] }}</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600">{{ $analytics['intro'] }}</p>
+                </div>
+
+                <a href="{{ $analyticsCtaUrl }}" class="inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-cyan-800">
+                    {{ $analytics['cta_label'] ?: 'Browse Courses' }}
+                    <span aria-hidden="true">-></span>
+                </a>
+            </div>
+
+            <div class="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                @foreach(($analytics['cards'] ?? []) as $card)
+                    <article class="rounded-[1.75rem] border border-cyan-100 bg-white p-6 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">{{ $card['label'] }}</p>
+                        <p class="mt-4 text-4xl font-black tracking-tight text-slate-950">{{ $card['value'] }}</p>
+                        <p class="mt-4 text-sm leading-7 text-slate-600">{{ $card['description'] }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </div>
+    </div>
+</section>
+
+@if(! empty($testimonialItems))
+    <section class="bg-[#ecfeff] py-20">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl">
+                <p class="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-700">{{ $testimonials['eyebrow'] ?: 'Community Voices' }}</p>
+                <h2 class="mt-4 text-3xl font-bold text-slate-900 md:text-4xl">{{ $testimonials['title'] }}</h2>
+                <p class="mt-4 text-lg leading-8 text-slate-600">{{ $testimonials['intro'] }}</p>
+            </div>
+
+            <div class="home-testimonial-carousel mt-10" style="--testimonial-count: {{ max(count($testimonialItems), 1) }};">
+                <div class="home-testimonial-track">
+                    @foreach($testimonialItems as $testimonial)
+                        <article class="home-testimonial-card rounded-[2rem] border border-cyan-100 bg-white p-6 shadow-[0_18px_50px_-38px_rgba(15,23,42,0.35)]">
+                            <div class="flex items-center gap-3 text-cyan-700">
+                                <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-100 text-lg font-bold">
+                                    &ldquo;
+                                </span>
+                                <p class="text-xs font-semibold uppercase tracking-[0.24em]">Testimonial</p>
+                            </div>
+
+                            <blockquote class="mt-6 text-lg leading-8 text-slate-700">
+                                "{{ $testimonial['quote'] }}"
+                            </blockquote>
+
+                            <div class="mt-8 border-t border-slate-200 pt-4">
+                                <p class="font-semibold text-slate-900">{{ $testimonial['name'] }}</p>
+                                <p class="mt-1 text-sm text-slate-500">{{ $testimonial['role'] }}</p>
+                            </div>
+                        </article>
+                    @endforeach
+
+                    @if($shouldLoopTestimonials)
+                        @foreach($testimonialItems as $testimonial)
+                            <article aria-hidden="true" class="home-testimonial-card rounded-[2rem] border border-cyan-100 bg-white p-6 shadow-[0_18px_50px_-38px_rgba(15,23,42,0.35)]">
+                                <div class="flex items-center gap-3 text-cyan-700">
+                                    <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-100 text-lg font-bold">
+                                        &ldquo;
+                                    </span>
+                                    <p class="text-xs font-semibold uppercase tracking-[0.24em]">Testimonial</p>
+                                </div>
+
+                                <blockquote class="mt-6 text-lg leading-8 text-slate-700">
+                                    "{{ $testimonial['quote'] }}"
+                                </blockquote>
+
+                                <div class="mt-8 border-t border-slate-200 pt-4">
+                                    <p class="font-semibold text-slate-900">{{ $testimonial['name'] }}</p>
+                                    <p class="mt-1 text-sm text-slate-500">{{ $testimonial['role'] }}</p>
+                                </div>
+                            </article>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
+@endif
 
 <section class="bg-white py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

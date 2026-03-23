@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'trix/dist/trix.css';
+@import "tailwindcss";
+@import "trix/dist/trix.css";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,13 +7,15 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
 }
 
 :root {
-    --font-editorial-display: 'Fraunces', Georgia, serif;
-    --font-editorial-body: 'Source Serif 4', Georgia, serif;
+    --font-editorial-display: "Fraunces", Georgia, serif;
+    --font-editorial-body: "Source Serif 4", Georgia, serif;
     --admin-page-bg: oklch(0.958 0.008 247.858);
     --admin-surface: oklch(1 0 0);
     --admin-surface-soft: oklch(0.983 0.004 247.858);
@@ -24,11 +26,14 @@
     --admin-placeholder: oklch(0.555 0.013 264.695);
     --admin-focus: oklch(0.546 0.245 262.881);
     --admin-focus-soft: color-mix(in oklab, var(--admin-focus) 14%, white);
-    --admin-shadow: 0 16px 34px -24px rgb(15 23 42 / 0.38), 0 8px 18px -16px rgb(15 23 42 / 0.22);
+    --admin-shadow:
+        0 16px 34px -24px rgb(15 23 42 / 0.38),
+        0 8px 18px -16px rgb(15 23 42 / 0.22);
     --admin-field-bg: oklch(0.945 0.01 247.858);
     --admin-field-bg-hover: oklch(0.932 0.012 247.858);
     --admin-field-border: oklch(0.655 0.022 255.508);
-    --admin-field-shadow: inset 0 1px 0 rgb(255 255 255 / 0.82), 0 1px 2px rgb(15 23 42 / 0.08);
+    --admin-field-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.82), 0 1px 2px rgb(15 23 42 / 0.08);
 }
 
 .public-article-prose {
@@ -144,10 +149,82 @@
     border-radius: 1.25rem;
 }
 
+.home-testimonial-carousel {
+    overflow: hidden;
+    mask-image: linear-gradient(
+        90deg,
+        transparent,
+        black 5%,
+        black 95%,
+        transparent
+    );
+}
+
+.home-testimonial-track {
+    display: flex;
+    gap: 1.25rem;
+    width: max-content;
+    animation: home-testimonial-scroll
+        calc(max(var(--testimonial-count), 1) * 6s) linear infinite;
+    will-change: transform;
+}
+
+.home-testimonial-carousel:hover .home-testimonial-track {
+    animation-play-state: paused;
+}
+
+.home-testimonial-card {
+    width: min(100vw - 2rem, 20rem);
+    flex: 0 0 auto;
+}
+
+@media (width >= 48rem) {
+    .home-testimonial-card {
+        width: min(calc((100vw - 6rem - 1.25rem) / 2), 24rem);
+    }
+}
+
+@media (width >= 80rem) {
+    .home-testimonial-card {
+        width: calc((min(100vw, 80rem) - 4rem - 2.5rem) / 3);
+        max-width: 24.5rem;
+    }
+}
+
+@keyframes home-testimonial-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(calc(-50% - 0.625rem));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-testimonial-track {
+        animation: none;
+    }
+
+    .home-testimonial-carousel {
+        overflow-x: auto;
+        mask-image: none;
+    }
+}
+
 .admin-shell {
     background:
-        radial-gradient(circle at top left, rgb(59 130 246 / 0.08), transparent 24rem),
-        linear-gradient(180deg, oklch(0.938 0.012 247.858) 0%, var(--admin-page-bg) 18rem, oklch(0.972 0.004 247.858) 100%);
+        radial-gradient(
+            circle at top left,
+            rgb(59 130 246 / 0.08),
+            transparent 24rem
+        ),
+        linear-gradient(
+            180deg,
+            oklch(0.938 0.012 247.858) 0%,
+            var(--admin-page-bg) 18rem,
+            oklch(0.972 0.004 247.858) 100%
+        );
     color: var(--admin-text);
 }
 
@@ -170,12 +247,20 @@
 }
 
 .admin-shell .admin-page-shell .border-gray-100,
-.admin-shell .admin-page-shell .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+.admin-shell
+    .admin-page-shell
+    .divide-gray-100
+    > :not([hidden])
+    ~ :not([hidden]) {
     border-color: color-mix(in oklab, var(--admin-border) 72%, white);
 }
 
 .admin-shell .admin-page-shell .border-gray-200,
-.admin-shell .admin-page-shell .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+.admin-shell
+    .admin-page-shell
+    .divide-gray-200
+    > :not([hidden])
+    ~ :not([hidden]) {
     border-color: var(--admin-border);
 }
 
@@ -209,11 +294,19 @@
     box-shadow: var(--admin-shadow);
 }
 
-.admin-shell .admin-page-shell input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.admin-shell
+    .admin-page-shell
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+        [type="color"]
+    ),
 .admin-shell .admin-page-shell select,
 .admin-shell .admin-page-shell textarea {
     border-color: var(--admin-field-border);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-field-bg) 82%, white), var(--admin-field-bg));
+    background: linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--admin-field-bg) 82%, white),
+        var(--admin-field-bg)
+    );
     color: var(--admin-text);
     box-shadow: var(--admin-field-shadow);
 }
@@ -223,27 +316,43 @@
     color: var(--admin-placeholder);
 }
 
-.admin-shell .admin-page-shell input:hover:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.admin-shell
+    .admin-page-shell
+    input:hover:not([type="checkbox"]):not([type="radio"]):not(
+        [type="range"]
+    ):not([type="color"]),
 .admin-shell .admin-page-shell select:hover,
 .admin-shell .admin-page-shell textarea:hover {
     border-color: color-mix(in oklab, var(--admin-field-border) 80%, black);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-field-bg-hover) 80%, white), var(--admin-field-bg-hover));
+    background: linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--admin-field-bg-hover) 80%, white),
+        var(--admin-field-bg-hover)
+    );
 }
 
-.admin-shell .admin-page-shell input:focus:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+.admin-shell
+    .admin-page-shell
+    input:focus:not([type="checkbox"]):not([type="radio"]):not(
+        [type="range"]
+    ):not([type="color"]),
 .admin-shell .admin-page-shell select:focus,
 .admin-shell .admin-page-shell textarea:focus {
     border-color: var(--admin-focus);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-focus) 7%, white), color-mix(in oklab, var(--admin-field-bg) 92%, white));
+    background: linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--admin-focus) 7%, white),
+        color-mix(in oklab, var(--admin-field-bg) 92%, white)
+    );
     box-shadow: 0 0 0 3px var(--admin-focus-soft);
     outline: none;
 }
 
-.admin-shell .admin-page-shell input[type='file'] {
+.admin-shell .admin-page-shell input[type="file"] {
     padding: 0.3rem;
 }
 
-.admin-shell .admin-page-shell input[type='file']::file-selector-button {
+.admin-shell .admin-page-shell input[type="file"]::file-selector-button {
     margin-right: 0.85rem;
     border: 1px solid color-mix(in oklab, var(--admin-field-border) 82%, white);
     border-radius: 0.55rem;
@@ -254,14 +363,14 @@
     font-weight: 600;
 }
 
-.admin-shell .admin-page-shell input[type='checkbox'],
-.admin-shell .admin-page-shell input[type='radio'] {
+.admin-shell .admin-page-shell input[type="checkbox"],
+.admin-shell .admin-page-shell input[type="radio"] {
     border-color: var(--admin-field-border);
     background-color: var(--admin-field-bg);
 }
 
-.admin-shell .admin-page-shell input[type='checkbox']:focus,
-.admin-shell .admin-page-shell input[type='radio']:focus {
+.admin-shell .admin-page-shell input[type="checkbox"]:focus,
+.admin-shell .admin-page-shell input[type="radio"]:focus {
     box-shadow: 0 0 0 3px var(--admin-focus-soft);
 }
 
@@ -277,7 +386,11 @@
     margin-bottom: 0.85rem;
     border: 1px solid var(--admin-border);
     border-radius: 0.85rem;
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(241 245 249 / 0.95));
+    background: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 0.98),
+        rgb(241 245 249 / 0.95)
+    );
     padding: 0.55rem;
     box-shadow: 0 10px 22px -20px rgb(15 23 42 / 0.45);
 }
@@ -308,8 +421,14 @@
     min-height: 22rem;
     border-radius: 0.5rem;
     border: 1px solid var(--admin-field-border);
-    background: linear-gradient(180deg, color-mix(in oklab, var(--admin-field-bg) 74%, white), var(--admin-field-bg));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.92), 0 10px 25px -24px rgb(15 23 42 / 0.4);
+    background: linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--admin-field-bg) 74%, white),
+        var(--admin-field-bg)
+    );
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.92),
+        0 10px 25px -24px rgb(15 23 42 / 0.4);
     padding: 0.875rem 1rem;
 }
 
@@ -322,7 +441,9 @@
     outline: 2px solid transparent;
     outline-offset: 2px;
     border-color: var(--admin-focus);
-    box-shadow: 0 0 0 3px var(--admin-focus-soft), 0 16px 30px -26px rgb(15 23 42 / 0.5);
+    box-shadow:
+        0 0 0 3px var(--admin-focus-soft),
+        0 16px 30px -26px rgb(15 23 42 / 0.5);
 }
 
 .admin-rich-editor trix-editor [data-trix-placeholder]::before {
@@ -504,7 +625,9 @@
     line-height: 1.75;
 }
 
-.admin-rich-editor trix-editor.editorial-editor.trix-content p:first-of-type::first-letter,
+.admin-rich-editor
+    trix-editor.editorial-editor.trix-content
+    p:first-of-type::first-letter,
 .admin-page-preview.editorial-preview p:first-of-type::first-letter {
     float: left;
     margin-right: 0.6rem;

@@ -92,6 +92,67 @@ class Page extends Model
                 'secondary_cta_url' => '/donations',
                 'hero_image_alt' => 'Friends of the Deaf Foundation community members learning together.',
             ],
+            'analytics' => [
+                'eyebrow' => 'Impact Snapshot',
+                'title' => 'A quick look at the momentum building across learning, access, and community action.',
+                'intro' => 'Use these figures to show visitors the scale, consistency, and practical outcomes behind the work.',
+                'cta_label' => 'Browse Courses',
+                'cta_url' => '/learning',
+                'cards' => [
+                    [
+                        'value' => '12+',
+                        'label' => 'Learning pathways',
+                        'description' => 'Structured courses that help learners, families, and allies grow communication confidence.',
+                    ],
+                    [
+                        'value' => '350+',
+                        'label' => 'Learners engaged',
+                        'description' => 'People reached through practical education, coaching, and inclusive learning opportunities.',
+                    ],
+                    [
+                        'value' => '48',
+                        'label' => 'Community gatherings',
+                        'description' => 'Events and outreach moments that make belonging visible and participation easier.',
+                    ],
+                    [
+                        'value' => '24',
+                        'label' => 'Partner organisations',
+                        'description' => 'Trusted collaborators helping widen access, awareness, and long-term support systems.',
+                    ],
+                    [
+                        'value' => '90%',
+                        'label' => 'Returning participants',
+                        'description' => 'A sign that programs feel useful, welcoming, and worth coming back to.',
+                    ],
+                    [
+                        'value' => '7 days',
+                        'label' => 'Average response time',
+                        'description' => 'Timely follow-up that helps people move from interest to practical next steps quickly.',
+                    ],
+                ],
+            ],
+            'testimonials' => [
+                'eyebrow' => 'Community Voices',
+                'title' => 'Stories from learners, families, and partners who have experienced the work up close.',
+                'intro' => 'This strip should feel conversational and lived-in, giving visitors proof that support is practical and personal.',
+                'items' => [
+                    [
+                        'quote' => 'The learning sessions gave our family a clearer way to communicate at home. We felt supported from the very first class.',
+                        'name' => 'Parent participant',
+                        'role' => 'Family learning program',
+                    ],
+                    [
+                        'quote' => 'I joined for the course content and stayed for the sense of community. It feels like a place where access is taken seriously.',
+                        'name' => 'Adult learner',
+                        'role' => 'Community education cohort',
+                    ],
+                    [
+                        'quote' => 'Their team made it easier for our organisation to think more carefully about inclusion and communication access.',
+                        'name' => 'Programme partner',
+                        'role' => 'Accessibility collaboration',
+                    ],
+                ],
+            ],
             'identity' => [
                 'mission_title' => 'Mission',
                 'mission_body' => 'We bridge communication gaps and expand opportunity for deaf and hard-of-hearing people through education, advocacy, direct services, and community support.',
@@ -543,7 +604,35 @@ class Page extends Model
 
     public static function mergeHomeSections(?array $sections): array
     {
-        return array_replace_recursive(static::defaultHomeSections(), is_array($sections) ? $sections : []);
+        $sections = is_array($sections) ? $sections : [];
+        $defaults = static::defaultHomeSections();
+        $merged = array_replace_recursive($defaults, $sections);
+
+        $analyticsCards = is_array(data_get($sections, 'analytics.cards')) ? data_get($sections, 'analytics.cards') : [];
+        $normalizedAnalyticsCards = [];
+
+        foreach ($defaults['analytics']['cards'] as $index => $defaultCard) {
+            $normalizedAnalyticsCards[] = array_replace($defaultCard, is_array($analyticsCards[$index] ?? null) ? $analyticsCards[$index] : []);
+        }
+
+        $testimonialItems = is_array(data_get($sections, 'testimonials.items')) ? data_get($sections, 'testimonials.items') : null;
+        $testimonialTemplate = [
+            'quote' => '',
+            'name' => '',
+            'role' => '',
+        ];
+
+        $normalizedTestimonials = $testimonialItems !== null
+            ? array_values(array_map(
+                fn ($item) => array_replace($testimonialTemplate, is_array($item) ? $item : []),
+                $testimonialItems
+            ))
+            : $defaults['testimonials']['items'];
+
+        $merged['analytics']['cards'] = $normalizedAnalyticsCards;
+        $merged['testimonials']['items'] = $normalizedTestimonials;
+
+        return $merged;
     }
 
     public static function mergeAboutSections(?array $sections): array
