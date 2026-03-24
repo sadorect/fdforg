@@ -11,8 +11,12 @@ use Illuminate\View\View;
 
 class UserDashboardController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if ($request->user()->canAccessAdminPanel()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $enrollments = Enrollment::with(['course', 'course.instructor'])
             ->where('user_id', $request->user()->id)
             ->orderByDesc('enrolled_at')
@@ -28,8 +32,12 @@ class UserDashboardController extends Controller
         return view('dashboard.index', compact('enrollments', 'stats'));
     }
 
-    public function payments(Request $request): View
+    public function payments(Request $request): View|RedirectResponse
     {
+        if ($request->user()->canAccessAdminPanel()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $pendingEnrollments = Enrollment::with('course')
             ->where('user_id', $request->user()->id)
             ->where('payment_status', 'pending')
@@ -39,8 +47,12 @@ class UserDashboardController extends Controller
         return view('dashboard.payments', compact('pendingEnrollments'));
     }
 
-    public function showPayment(Request $request, Enrollment $enrollment): View
+    public function showPayment(Request $request, Enrollment $enrollment): View|RedirectResponse
     {
+        if ($request->user()->canAccessAdminPanel()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $this->authorizeEnrollment($request, $enrollment);
 
         $enrollment->load('course');
@@ -54,6 +66,12 @@ class UserDashboardController extends Controller
 
     public function refreshPaymentCaptcha(Request $request, Enrollment $enrollment): JsonResponse
     {
+        if ($request->user()->canAccessAdminPanel()) {
+            return response()->json([
+                'redirect' => route('admin.dashboard'),
+            ], 409);
+        }
+
         $this->authorizeEnrollment($request, $enrollment);
 
         MathCaptcha::regenerate($request, 'payment_action');
@@ -65,6 +83,10 @@ class UserDashboardController extends Controller
 
     public function processPayment(Request $request, Enrollment $enrollment): RedirectResponse
     {
+        if ($request->user()->canAccessAdminPanel()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $this->authorizeEnrollment($request, $enrollment);
 
         $request->validate([
@@ -98,6 +120,10 @@ class UserDashboardController extends Controller
 
     public function continueLearning(Request $request, Enrollment $enrollment): RedirectResponse
     {
+        if ($request->user()->canAccessAdminPanel()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $this->authorizeEnrollment($request, $enrollment);
 
         if ($enrollment->payment_status !== 'paid') {

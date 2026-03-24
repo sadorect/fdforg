@@ -35,12 +35,15 @@ class AppServiceProvider extends ServiceProvider
             });
         }
 
-        View::composer('layouts.app', function ($view) {
+        View::composer(['layouts.app', 'pages.*', 'blog.*', 'courses.*', 'events.*', 'gallery.*', 'errors.*'], function ($view) {
             $totalSiteVisits = 0;
             $publishedPageSlugs = [];
             $siteSettings = [];
             $showMediaSidebar = false;
             $routeName = request()->route()?->getName();
+            $authenticatedUser = request()->user();
+            $dashboardRouteName = $authenticatedUser?->canAccessAdminPanel() ? 'admin.dashboard' : 'dashboard';
+            $dashboardUrl = route($dashboardRouteName);
 
             if (Schema::hasTable('visit_logs')) {
                 $totalSiteVisits = Cache::remember('analytics.total_site_visits', now()->addMinutes(5), function () {
@@ -140,6 +143,7 @@ class AppServiceProvider extends ServiceProvider
                 'siteFooter' => [
                     'tagline' => $siteSettings['footer_tagline'] ?? 'Bridging the communication gap and empowering the deaf community through education, advocacy, and support.',
                     'phone' => $siteSettings['footer_phone'] ?? '(555) 123-4567',
+                    'whatsapp' => $siteSettings['footer_whatsapp'] ?? '',
                     'email' => $siteSettings['footer_email'] ?? 'info@friendsofthedeaffoundation.org',
                     'address' => $siteSettings['footer_address'] ?? '',
                 ],
@@ -148,6 +152,8 @@ class AppServiceProvider extends ServiceProvider
                     'title' => $siteSettings['media_sidebar_title'] ?? 'Media Streams',
                     'channels' => $mediaSidebarChannels,
                 ],
+                'dashboardRouteName' => $dashboardRouteName,
+                'dashboardUrl' => $dashboardUrl,
             ]);
         });
     }

@@ -4,48 +4,59 @@
 @section('description', 'Join upcoming Friends of the Deaf Foundation events, workshops, and community gatherings.')
 
 @section('content')
-<section class="relative overflow-hidden bg-slate-950 text-white">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.17),_transparent_28rem)]"></div>
-    <div class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,_rgba(14,116,144,0.14),_transparent)]"></div>
+<section class="relative isolate overflow-hidden bg-slate-950 text-white">
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-950 via-slate-950 to-cyan-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.18),transparent_30%)]"></div>
+    <div class="absolute -left-24 top-10 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl"></div>
+    <div class="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl"></div>
 
-    <div class="relative mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8 lg:py-24">
-        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(18rem,0.8fr)] lg:items-end">
+    <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
             <div class="max-w-3xl">
-                <p class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
+                <p class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-cyan-100 backdrop-blur">
                     Community Events
                 </p>
-                <h1 class="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">
+                <h1 class="mt-6 text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
                     Community gatherings, trainings, and outreach opportunities that turn inclusion into shared experience.
                 </h1>
-                <p class="mt-5 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
+                <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-200 sm:text-xl">
                     Explore upcoming events from Friends of the Deaf Foundation, from learning sessions and workshops to public conversations and community gatherings that strengthen access, confidence, and belonging.
                 </p>
 
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <a href="#upcoming-events" class="inline-flex items-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                    <a href="#upcoming-events" class="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
                         Browse upcoming events
                     </a>
-                    <a href="{{ route('events.calendar') }}" class="inline-flex items-center rounded-full border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/14">
+                    <a href="{{ route('events.calendar') }}" class="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
                         View calendar
                     </a>
                 </div>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Upcoming events</p>
-                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($eventStats['upcoming_count']) }}</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-300">Upcoming sessions, workshops, and public gatherings on the calendar.</p>
-                </div>
-                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Open registration</p>
-                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($eventStats['open_registration_count']) }}</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-300">Events with registration currently open for participants and supporters.</p>
-                </div>
-                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Virtual access</p>
-                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($eventStats['virtual_count']) }}</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-300">Online events that make participation easier across distance and schedules.</p>
+            <div class="relative">
+                <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/40 backdrop-blur">
+                    <div class="flex h-[32rem] flex-col justify-between bg-gradient-to-br from-cyan-400/20 via-slate-900 to-sky-950 p-8">
+                        <div class="max-w-md rounded-3xl border border-white/10 bg-slate-950/70 p-6 backdrop-blur">
+                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-100">Participation snapshot</p>
+                            <p class="mt-3 text-lg font-semibold text-white">Plan ahead for gatherings, registrations, and ways to show up in community.</p>
+                            <p class="mt-3 text-sm leading-7 text-slate-300">The events page keeps upcoming opportunities visible so learners, families, supporters, and partners can engage with the mission in real time.</p>
+                        </div>
+
+                        <div class="grid gap-4 md:grid-cols-3">
+                            <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Upcoming Events</p>
+                                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($eventStats['upcoming_count']) }}</p>
+                            </article>
+                            <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Open Registration</p>
+                                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($eventStats['open_registration_count']) }}</p>
+                            </article>
+                            <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Virtual Access</p>
+                                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($eventStats['virtual_count']) }}</p>
+                            </article>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -216,24 +227,6 @@
             </div>
 
             <aside class="space-y-5">
-                <div class="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">How to use this page</p>
-                    <div class="mt-5 space-y-4">
-                        <div class="rounded-2xl border border-white bg-white p-4">
-                            <h3 class="text-base font-semibold text-slate-900">Plan ahead</h3>
-                            <p class="mt-2 text-sm leading-7 text-slate-600">Use the calendar view if you want a quick scan of what is coming over the next few weeks.</p>
-                        </div>
-                        <div class="rounded-2xl border border-white bg-white p-4">
-                            <h3 class="text-base font-semibold text-slate-900">Register early</h3>
-                            <p class="mt-2 text-sm leading-7 text-slate-600">If a session needs registration, reserve your place early so capacity does not close before you are ready.</p>
-                        </div>
-                        <div class="rounded-2xl border border-white bg-white p-4">
-                            <h3 class="text-base font-semibold text-slate-900">Share widely</h3>
-                            <p class="mt-2 text-sm leading-7 text-slate-600">Events become stronger when families, allies, and community supporters know they are welcome too.</p>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_20px_45px_-34px_rgba(15,23,42,0.28)]">
                     <div class="flex items-center justify-between gap-3">
                         <div>

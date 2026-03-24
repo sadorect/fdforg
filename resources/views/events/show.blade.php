@@ -24,9 +24,15 @@
         <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
             <div class="max-w-4xl">
                 <div class="flex flex-wrap items-center gap-3 text-sm text-slate-300">
-                    <a href="{{ route('events.index') }}" class="font-semibold text-cyan-100 transition hover:text-white"><- Back to all events</a>
-                    <span class="h-1 w-1 rounded-full bg-cyan-300"></span>
-                    <span>{{ $statusLabel }}</span>
+                    <a href="{{ route('events.index') }}" class="detail-link detail-link--glass detail-link--compact">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 10H4m6-6-6 6 6 6" />
+                            </svg>
+                        </span>
+                        Back to all events
+                    </a>
+                    <span class="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">{{ $statusLabel }}</span>
                 </div>
 
                 <div class="mt-6 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.18em]">
@@ -215,7 +221,14 @@
                     <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Keep participating</p>
                     <h2 class="mt-2 text-3xl font-bold text-slate-900">More events connected to the mission</h2>
                 </div>
-                <a href="{{ route('events.index') }}" class="text-sm font-semibold text-cyan-700 transition hover:text-cyan-900">View all events</a>
+                <a href="{{ route('events.index') }}" class="detail-link">
+                    <span class="detail-link__icon" aria-hidden="true">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                        </svg>
+                    </span>
+                    View all events
+                </a>
             </div>
 
             <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">

@@ -197,6 +197,112 @@
             border-top: 1px solid #cbd5e1;
         }
 
+        .detail-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(8, 145, 178, 0.14);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 254, 255, 0.92));
+            padding: 0.72rem 1rem 0.72rem 1.1rem;
+            color: #155e75;
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            text-decoration: none;
+            box-shadow: 0 12px 30px -24px rgba(8, 145, 178, 0.45);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+        }
+
+        .detail-link:hover {
+            transform: translateY(-1px);
+            border-color: rgba(14, 116, 144, 0.25);
+            color: #0f172a;
+            box-shadow: 0 20px 44px -28px rgba(8, 145, 178, 0.35);
+        }
+
+        .detail-link__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.9rem;
+            height: 1.9rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #cffafe, #a5f3fc);
+            color: #0f766e;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            flex-shrink: 0;
+        }
+
+        .detail-link--dark {
+            border-color: rgba(15, 23, 42, 0.22);
+            background: linear-gradient(135deg, #082f49, #0f172a 58%, #164e63);
+            color: #f8fafc;
+            box-shadow: 0 20px 46px -26px rgba(8, 47, 73, 0.55);
+        }
+
+        .detail-link--dark:hover {
+            border-color: rgba(165, 243, 252, 0.42);
+            color: #ffffff;
+            box-shadow: 0 24px 54px -28px rgba(8, 47, 73, 0.65);
+        }
+
+        .detail-link--dark .detail-link__icon {
+            background: linear-gradient(135deg, #67e8f9, #a5f3fc);
+            color: #0f172a;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .detail-link--accent {
+            border-color: rgba(103, 232, 249, 0.38);
+            background: linear-gradient(135deg, #67e8f9, #22d3ee 52%, #a5f3fc);
+            color: #082f49;
+            box-shadow: 0 20px 46px -26px rgba(6, 182, 212, 0.45);
+        }
+
+        .detail-link--accent:hover {
+            border-color: rgba(165, 243, 252, 0.65);
+            color: #0f172a;
+            box-shadow: 0 24px 54px -28px rgba(6, 182, 212, 0.52);
+        }
+
+        .detail-link--accent .detail-link__icon {
+            background: rgba(255, 255, 255, 0.78);
+            color: #0f172a;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        .detail-link--glass {
+            border-color: rgba(255, 255, 255, 0.16);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(15, 23, 42, 0.22));
+            color: #f8fafc;
+            box-shadow: 0 18px 40px -28px rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(14px);
+        }
+
+        .detail-link--glass:hover {
+            border-color: rgba(165, 243, 252, 0.42);
+            color: #ffffff;
+            box-shadow: 0 22px 48px -28px rgba(15, 23, 42, 0.58);
+        }
+
+        .detail-link--glass .detail-link__icon {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(103, 232, 249, 0.3));
+            color: #cffafe;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .detail-link--compact {
+            gap: 0.58rem;
+            padding: 0.58rem 0.82rem 0.58rem 0.92rem;
+            font-size: 0.8125rem;
+        }
+
+        .detail-link--compact .detail-link__icon {
+            width: 1.65rem;
+            height: 1.65rem;
+        }
+
         .site-header {
             transition: box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
         }
@@ -303,7 +409,7 @@
                         <a href="{{ route('donations') }}" class="{{ $ctaLinkClasses }} {{ $donationsActive ? 'bg-blue-700' : '' }}" data-nav-item="donations" data-nav-active="{{ $donationsActive ? 'true' : 'false' }}" @if($donationsActive) aria-current="page" @endif>Donate</a>
                     @endif
                     @auth
-                        <a href="{{ route('dashboard') }}" class="{{ $quickLinkBase }} {{ $dashboardActive ? $quickLinkActive : $quickLinkInactive }}" @if($dashboardActive) aria-current="page" @endif>Dashboard</a>
+                        <a href="{{ $dashboardUrl }}" class="{{ $quickLinkBase }} {{ $dashboardActive ? $quickLinkActive : $quickLinkInactive }}" @if($dashboardActive) aria-current="page" @endif>{{ $dashboardRouteName === 'admin.dashboard' ? 'Admin Dashboard' : 'Dashboard' }}</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-900">Logout</button>
@@ -355,7 +461,7 @@
                         <div>
                             <p class="px-1 text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-slate-500">Account</p>
                             <div class="mt-2 grid gap-2">
-                                <a href="{{ route('dashboard') }}" class="{{ $mobileNavBase }} {{ $dashboardActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($dashboardActive) aria-current="page" @endif>Dashboard</a>
+                                <a href="{{ $dashboardUrl }}" class="{{ $mobileNavBase }} {{ $dashboardActive ? $mobileNavActive : $mobileNavInactive }}" data-mobile-nav-link="true" @if($dashboardActive) aria-current="page" @endif>{{ $dashboardRouteName === 'admin.dashboard' ? 'Admin Dashboard' : 'Dashboard' }}</a>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="block w-full rounded-2xl border border-slate-300 px-4 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Logout</button>
@@ -399,12 +505,12 @@
     <!-- Footer -->
     <footer class="bg-slate-950 text-slate-100">
         <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-            <div class="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.35fr,0.8fr,0.85fr]">
-                <div class="space-y-5">
+            <div class="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(11rem,0.52fr)_minmax(13rem,0.62fr)] xl:grid-cols-[minmax(0,1.2fr)_minmax(12rem,0.55fr)_minmax(14rem,0.7fr)]">
+                <div class="min-w-0 space-y-5">
                     <p class="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-cyan-300">Friends of The Deaf Int'l Foundation</p>
                     <div class="space-y-3">
-                        <h3 class="max-w-2xl text-2xl font-semibold tracking-tight text-white sm:text-3xl">Building access, dignity, and belonging for deaf communities.</h3>
-                        <p class="max-w-2xl text-sm leading-7 text-slate-300">
+                        <h3 class="max-w-xl text-2xl font-semibold tracking-tight text-white sm:text-3xl">Building access, dignity, and belonging for deaf communities.</h3>
+                        <p class="max-w-xl text-sm leading-7 text-slate-300">
                             {{ $siteFooter['tagline'] ?: 'We support deaf children, adults, families, and allies through education, advocacy, inclusive programs, and community-centered opportunities.' }}
                         </p>
                     </div>
@@ -418,39 +524,37 @@
                     </div>
                 </div>
 
-                <div class="grid gap-8 sm:grid-cols-2 lg:col-span-2">
-                    <div>
-                        <h4 class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">Explore</h4>
-                        <ul class="mt-4 space-y-3 text-sm text-slate-300">
-                            @if(!empty($publishedPageSlugs['about']))
-                                <li><a href="{{ route('about') }}" class="transition hover:text-white">About</a></li>
-                            @endif
-                            @if(!empty($publishedPageSlugs['programs']))
-                                <li><a href="{{ route('programs') }}" class="transition hover:text-white">Programs</a></li>
-                            @endif
-                            <li><a href="{{ route('events.index') }}" class="transition hover:text-white">Events</a></li>
-                            <li><a href="{{ route('blog.index') }}" class="transition hover:text-white">Blog</a></li>
-                            <li><a href="{{ route('gallery') }}" class="transition hover:text-white">Gallery</a></li>
-                            <li><a href="{{ route('courses.index') }}" class="transition hover:text-white">Learning</a></li>
-                        </ul>
-                    </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">Explore</h4>
+                    <ul class="mt-4 space-y-3 text-sm text-slate-300">
+                        @if(!empty($publishedPageSlugs['about']))
+                            <li><a href="{{ route('about') }}" class="transition hover:text-white">About</a></li>
+                        @endif
+                        @if(!empty($publishedPageSlugs['programs']))
+                            <li><a href="{{ route('programs') }}" class="transition hover:text-white">Programs</a></li>
+                        @endif
+                        <li><a href="{{ route('events.index') }}" class="transition hover:text-white">Events</a></li>
+                        <li><a href="{{ route('blog.index') }}" class="transition hover:text-white">Blog</a></li>
+                        <li><a href="{{ route('gallery') }}" class="transition hover:text-white">Gallery</a></li>
+                        <li><a href="{{ route('courses.index') }}" class="transition hover:text-white">Learning</a></li>
+                    </ul>
+                </div>
 
-                    <div>
-                        <h4 class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">Connect</h4>
-                        <div class="mt-4 space-y-3 text-sm text-slate-300">
-                            @if(!empty($siteFooter['phone']))
-                                <p><span class="font-semibold text-slate-100">Phone:</span> {{ $siteFooter['phone'] }}</p>
-                            @endif
-                            @if(!empty($siteFooter['email']))
-                                <p><span class="font-semibold text-slate-100">Email:</span> {{ $siteFooter['email'] }}</p>
-                            @endif
-                            @if(!empty($siteFooter['address']))
-                                <p><span class="font-semibold text-slate-100">Address:</span> {{ $siteFooter['address'] }}</p>
-                            @endif
-                            @if(!empty($publishedPageSlugs['accessibility']))
-                                <p><a href="{{ route('accessibility') }}" class="transition hover:text-white">Accessibility</a></p>
-                            @endif
-                        </div>
+                <div class="min-w-0">
+                    <h4 class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">Connect</h4>
+                    <div class="mt-4 space-y-3 text-sm text-slate-300">
+                        @if(!empty($siteFooter['phone']))
+                            <p><span class="font-semibold text-slate-100">Phone:</span> {{ $siteFooter['phone'] }}</p>
+                        @endif
+                        @if(!empty($siteFooter['email']))
+                            <p><span class="font-semibold text-slate-100">Email:</span> {{ $siteFooter['email'] }}</p>
+                        @endif
+                        @if(!empty($siteFooter['address']))
+                            <p><span class="font-semibold text-slate-100">Address:</span> {{ $siteFooter['address'] }}</p>
+                        @endif
+                        @if(!empty($publishedPageSlugs['accessibility']))
+                            <p><a href="{{ route('accessibility') }}" class="transition hover:text-white">Accessibility</a></p>
+                        @endif
                     </div>
                 </div>
             </div>

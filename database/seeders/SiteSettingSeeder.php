@@ -13,6 +13,7 @@ class SiteSettingSeeder extends Seeder
             'site_name' => 'Friends of the Deaf Foundation',
             'footer_tagline' => 'Bridging the communication gap and empowering the deaf community through education, advocacy, and support.',
             'footer_phone' => '(555) 123-4567',
+            'footer_whatsapp' => '',
             'footer_email' => 'info@friendsofthedeaffoundation.org',
             'footer_address' => '',
             'site_logo_path' => '',

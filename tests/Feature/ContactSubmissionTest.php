@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Page;
+use App\Models\SiteSetting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -73,5 +74,23 @@ class ContactSubmissionTest extends TestCase
 
         $response->assertRedirect('/contact');
         $response->assertSessionHasErrors('captcha_answer');
+    }
+
+    public function test_contact_page_renders_whatsapp_path_when_number_is_configured(): void
+    {
+        SiteSetting::setValue('footer_whatsapp', '2348012345678');
+
+        Page::create([
+            'title' => 'Contact',
+            'slug' => 'contact',
+            'content' => '<p>Contact page content.</p>',
+            'status' => 'published',
+        ]);
+
+        $this->get(route('contact'))
+            ->assertOk()
+            ->assertSee('Open WhatsApp')
+            ->assertSee('https://wa.me/2348012345678', false)
+            ->assertSee('data-whatsapp-submit', false);
     }
 }

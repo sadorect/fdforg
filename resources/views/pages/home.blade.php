@@ -151,9 +151,13 @@
                     <p class="mt-4 text-lg leading-8 text-slate-600">{{ $analytics['intro'] }}</p>
                 </div>
 
-                <a href="{{ $analyticsCtaUrl }}" class="inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-cyan-800">
+                <a href="{{ $analyticsCtaUrl }}" class="detail-link detail-link--dark">
+                    <span class="detail-link__icon" aria-hidden="true">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                        </svg>
+                    </span>
                     {{ $analytics['cta_label'] ?: 'Browse Courses' }}
-                    <span aria-hidden="true">-></span>
                 </a>
             </div>
 
@@ -270,9 +274,13 @@
                     <h3 class="mt-3 text-2xl font-bold leading-tight text-slate-900">{{ $service['title'] }}</h3>
                     <p class="mt-4 text-base leading-7 text-slate-600">{{ $service['description'] }}</p>
                     @if(! empty($service['cta_label']) && ! empty($service['cta_url']))
-                        <a href="{{ $service['cta_url'] }}" class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-700 transition hover:text-cyan-900">
+                        <a href="{{ $service['cta_url'] }}" class="detail-link mt-6">
+                            <span class="detail-link__icon" aria-hidden="true">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                </svg>
+                            </span>
                             {{ $service['cta_label'] }}
-                            <span aria-hidden="true">-></span>
                         </a>
                     @endif
                 </article>
@@ -422,7 +430,14 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">Learn</p>
                         <h3 class="mt-2 text-2xl font-bold text-slate-900">Featured Learning</h3>
                     </div>
-                    <a href="{{ route('courses.index') }}" class="text-sm font-semibold text-cyan-700 hover:text-cyan-900">View all</a>
+                    <a href="{{ route('courses.index') }}" class="detail-link">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        View all
+                    </a>
                 </div>
 
                 <div class="mt-6 space-y-4">
@@ -436,7 +451,14 @@
                             </div>
                             <h4 class="mt-4 text-lg font-semibold text-slate-900">{{ $course->title }}</h4>
                             <p class="mt-2 text-sm leading-6 text-slate-600">{{ \Illuminate\Support\Str::limit($course->description, 110) }}</p>
-                            <a href="{{ route('courses.show', $course->slug) }}" class="mt-4 inline-flex text-sm font-semibold text-cyan-700 hover:text-cyan-900">View details -></a>
+                            <a href="{{ route('courses.show', $course->slug) }}" class="detail-link mt-4">
+                                <span class="detail-link__icon" aria-hidden="true">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                    </svg>
+                                </span>
+                                View details
+                            </a>
                         </article>
                     @empty
                         <div class="rounded-3xl bg-white p-6 text-sm text-slate-500 ring-1 ring-slate-200">Learning paths will be published soon.</div>
@@ -450,7 +472,14 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">Connect</p>
                         <h3 class="mt-2 text-2xl font-bold text-slate-900">Upcoming Events</h3>
                     </div>
-                    <a href="{{ route('events.index') }}" class="text-sm font-semibold text-cyan-700 hover:text-cyan-900">View all</a>
+                    <a href="{{ route('events.index') }}" class="detail-link">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        View all
+                    </a>
                 </div>
 
                 <div class="mt-6 space-y-4">
@@ -462,7 +491,14 @@
                                 <p>{{ $event->getFormattedDateRange() }}</p>
                                 <p class="mt-1">{{ $event->getDisplayLocation() }}</p>
                             </div>
-                            <a href="{{ route('events.show', $event->slug) }}" class="mt-4 inline-flex text-sm font-semibold text-cyan-700 hover:text-cyan-900">Event details -></a>
+                            <a href="{{ route('events.show', $event->slug) }}" class="detail-link mt-4">
+                                <span class="detail-link__icon" aria-hidden="true">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                    </svg>
+                                </span>
+                                Event details
+                            </a>
                         </article>
                     @empty
                         <div class="rounded-3xl bg-white p-6 text-sm text-slate-500 ring-1 ring-slate-200">More community events will be announced soon.</div>
@@ -476,7 +512,14 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">Read</p>
                         <h3 class="mt-2 text-2xl font-bold text-slate-900">Stories and Resources</h3>
                     </div>
-                    <a href="{{ route('blog.index') }}" class="text-sm font-semibold text-cyan-700 hover:text-cyan-900">Visit blog</a>
+                    <a href="{{ route('blog.index') }}" class="detail-link">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        Visit blog
+                    </a>
                 </div>
 
                 <div class="mt-6 space-y-4">
@@ -486,7 +529,14 @@
                             <h4 class="mt-3 text-lg font-semibold text-slate-900">{{ $post->title }}</h4>
                             <p class="mt-2 text-sm leading-6 text-slate-600">{{ \Illuminate\Support\Str::limit($post->excerpt, 110) }}</p>
                             <p class="mt-4 text-xs uppercase tracking-[0.2em] text-slate-500">{{ $post->published_at?->format('M j, Y') }}</p>
-                            <a href="{{ route('blog.show', $post) }}" class="mt-4 inline-flex text-sm font-semibold text-cyan-700 hover:text-cyan-900">Read article -></a>
+                            <a href="{{ route('blog.show', $post) }}" class="detail-link mt-4">
+                                <span class="detail-link__icon" aria-hidden="true">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                    </svg>
+                                </span>
+                                Read article
+                            </a>
                         </article>
                     @empty
                         <div class="rounded-3xl bg-white p-6 text-sm text-slate-500 ring-1 ring-slate-200">Fresh stories and resources will appear here soon.</div>
@@ -532,9 +582,13 @@
                     <h3 class="text-xl font-bold text-slate-900">{{ $item['title'] }}</h3>
                     <p class="mt-4 text-sm leading-7 text-slate-600">{{ $item['description'] }}</p>
                     @if(! empty($item['cta_label']) && ! empty($item['cta_url']))
-                        <a href="{{ $item['cta_url'] }}" class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-700 hover:text-cyan-900">
+                        <a href="{{ $item['cta_url'] }}" class="detail-link mt-6">
+                            <span class="detail-link__icon" aria-hidden="true">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                </svg>
+                            </span>
                             {{ $item['cta_label'] }}
-                            <span aria-hidden="true">-></span>
                         </a>
                     @endif
                 </article>

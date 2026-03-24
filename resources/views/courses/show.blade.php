@@ -96,7 +96,7 @@
                                 @if($firstAccessibleLesson)
                                     <a href="{{ route('courses.lessons.show', [$course->slug, $firstAccessibleLesson->slug]) }}" class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50">Continue Learning</a>
                                 @else
-                                    <a href="{{ route('dashboard') }}" class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50">Open Dashboard</a>
+                                    <a href="{{ $dashboardUrl }}" class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50">{{ $dashboardRouteName === 'admin.dashboard' ? 'Open Admin Dashboard' : 'Open Dashboard' }}</a>
                                 @endif
                                 @if($currentEnrollment->payment_status === 'pending')
                                     <a href="{{ route('dashboard.pay', $currentEnrollment->id) }}" class="rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">Complete Payment</a>

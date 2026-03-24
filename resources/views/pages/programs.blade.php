@@ -132,9 +132,13 @@
                     <h3 class="mt-3 text-2xl font-bold leading-tight text-slate-900">{{ $item['title'] }}</h3>
                     <p class="mt-4 text-base leading-7 text-slate-600">{{ $item['description'] }}</p>
                     @if(! empty($item['cta_label']) && ! empty($item['cta_url']))
-                        <a href="{{ $item['cta_url'] }}" class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-700 transition hover:text-cyan-900">
+                        <a href="{{ $item['cta_url'] }}" class="detail-link mt-6">
+                            <span class="detail-link__icon" aria-hidden="true">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                </svg>
+                            </span>
                             {{ $item['cta_label'] }}
-                            <span aria-hidden="true">-></span>
                         </a>
                     @endif
                 </article>
@@ -179,7 +183,14 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">Learn</p>
                         <h3 class="mt-2 text-2xl font-bold text-slate-900">Featured Learning</h3>
                     </div>
-                    <a href="{{ route('courses.index') }}" class="text-sm font-semibold text-cyan-700 hover:text-cyan-900">View all</a>
+                    <a href="{{ route('courses.index') }}" class="detail-link">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        View all
+                    </a>
                 </div>
 
                 <div class="mt-6 space-y-4">
@@ -193,7 +204,14 @@
                             </div>
                             <h4 class="mt-4 text-lg font-semibold text-slate-900">{{ $course->title }}</h4>
                             <p class="mt-2 text-sm leading-6 text-slate-600">{{ \Illuminate\Support\Str::limit($course->description, 110) }}</p>
-                            <a href="{{ route('courses.show', $course->slug) }}" class="mt-4 inline-flex text-sm font-semibold text-cyan-700 hover:text-cyan-900">View details -></a>
+                            <a href="{{ route('courses.show', $course->slug) }}" class="detail-link mt-4">
+                                <span class="detail-link__icon" aria-hidden="true">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                    </svg>
+                                </span>
+                                View details
+                            </a>
                         </article>
                     @empty
                         <div class="rounded-3xl bg-slate-50 p-6 text-sm text-slate-500 ring-1 ring-slate-200">Learning paths will appear here as they are published.</div>
@@ -207,7 +225,14 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">Connect</p>
                         <h3 class="mt-2 text-2xl font-bold text-slate-900">Upcoming Events</h3>
                     </div>
-                    <a href="{{ route('events.index') }}" class="text-sm font-semibold text-cyan-700 hover:text-cyan-900">View all</a>
+                    <a href="{{ route('events.index') }}" class="detail-link">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        View all
+                    </a>
                 </div>
 
                 <div class="mt-6 space-y-4">
@@ -219,7 +244,14 @@
                                 <p>{{ $event->getFormattedDateRange() }}</p>
                                 <p class="mt-1">{{ $event->getDisplayLocation() }}</p>
                             </div>
-                            <a href="{{ route('events.show', $event->slug) }}" class="mt-4 inline-flex text-sm font-semibold text-cyan-700 hover:text-cyan-900">Event details -></a>
+                            <a href="{{ route('events.show', $event->slug) }}" class="detail-link mt-4">
+                                <span class="detail-link__icon" aria-hidden="true">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                    </svg>
+                                </span>
+                                Event details
+                            </a>
                         </article>
                     @empty
                         <div class="rounded-3xl bg-slate-50 p-6 text-sm text-slate-500 ring-1 ring-slate-200">More program-related events will appear here soon.</div>

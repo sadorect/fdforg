@@ -40,11 +40,15 @@
 
     $email = $siteFooter['email'] ?? null;
     $phone = $siteFooter['phone'] ?? null;
+    $whatsapp = $siteFooter['whatsapp'] ?? null;
     $address = $siteFooter['address'] ?? null;
     $emailLink = filled($email) ? 'mailto:' . $email : null;
     $phoneDigits = preg_replace('/[^0-9+]/', '', (string) $phone);
     $phoneLink = filled($phoneDigits) ? 'tel:' . $phoneDigits : null;
     $smsLink = filled($phoneDigits) ? 'sms:' . $phoneDigits : null;
+    $whatsappDisplay = filled($whatsapp) ? $whatsapp : $phone;
+    $whatsappDigits = preg_replace('/\D+/', '', (string) $whatsappDisplay);
+    $whatsappLink = filled($whatsappDigits) ? 'https://wa.me/' . $whatsappDigits : null;
 @endphp
 
 <section class="relative isolate overflow-hidden bg-slate-950 text-white">
@@ -80,7 +84,7 @@
                 <div class="mt-8 max-w-2xl rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
                     <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200">Best use of this page</p>
                     <p class="mt-3 text-base leading-7 text-slate-200">
-                        Use this page for support questions, donor follow-up, partnership inquiries, and general outreach. The contact form stays active, but email and phone options are available too.
+                        Use this page for support questions, donor follow-up, partnership inquiries, and general outreach. The contact form stays active, and email, phone, and WhatsApp options are available too.
                     </p>
                 </div>
             </div>
@@ -141,9 +145,13 @@
                     <h3 class="mt-6 text-2xl font-bold leading-tight text-slate-900">{{ $item['title'] }}</h3>
                     <p class="mt-4 text-base leading-7 text-slate-600">{{ $item['description'] }}</p>
                     @if(! empty($item['cta_label']) && ! empty($item['cta_url']))
-                        <a href="{{ $item['cta_url'] }}" class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-700 transition hover:text-cyan-900">
+                        <a href="{{ $item['cta_url'] }}" class="detail-link mt-6">
+                            <span class="detail-link__icon" aria-hidden="true">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                </svg>
+                            </span>
                             {{ $item['cta_label'] }}
-                            <span aria-hidden="true">-></span>
                         </a>
                     @endif
                 </article>
@@ -193,6 +201,17 @@
                     </article>
 
                     <article class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">WhatsApp</p>
+                        <p class="mt-3 text-sm leading-7 text-slate-600">Best for quick chat-based follow-up. We can open a WhatsApp message directly from this page with your contact details and message prefilled.</p>
+                        <p class="mt-4 text-lg font-semibold text-slate-900">{{ $whatsappDisplay ?: 'Set a WhatsApp number or footer phone in Site Settings.' }}</p>
+                        @if($whatsappLink)
+                            <a href="{{ $whatsappLink }}" target="_blank" rel="noopener" class="mt-5 inline-flex rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                                Open WhatsApp
+                            </a>
+                        @endif
+                    </article>
+
+                    <article class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
                         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700">{{ $contactInfo['address_title'] ?: 'Address' }}</p>
                         <p class="mt-3 text-sm leading-7 text-slate-600">{{ $contactInfo['address_body'] }}</p>
                         <div class="mt-4 text-base leading-8 text-slate-900">
@@ -228,7 +247,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('contact.submit') }}" class="mt-6 space-y-5 rounded-[1.75rem] border border-cyan-100 bg-white p-6 shadow-sm">
+                <form method="POST" action="{{ route('contact.submit') }}" class="mt-6 space-y-5 rounded-[1.75rem] border border-cyan-100 bg-white p-6 shadow-sm" @if($whatsappLink) data-whatsapp-form data-whatsapp-base-url="{{ $whatsappLink }}" @endif>
                     @csrf
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
@@ -274,9 +293,21 @@
                         @error('captcha_answer') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    <button type="submit" class="w-full rounded-full bg-cyan-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-cyan-700">
-                        Send Message
-                    </button>
+                    @if($whatsappLink)
+                        <p class="text-sm leading-6 text-slate-600">Prefer WhatsApp? Use the button below and we will open WhatsApp with your message ready for review and sending.</p>
+                        <p class="hidden text-sm font-medium text-red-600" data-whatsapp-status aria-live="polite"></p>
+                    @endif
+
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <button type="submit" class="w-full rounded-full bg-cyan-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-cyan-700">
+                            Send Message
+                        </button>
+                        @if($whatsappLink)
+                            <button type="button" class="w-full rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700" data-whatsapp-submit>
+                                Send via WhatsApp
+                            </button>
+                        @endif
+                    </div>
                 </form>
             </div>
         </div>
@@ -299,3 +330,58 @@
 </section>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('[data-whatsapp-form]').forEach(function (form) {
+            const trigger = form.querySelector('[data-whatsapp-submit]');
+            const statusNode = form.querySelector('[data-whatsapp-status]');
+            const messageInput = form.querySelector('#message');
+
+            if (!trigger) {
+                return;
+            }
+
+            trigger.addEventListener('click', function () {
+                const baseUrl = form.getAttribute('data-whatsapp-base-url');
+
+                if (!baseUrl) {
+                    return;
+                }
+
+                if (statusNode) {
+                    statusNode.classList.add('hidden');
+                    statusNode.textContent = '';
+                }
+
+                if (messageInput && !messageInput.value.trim()) {
+                    if (statusNode) {
+                        statusNode.textContent = 'Add a message before continuing to WhatsApp.';
+                        statusNode.classList.remove('hidden');
+                    }
+
+                    messageInput.focus();
+                    return;
+                }
+
+                const name = form.querySelector('#name')?.value.trim() || '';
+                const email = form.querySelector('#email')?.value.trim() || '';
+                const message = messageInput?.value.trim() || '';
+                const lines = ['Hello, I am reaching out from the website contact page.'];
+
+                if (name) {
+                    lines.push('Name: ' + name);
+                }
+
+                if (email) {
+                    lines.push('Email: ' + email);
+                }
+
+                lines.push('Message:');
+                lines.push(message);
+
+                window.open(baseUrl + '?text=' + encodeURIComponent(lines.join('\n')), '_blank', 'noopener');
+            });
+        });
+    </script>
+@endpush

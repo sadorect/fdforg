@@ -479,6 +479,7 @@ class PublicNavigationAndHeroTest extends TestCase
     {
         SiteSetting::setValue('footer_email', 'hello@example.org');
         SiteSetting::setValue('footer_phone', '+1234567890');
+        SiteSetting::setValue('footer_whatsapp', '1234567890');
         SiteSetting::setValue('footer_address', "123 Support Lane\nLagos");
 
         Page::create([
@@ -537,6 +538,9 @@ class PublicNavigationAndHeroTest extends TestCase
             ->assertSee('Send us a message')
             ->assertSee('hello@example.org')
             ->assertSee('+1234567890')
+            ->assertSee('1234567890')
+            ->assertSee('https://wa.me/1234567890', false)
+            ->assertSee('data-whatsapp-submit', false)
             ->assertSee('123 Support Lane')
             ->assertSee('storage/pages/contact-hero.jpg', false);
     }

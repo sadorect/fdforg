@@ -3,25 +3,81 @@
 @section('title', 'Register for ' . $event->title)
 
 @section('content')
+@php
+    $availableSlots = $event->max_attendees ? max($event->max_attendees - $event->registrations_count, 0) : null;
+@endphp
 <section class="relative overflow-hidden bg-slate-950 text-white">
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.16),_transparent_28rem)]"></div>
     <div class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,_rgba(14,116,144,0.14),_transparent)]"></div>
 
-    <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-18">
-        <div class="max-w-3xl">
-            <a href="{{ route('events.show', $event->slug) }}" class="inline-flex text-sm font-semibold text-cyan-100 transition hover:text-white"><- Back to event details</a>
-            <p class="mt-6 inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
-                Event Registration
-            </p>
-            <h1 class="mt-5 text-4xl font-bold tracking-tight text-white md:text-5xl">Reserve your place for {{ $event->title }}</h1>
-            <p class="mt-4 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
-                Complete the short form below so the team can register your attendance, plan capacity well, and send you the right confirmation details.
-            </p>
+    <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.05fr),22rem] lg:items-end">
+            <div class="max-w-3xl">
+                <a href="{{ route('events.show', $event->slug) }}" class="detail-link detail-link--glass detail-link--compact">
+                    <span class="detail-link__icon" aria-hidden="true">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 10H4m6-6-6 6 6 6" />
+                        </svg>
+                    </span>
+                    Back to event details
+                </a>
+                <p class="mt-6 inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
+                    Event Registration
+                </p>
+                <h1 class="mt-5 text-4xl font-bold tracking-tight text-white md:text-5xl">Reserve your place for {{ $event->title }}</h1>
+                <p class="mt-4 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
+                    Complete the short form below so the team can register your attendance, plan capacity well, and send you the right confirmation details.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <a href="#registration-form" class="detail-link detail-link--accent">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        Complete registration
+                    </a>
+                    <a href="{{ route('events.show', $event->slug) }}" class="detail-link detail-link--glass">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        Review event details
+                    </a>
+                </div>
+            </div>
+
+            <div class="rounded-[1.75rem] border border-white/12 bg-white/8 p-6 backdrop-blur-sm">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Event summary</p>
+                <div class="mt-5 space-y-4 text-sm text-slate-200">
+                    <div class="rounded-2xl border border-white/10 bg-black/10 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Date</p>
+                        <p class="mt-2 font-semibold text-white">{{ $event->getFormattedDateRange() }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-black/10 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Location</p>
+                        <p class="mt-2 font-semibold text-white">{{ $event->getDisplayLocation() }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-black/10 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Availability</p>
+                        <p class="mt-2 font-semibold text-white">
+                            @if($availableSlots !== null)
+                                {{ $availableSlots }} spaces left
+                            @elseif($event->registration_required)
+                                Registration available
+                            @else
+                                Open attendance
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="bg-slate-50 py-12">
+<section id="registration-form" class="bg-slate-50 py-12">
     <div class="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr),20rem] lg:px-8">
         <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.32)] md:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4">
@@ -105,10 +161,6 @@
         </div>
 
         <aside class="space-y-5">
-            @php
-                $availableSlots = $event->max_attendees ? max($event->max_attendees - $event->registrations_count, 0) : null;
-            @endphp
-
             <div class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_20px_45px_-34px_rgba(15,23,42,0.28)]">
                 <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Event summary</p>
                 <dl class="mt-5 space-y-4 text-sm">

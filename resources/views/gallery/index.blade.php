@@ -4,45 +4,46 @@
 @section('description', 'Explore photos of Friends of the Deaf Foundation activities, events, and community moments.')
 
 @section('content')
-<section class="relative overflow-hidden bg-slate-950 text-white">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_28rem)]"></div>
-    <div class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,_rgba(14,116,144,0.15),_transparent)]"></div>
+<section class="relative isolate overflow-hidden bg-slate-950 text-white">
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-950 via-slate-950 to-cyan-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.18),transparent_30%)]"></div>
+    <div class="absolute -left-24 top-10 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl"></div>
+    <div class="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl"></div>
 
-    <div class="relative mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8 lg:py-24">
-        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(18rem,0.8fr)] lg:items-end">
+    <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
             <div class="max-w-3xl">
-                <p class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
+                <p class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-cyan-100 backdrop-blur">
                     Visual Archive
                 </p>
-                <h1 class="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">
+                <h1 class="mt-6 text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
                     Images that show the people, programs, and public moments behind the mission.
                 </h1>
-                <p class="mt-5 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
+                <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-200 sm:text-xl">
                     The gallery captures workshops, outreach, advocacy, and community life at Friends of the Deaf Foundation so visitors can see the mission expressed in real spaces, real relationships, and real participation.
                 </p>
 
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <a href="#gallery-grid" class="inline-flex items-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                    <a href="#gallery-grid" class="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
                         Explore the gallery
                     </a>
-                    <a href="{{ route('events.index') }}" class="inline-flex items-center rounded-full border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/14">
+                    <a href="{{ route('events.index') }}" class="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
                         See events
                     </a>
                 </div>
-
-                <div class="mt-8 grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-2xl border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
-                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100">Collections</p>
-                        <p class="mt-2 text-2xl font-bold text-white">{{ number_format($galleryStats['collection_count']) }}</p>
-                    </div>
-                    <div class="rounded-2xl border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
-                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100">Images</p>
-                        <p class="mt-2 text-2xl font-bold text-white">{{ number_format($galleryStats['image_count']) }}</p>
-                    </div>
-                    <div class="rounded-2xl border border-white/12 bg-white/8 p-4 backdrop-blur-sm">
-                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100">Featured</p>
-                        <p class="mt-2 text-2xl font-bold text-white">{{ number_format($galleryStats['featured_count']) }}</p>
-                    </div>
+                <div class="mt-10 grid gap-4 md:grid-cols-3">
+                    <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Collections</p>
+                        <p class="mt-2 text-3xl font-bold text-white">{{ number_format($galleryStats['collection_count']) }}</p>
+                    </article>
+                    <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Images</p>
+                        <p class="mt-2 text-3xl font-bold text-white">{{ number_format($galleryStats['image_count']) }}</p>
+                    </article>
+                    <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Featured</p>
+                        <p class="mt-2 text-3xl font-bold text-white">{{ number_format($galleryStats['featured_count']) }}</p>
+                    </article>
                 </div>
             </div>
 
@@ -50,7 +51,7 @@
                 <div
                     id="gallery-hero-slider"
                     data-slides='@json($heroSlides)'
-                    class="relative overflow-hidden rounded-[2rem] border border-white/12 bg-white/8 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)] backdrop-blur-sm"
+                    class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/40 backdrop-blur"
                     role="region"
                     aria-roledescription="carousel"
                     aria-label="Gallery highlights"
@@ -235,7 +236,7 @@
 
 <section id="gallery-grid" class="bg-white py-16">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr),21rem]">
+        <div>
             <div>
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div>
@@ -312,7 +313,12 @@
                     <div class="mt-8 rounded-[1.75rem] border border-slate-200 bg-slate-50 px-8 py-12 text-center">
                         <p class="text-lg font-semibold text-slate-900">The spotlight collection matches this filter.</p>
                         <p class="mt-3 text-sm leading-7 text-slate-600">Clear the current filter if you want to see more collections alongside it.</p>
-                        <a href="{{ route('gallery') }}" class="mt-6 inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                        <a href="{{ route('gallery') }}" class="detail-link mt-6">
+                            <span class="detail-link__icon" aria-hidden="true">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                </svg>
+                            </span>
                             View all collections
                         </a>
                     </div>
@@ -324,7 +330,7 @@
                 @endif
             </div>
 
-            <aside class="space-y-5">
+            <div class="mt-10 grid gap-5 xl:grid-cols-[minmax(0,1.15fr),minmax(0,0.85fr)]">
                 <div class="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
                     <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Why this matters</p>
                     <div class="mt-5 space-y-4">
@@ -358,7 +364,7 @@
                         </a>
                     </div>
                 </div>
-            </aside>
+            </div>
         </div>
     </div>
 </section>

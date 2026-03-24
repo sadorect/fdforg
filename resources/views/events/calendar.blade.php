@@ -7,21 +7,66 @@
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.16),_transparent_28rem)]"></div>
     <div class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,_rgba(14,116,144,0.14),_transparent)]"></div>
 
-    <div class="relative mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8 lg:py-22">
-        <div class="max-w-3xl">
-            <a href="{{ route('events.index') }}" class="inline-flex text-sm font-semibold text-cyan-100 transition hover:text-white"><- Back to all events</a>
-            <p class="mt-6 inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
-                Calendar View
-            </p>
-            <h1 class="mt-5 text-4xl font-bold tracking-tight text-white md:text-5xl">See the upcoming event calendar at a glance.</h1>
-            <p class="mt-4 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
-                This view helps you track upcoming workshops, gatherings, and public activities month by month, so it is easier to plan ahead and share dates with others.
-            </p>
+    <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.1fr),22rem] lg:items-end">
+            <div class="max-w-3xl">
+                <a href="{{ route('events.index') }}" class="detail-link detail-link--glass detail-link--compact">
+                    <span class="detail-link__icon" aria-hidden="true">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 10H4m6-6-6 6 6 6" />
+                        </svg>
+                    </span>
+                    Back to all events
+                </a>
+                <p class="mt-6 inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
+                    Calendar View
+                </p>
+                <h1 class="mt-5 text-4xl font-bold tracking-tight text-white md:text-5xl">See the upcoming event calendar at a glance.</h1>
+                <p class="mt-4 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
+                    This view helps you track upcoming workshops, gatherings, and public activities month by month, so it is easier to plan ahead and share dates with others.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <a href="#calendar-months" class="detail-link detail-link--accent">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        Browse the calendar
+                    </a>
+                    <a href="{{ route('events.index') }}" class="detail-link detail-link--glass">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
+                        Return to event cards
+                    </a>
+                </div>
+            </div>
+
+            <div class="rounded-[1.75rem] border border-white/12 bg-white/8 p-6 backdrop-blur-sm">
+                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">At a glance</p>
+                <div class="mt-5 grid gap-4 text-sm text-slate-200 sm:grid-cols-2 lg:grid-cols-1">
+                    <div class="rounded-2xl border border-white/10 bg-black/10 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Months covered</p>
+                        <p class="mt-2 text-2xl font-semibold text-white">{{ count($eventsByMonth) }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-black/10 p-4">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Published events</p>
+                        <p class="mt-2 text-2xl font-semibold text-white">{{ $events->count() }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-black/10 p-4 sm:col-span-2 lg:col-span-1">
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">What this helps with</p>
+                        <p class="mt-2 leading-7 text-slate-200">Review dates in sequence, spot busy months, and quickly move into registration or event details from the schedule.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="bg-white py-16">
+<section id="calendar-months" class="bg-white py-16">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         @if($events->count() > 0)
             <div class="space-y-10">

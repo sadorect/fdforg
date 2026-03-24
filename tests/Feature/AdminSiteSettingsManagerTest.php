@@ -33,12 +33,14 @@ class AdminSiteSettingsManagerTest extends TestCase
             ->set('site_name', 'FDF Nigeria')
             ->set('footer_tagline', 'Accessibility for all.')
             ->set('footer_phone', '+2348011111111')
+            ->set('footer_whatsapp', '2348012222222')
             ->set('footer_email', 'support@fdf.ng')
             ->set('footer_address', 'Lagos, Nigeria')
             ->call('saveFooterSettings')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('site_settings', ['key' => 'site_name', 'value' => 'FDF Nigeria']);
+        $this->assertDatabaseHas('site_settings', ['key' => 'footer_whatsapp', 'value' => '2348012222222']);
         $this->assertDatabaseHas('site_settings', ['key' => 'footer_email', 'value' => 'support@fdf.ng']);
     }
 

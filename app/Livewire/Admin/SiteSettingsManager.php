@@ -19,6 +19,8 @@ class SiteSettingsManager extends AdminComponent
 
     public $footer_phone = '';
 
+    public $footer_whatsapp = '';
+
     public $footer_email = '';
 
     public $footer_address = '';
@@ -94,6 +96,7 @@ class SiteSettingsManager extends AdminComponent
         $this->site_name = SiteSetting::getValue('site_name', 'Friends of the Deaf Foundation') ?? '';
         $this->footer_tagline = SiteSetting::getValue('footer_tagline', '') ?? '';
         $this->footer_phone = SiteSetting::getValue('footer_phone', '') ?? '';
+        $this->footer_whatsapp = SiteSetting::getValue('footer_whatsapp', '') ?? '';
         $this->footer_email = SiteSetting::getValue('footer_email', '') ?? '';
         $this->footer_address = SiteSetting::getValue('footer_address', '') ?? '';
         $this->logo_path = SiteSetting::getValue('site_logo_path', '') ?? '';
@@ -183,6 +186,7 @@ class SiteSettingsManager extends AdminComponent
             'site_name' => ['required', 'string', 'max:255'],
             'footer_tagline' => ['nullable', 'string', 'max:1000'],
             'footer_phone' => ['nullable', 'string', 'max:255'],
+            'footer_whatsapp' => ['nullable', 'string', 'max:255'],
             'footer_email' => ['nullable', 'email', 'max:255'],
             'footer_address' => ['nullable', 'string', 'max:1000'],
         ]);
@@ -190,6 +194,7 @@ class SiteSettingsManager extends AdminComponent
         SiteSetting::setValue('site_name', $validated['site_name']);
         SiteSetting::setValue('footer_tagline', $validated['footer_tagline'] ?? '');
         SiteSetting::setValue('footer_phone', $validated['footer_phone'] ?? '');
+        SiteSetting::setValue('footer_whatsapp', $validated['footer_whatsapp'] ?? '');
         SiteSetting::setValue('footer_email', $validated['footer_email'] ?? '');
         SiteSetting::setValue('footer_address', $validated['footer_address'] ?? '');
 

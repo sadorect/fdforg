@@ -1,48 +1,59 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="relative overflow-hidden bg-slate-950 text-white">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_28rem)]"></div>
-    <div class="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,_rgba(14,116,144,0.15),_transparent)]"></div>
+<section class="relative isolate overflow-hidden bg-slate-950 text-white">
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-950 via-slate-950 to-cyan-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.18),transparent_30%)]"></div>
+    <div class="absolute -left-24 top-10 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl"></div>
+    <div class="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-sky-400/10 blur-3xl"></div>
 
-    <div class="relative mx-auto max-w-7xl px-4 py-18 sm:px-6 lg:px-8 lg:py-24">
-        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(18rem,0.8fr)] lg:items-end">
+    <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
             <div class="max-w-3xl">
-                <p class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
+                <p class="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-cyan-100 backdrop-blur">
                     Resource Hub
                 </p>
-                <h1 class="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">
+                <h1 class="mt-6 text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">
                     Stories, guidance, and community updates that deepen deaf inclusion.
                 </h1>
-                <p class="mt-5 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
+                <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-200 sm:text-xl">
                     This space brings together practical insights, community stories, and updates from Friends of the Deaf Foundation so supporters, families, and allies can learn from the work as it unfolds.
                 </p>
 
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <a href="#latest-articles" class="inline-flex items-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                    <a href="#latest-articles" class="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200">
                         Browse latest insights
                     </a>
-                    <a href="{{ route('programs') }}" class="inline-flex items-center rounded-full border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/14">
+                    <a href="{{ route('programs') }}" class="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
                         Explore our programs
                     </a>
                 </div>
             </div>
 
-            <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Published articles</p>
-                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($blogStats['article_count']) }}</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-300">Mission-aligned stories, updates, and practical guidance.</p>
-                </div>
-                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Active topics</p>
-                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($blogStats['category_count']) }}</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-300">Organized themes to help readers find the right entry point.</p>
-                </div>
-                <div class="rounded-3xl border border-white/12 bg-white/8 p-5 backdrop-blur-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Contributor voices</p>
-                    <p class="mt-3 text-3xl font-bold text-white">{{ number_format($blogStats['author_count']) }}</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-300">Articles that carry lived context, updates, and organizational perspective.</p>
+            <div class="relative">
+                <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/40 backdrop-blur">
+                    <div class="flex h-[32rem] flex-col justify-between bg-gradient-to-br from-cyan-400/20 via-slate-900 to-sky-950 p-8">
+                        <div class="max-w-md rounded-3xl border border-white/10 bg-slate-950/70 p-6 backdrop-blur">
+                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-100">Resource signals</p>
+                            <p class="mt-3 text-lg font-semibold text-white">Stories, guidance, and updates shaped by community context.</p>
+                            <p class="mt-3 text-sm leading-7 text-slate-300">Use the hub to move from headline-level awareness into practical understanding, shared experiences, and informed action.</p>
+                        </div>
+
+                        <div class="grid gap-4 md:grid-cols-3">
+                            <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Published Articles</p>
+                                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($blogStats['article_count']) }}</p>
+                            </article>
+                            <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Active Topics</p>
+                                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($blogStats['category_count']) }}</p>
+                            </article>
+                            <article class="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                                <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Contributor Voices</p>
+                                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($blogStats['author_count']) }}</p>
+                            </article>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -130,7 +141,7 @@
 
 <section id="latest-articles" class="bg-white py-16">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr),21rem]">
+        <div>
             <div>
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div>
@@ -171,7 +182,14 @@
 
                                     <div class="mt-5 flex items-center justify-between gap-3 text-sm text-slate-500">
                                         <span>{{ $post->published_at?->format('M j, Y') }}</span>
-                                        <a href="{{ route('blog.show', $post) }}" class="font-semibold text-cyan-700 transition hover:text-cyan-900">Read article -></a>
+                                        <a href="{{ route('blog.show', $post) }}" class="detail-link">
+                                            <span class="detail-link__icon" aria-hidden="true">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                                </svg>
+                                            </span>
+                                            Read article
+                                        </a>
                                     </div>
                                 </div>
                             </article>
@@ -192,7 +210,7 @@
                 @endif
             </div>
 
-            <aside class="space-y-5">
+            <div class="mt-10 grid gap-5 {{ $popularPosts->count() > 0 ? 'xl:grid-cols-3' : 'xl:grid-cols-2' }}">
                 <div class="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6">
                     <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">What you will find here</p>
                     <div class="mt-5 space-y-4">
@@ -243,7 +261,7 @@
                         </a>
                     </div>
                 </div>
-            </aside>
+            </div>
         </div>
     </div>
 </section>

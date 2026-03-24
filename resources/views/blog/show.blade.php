@@ -9,9 +9,15 @@
         <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
             <div class="max-w-4xl">
                 <div class="flex flex-wrap items-center gap-3 text-sm text-slate-300">
-                    <a href="{{ route('blog.index') }}" class="font-semibold text-cyan-100 transition hover:text-white"><- Back to all insights</a>
-                    <span class="h-1 w-1 rounded-full bg-cyan-300"></span>
-                    <span>{{ $post->category->name ?? 'General' }}</span>
+                    <a href="{{ route('blog.index') }}" class="detail-link detail-link--glass detail-link--compact">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 10H4m6-6-6 6 6 6" />
+                            </svg>
+                        </span>
+                        Back to all insights
+                    </a>
+                    <span class="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">{{ $post->category->name ?? 'General' }}</span>
                 </div>
 
                 <h1 class="mt-6 text-4xl font-bold leading-tight text-white md:text-5xl">{{ $post->title }}</h1>
@@ -28,10 +34,20 @@
                 </div>
 
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <a href="{{ route('programs') }}" class="inline-flex items-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                    <a href="{{ route('programs') }}" class="detail-link detail-link--accent">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
                         Explore our programs
                     </a>
-                    <a href="{{ route('contact') }}" class="inline-flex items-center rounded-full border border-white/15 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/14">
+                    <a href="{{ route('contact') }}" class="detail-link detail-link--glass">
+                        <span class="detail-link__icon" aria-hidden="true">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                            </svg>
+                        </span>
                         Contact our team
                     </a>
                 </div>
@@ -135,7 +151,14 @@
                     <p class="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700">Keep reading</p>
                     <h2 class="mt-2 text-3xl font-bold text-slate-900">More stories connected to this work</h2>
                 </div>
-                <a href="{{ route('blog.index') }}" class="text-sm font-semibold text-cyan-700 transition hover:text-cyan-900">Visit the full blog</a>
+                <a href="{{ route('blog.index') }}" class="detail-link">
+                    <span class="detail-link__icon" aria-hidden="true">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                        </svg>
+                    </span>
+                    Visit the full blog
+                </a>
             </div>
 
             <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">

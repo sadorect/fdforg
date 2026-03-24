@@ -74,6 +74,29 @@ class UserAuthCaptchaTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'new-learner@example.com']);
     }
 
+    public function test_admin_user_logging_in_from_public_login_is_redirected_to_admin_dashboard(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin-login@example.com',
+            'is_admin' => true,
+            'password' => 'password',
+        ]);
+
+        $response = $this
+            ->withSession([
+                'user_auth_captcha_question' => '3 + 4',
+                'user_auth_captcha_answer' => 7,
+            ])
+            ->post('/login', [
+                'email' => $admin->email,
+                'password' => 'password',
+                'captcha_answer' => 7,
+            ]);
+
+        $response->assertRedirect('/admin/dashboard');
+        $this->assertAuthenticatedAs($admin);
+    }
+
     public function test_register_succeeds_with_valid_math_captcha(): void
     {
         $response = $this

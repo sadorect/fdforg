@@ -204,6 +204,12 @@
                         @error('footer_phone') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                     <div>
+                        <label class="text-sm font-medium text-gray-700">WhatsApp Number</label>
+                        <input wire:model="footer_whatsapp" type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" placeholder="2348012345678">
+                        <p class="mt-1 text-xs text-gray-500">Use international format. Leave blank to let the contact page reuse the footer phone number.</p>
+                        @error('footer_whatsapp') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
                         <label class="text-sm font-medium text-gray-700">Footer Email</label>
                         <input wire:model="footer_email" type="email" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                         @error('footer_email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror

@@ -19,6 +19,11 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    private function dashboardRouteFor(?User $user = null): string
+    {
+        return $user?->canAccessAdminPanel() ? 'admin.dashboard' : 'dashboard';
+    }
+
     public function refreshCaptcha(Request $request): JsonResponse
     {
         MathCaptcha::regenerate($request, 'user_auth');
@@ -31,7 +36,7 @@ class AuthController extends Controller
     public function showLoginForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route($this->dashboardRouteFor($request->user()));
         }
 
         MathCaptcha::ensure($request, 'user_auth');
@@ -68,13 +73,13 @@ class AuthController extends Controller
         $request->session()->regenerate();
         MathCaptcha::regenerate($request, 'user_auth');
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route($this->dashboardRouteFor($request->user())));
     }
 
     public function showRegisterForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route($this->dashboardRouteFor($request->user()));
         }
 
         MathCaptcha::ensure($request, 'user_auth');
@@ -125,7 +130,7 @@ class AuthController extends Controller
             ]);
         }
 
-        return redirect()->route('dashboard')->with('success', 'Account created successfully.');
+        return redirect()->route($this->dashboardRouteFor($request->user()))->with('success', 'Account created successfully.');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -140,7 +145,7 @@ class AuthController extends Controller
     public function showForgotPasswordForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route($this->dashboardRouteFor($request->user()));
         }
 
         MathCaptcha::ensure($request, 'user_auth');
@@ -180,7 +185,7 @@ class AuthController extends Controller
     public function showResetPasswordForm(Request $request, string $token): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route($this->dashboardRouteFor($request->user()));
         }
 
         MathCaptcha::ensure($request, 'user_auth');

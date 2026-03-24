@@ -19,7 +19,7 @@
                         <a href="{{ route('login') }}" class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50">Sign In to Enroll</a>
                         <a href="{{ route('register') }}" class="rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">Create Account</a>
                     @else
-                        <a href="{{ route('dashboard') }}" class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50">Open Learner Dashboard</a>
+                        <a href="{{ $dashboardUrl }}" class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50">{{ $dashboardRouteName === 'admin.dashboard' ? 'Open Admin Dashboard' : 'Open Learner Dashboard' }}</a>
                     @endguest
                     @if(!empty($publishedPageSlugs['programs']))
                         <a href="{{ route('programs') }}" class="rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">See Programs</a>
@@ -81,7 +81,12 @@
                                     <p class="mt-2 font-semibold text-white">{{ $featuredLearning->formatted_price }}</p>
                                 </div>
                             </div>
-                            <a href="{{ route('courses.show', $featuredLearning->slug) }}" class="inline-flex items-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-50">
+                            <a href="{{ route('courses.show', $featuredLearning->slug) }}" class="detail-link">
+                                <span class="detail-link__icon" aria-hidden="true">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                    </svg>
+                                </span>
                                 Explore learning path
                             </a>
                         </div>
@@ -175,7 +180,12 @@
                             @endif
                         </div>
 
-                        <a href="{{ route('courses.show', $course->slug) }}" class="inline-flex items-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
+                        <a href="{{ route('courses.show', $course->slug) }}" class="detail-link">
+                            <span class="detail-link__icon" aria-hidden="true">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 10h12M10 4l6 6-6 6" />
+                                </svg>
+                            </span>
                             View learning path
                         </a>
                     </div>
