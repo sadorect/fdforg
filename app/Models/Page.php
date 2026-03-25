@@ -140,16 +140,19 @@ class Page extends Model
                         'quote' => 'The learning sessions gave our family a clearer way to communicate at home. We felt supported from the very first class.',
                         'name' => 'Parent participant',
                         'role' => 'Family learning program',
+                        'image_path' => null,
                     ],
                     [
                         'quote' => 'I joined for the course content and stayed for the sense of community. It feels like a place where access is taken seriously.',
                         'name' => 'Adult learner',
                         'role' => 'Community education cohort',
+                        'image_path' => null,
                     ],
                     [
                         'quote' => 'Their team made it easier for our organisation to think more carefully about inclusion and communication access.',
                         'name' => 'Programme partner',
                         'role' => 'Accessibility collaboration',
+                        'image_path' => null,
                     ],
                 ],
             ],
@@ -620,6 +623,7 @@ class Page extends Model
             'quote' => '',
             'name' => '',
             'role' => '',
+            'image_path' => null,
         ];
 
         $normalizedTestimonials = $testimonialItems !== null

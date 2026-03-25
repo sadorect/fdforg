@@ -58,6 +58,10 @@ class PageManager extends AdminComponent
 
     public array $partnerLogoPathsToDelete = [];
 
+    public array $testimonialImageUploads = [];
+
+    public array $testimonialImagePathsToDelete = [];
+
     protected $paginationTheme = 'tailwind';
 
     public function mount(): void
@@ -131,6 +135,8 @@ class PageManager extends AdminComponent
             : Page::defaultContactSections();
         $this->partnerLogoUploads = [];
         $this->partnerLogoPathsToDelete = [];
+        $this->testimonialImageUploads = [];
+        $this->testimonialImagePathsToDelete = [];
         $this->showPreview = false;
         $this->showForm = true;
         $this->editing = true;
@@ -305,6 +311,7 @@ class PageManager extends AdminComponent
             'quote' => '',
             'name' => '',
             'role' => '',
+            'image_path' => null,
         ];
 
         $this->homeSections['testimonials']['items'] = array_values($items);
@@ -312,9 +319,29 @@ class PageManager extends AdminComponent
 
     public function removeHomepageTestimonial(int $index): void
     {
+        $imagePath = data_get($this->homeSections, "testimonials.items.{$index}.image_path");
+
+        if (filled($imagePath) && ! Str::startsWith($imagePath, ['http://', 'https://'])) {
+            $this->testimonialImagePathsToDelete[] = $imagePath;
+        }
+
+        unset($this->testimonialImageUploads[$index]);
         unset($this->homeSections['testimonials']['items'][$index]);
 
         $this->homeSections['testimonials']['items'] = array_values($this->homeSections['testimonials']['items'] ?? []);
+        $this->testimonialImageUploads = array_values($this->testimonialImageUploads);
+    }
+
+    public function removeHomepageTestimonialImage(int $index): void
+    {
+        $imagePath = data_get($this->homeSections, "testimonials.items.{$index}.image_path");
+
+        if (filled($imagePath) && ! Str::startsWith($imagePath, ['http://', 'https://'])) {
+            $this->testimonialImagePathsToDelete[] = $imagePath;
+        }
+
+        data_set($this->homeSections, "testimonials.items.{$index}.image_path", null);
+        unset($this->testimonialImageUploads[$index]);
     }
 
     public function cancel()
@@ -426,6 +453,7 @@ class PageManager extends AdminComponent
                 'featured_image' => $this->featured_image,
                 'sections' => $sections,
                 'partner_logo_uploads' => $this->partnerLogoUploads,
+                'testimonial_image_uploads' => $this->testimonialImageUploads,
             ],
             array_merge([
                 'title' => 'required|string|max:255',
@@ -480,6 +508,8 @@ class PageManager extends AdminComponent
             'contactSections',
             'partnerLogoUploads',
             'partnerLogoPathsToDelete',
+            'testimonialImageUploads',
+            'testimonialImagePathsToDelete',
         ]);
         $this->homeSections = Page::defaultHomeSections();
         $this->aboutSections = Page::defaultAboutSections();
@@ -548,6 +578,7 @@ class PageManager extends AdminComponent
             'sections.testimonials.items.*.quote' => 'nullable|string|max:500',
             'sections.testimonials.items.*.name' => 'nullable|string|max:120',
             'sections.testimonials.items.*.role' => 'nullable|string|max:120',
+            'sections.testimonials.items.*.image_path' => 'nullable|string|max:255',
             'sections.services.eyebrow' => 'nullable|string|max:80',
             'sections.services.title' => 'nullable|string|max:255',
             'sections.services.intro' => 'nullable|string|max:500',
@@ -581,6 +612,8 @@ class PageManager extends AdminComponent
             'sections.trust.partners.*.logo_path' => 'nullable|string|max:255',
             'partner_logo_uploads' => 'array',
             'partner_logo_uploads.*' => 'nullable|image|max:2048',
+            'testimonial_image_uploads' => 'array',
+            'testimonial_image_uploads.*' => 'nullable|image|max:2048',
             'sections.accessibility.eyebrow' => 'nullable|string|max:80',
             'sections.accessibility.title' => 'nullable|string|max:255',
             'sections.accessibility.body' => 'nullable|string|max:500',
@@ -818,12 +851,22 @@ class PageManager extends AdminComponent
 
         $testimonials = [];
 
-        foreach ($sections['testimonials']['items'] ?? [] as $testimonial) {
+        foreach ($sections['testimonials']['items'] ?? [] as $index => $testimonial) {
             $quote = trim((string) ($testimonial['quote'] ?? ''));
             $name = trim((string) ($testimonial['name'] ?? ''));
             $role = trim((string) ($testimonial['role'] ?? ''));
+            $imagePath = trim((string) ($testimonial['image_path'] ?? ''));
+            $upload = $this->testimonialImageUploads[$index] ?? null;
 
-            if ($quote === '' && $name === '' && $role === '') {
+            if ($upload) {
+                if (filled($imagePath) && ! Str::startsWith($imagePath, ['http://', 'https://'])) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+
+                $imagePath = $upload->store('pages/testimonials', 'public');
+            }
+
+            if ($quote === '' && $name === '' && $role === '' && $imagePath === '') {
                 continue;
             }
 
@@ -831,6 +874,7 @@ class PageManager extends AdminComponent
                 'quote' => $quote,
                 'name' => $name,
                 'role' => $role,
+                'image_path' => $imagePath ?: null,
             ];
         }
 
@@ -840,6 +884,16 @@ class PageManager extends AdminComponent
             if (
                 filled($path)
                 && ! in_array($path, array_column($partners, 'logo_path'), true)
+                && ! Str::startsWith($path, ['http://', 'https://'])
+            ) {
+                Storage::disk('public')->delete($path);
+            }
+        }
+
+        foreach (array_unique($this->testimonialImagePathsToDelete) as $path) {
+            if (
+                filled($path)
+                && ! in_array($path, array_column($testimonials, 'image_path'), true)
                 && ! Str::startsWith($path, ['http://', 'https://'])
             ) {
                 Storage::disk('public')->delete($path);

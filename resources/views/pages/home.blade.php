@@ -51,6 +51,25 @@
     );
     $testimonialItems = array_values($testimonials['items'] ?? []);
     $shouldLoopTestimonials = count($testimonialItems) > 1;
+    $resolveTestimonialImageUrl = function (?string $configured): ?string {
+        if (blank($configured)) {
+            return null;
+        }
+
+        return \Illuminate\Support\Str::startsWith($configured, ['http://', 'https://'])
+            ? $configured
+            : asset('storage/' . ltrim($configured, '/'));
+    };
+    $resolveTestimonialInitials = function (?string $name): string {
+        $parts = preg_split('/\s+/', trim((string) $name)) ?: [];
+        $initials = '';
+
+        foreach (array_slice(array_values(array_filter($parts)), 0, 2) as $part) {
+            $initials .= mb_strtoupper(mb_substr($part, 0, 1));
+        }
+
+        return $initials !== '' ? $initials : 'TM';
+    };
 @endphp
 
 <section class="relative isolate overflow-hidden bg-slate-950 text-white">
@@ -186,6 +205,10 @@
             <div class="home-testimonial-carousel mt-10" style="--testimonial-count: {{ max(count($testimonialItems), 1) }};">
                 <div class="home-testimonial-track">
                     @foreach($testimonialItems as $testimonial)
+                        @php
+                            $testimonialImageUrl = $resolveTestimonialImageUrl($testimonial['image_path'] ?? null);
+                            $testimonialInitials = $resolveTestimonialInitials($testimonial['name'] ?? null);
+                        @endphp
                         <article class="home-testimonial-card rounded-[2rem] border border-cyan-100 bg-white p-6 shadow-[0_18px_50px_-38px_rgba(15,23,42,0.35)]">
                             <div class="flex items-center gap-3 text-cyan-700">
                                 <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-100 text-lg font-bold">
@@ -198,15 +221,28 @@
                                 "{{ $testimonial['quote'] }}"
                             </blockquote>
 
-                            <div class="mt-8 border-t border-slate-200 pt-4">
-                                <p class="font-semibold text-slate-900">{{ $testimonial['name'] }}</p>
-                                <p class="mt-1 text-sm text-slate-500">{{ $testimonial['role'] }}</p>
+                            <div class="mt-8 flex items-center gap-4 border-t border-slate-200 pt-4">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-cyan-100 text-sm font-bold uppercase text-cyan-700 ring-1 ring-cyan-200">
+                                    @if($testimonialImageUrl)
+                                        <img src="{{ $testimonialImageUrl }}" alt="Portrait of {{ $testimonial['name'] }}" class="h-full w-full object-cover">
+                                    @else
+                                        <span>{{ $testimonialInitials }}</span>
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-semibold text-slate-900">{{ $testimonial['name'] }}</p>
+                                    <p class="mt-1 text-sm text-slate-500">{{ $testimonial['role'] }}</p>
+                                </div>
                             </div>
                         </article>
                     @endforeach
 
                     @if($shouldLoopTestimonials)
                         @foreach($testimonialItems as $testimonial)
+                            @php
+                                $testimonialImageUrl = $resolveTestimonialImageUrl($testimonial['image_path'] ?? null);
+                                $testimonialInitials = $resolveTestimonialInitials($testimonial['name'] ?? null);
+                            @endphp
                             <article aria-hidden="true" class="home-testimonial-card rounded-[2rem] border border-cyan-100 bg-white p-6 shadow-[0_18px_50px_-38px_rgba(15,23,42,0.35)]">
                                 <div class="flex items-center gap-3 text-cyan-700">
                                     <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-100 text-lg font-bold">
@@ -219,9 +255,18 @@
                                     "{{ $testimonial['quote'] }}"
                                 </blockquote>
 
-                                <div class="mt-8 border-t border-slate-200 pt-4">
-                                    <p class="font-semibold text-slate-900">{{ $testimonial['name'] }}</p>
-                                    <p class="mt-1 text-sm text-slate-500">{{ $testimonial['role'] }}</p>
+                                <div class="mt-8 flex items-center gap-4 border-t border-slate-200 pt-4">
+                                    <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-cyan-100 text-sm font-bold uppercase text-cyan-700 ring-1 ring-cyan-200">
+                                        @if($testimonialImageUrl)
+                                            <img src="{{ $testimonialImageUrl }}" alt="Portrait of {{ $testimonial['name'] }}" class="h-full w-full object-cover">
+                                        @else
+                                            <span>{{ $testimonialInitials }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-slate-900">{{ $testimonial['name'] }}</p>
+                                        <p class="mt-1 text-sm text-slate-500">{{ $testimonial['role'] }}</p>
+                                    </div>
                                 </div>
                             </article>
                         @endforeach

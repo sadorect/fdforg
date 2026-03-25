@@ -11,6 +11,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserDashboardController;
 use App\Livewire\Admin\AnalyticsDashboard;
 use App\Livewire\Admin\BlogManager;
@@ -31,8 +32,11 @@ use App\Livewire\Admin\SiteSettingsManager;
 use App\Livewire\Admin\UserManager;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\SiteSetting;
 use App\Support\AdminPermissions;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 // Admin Authentication Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -130,6 +134,9 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/profile', [UserProfileController::class, 'edit'])->name('dashboard.profile');
+    Route::put('/dashboard/profile', [UserProfileController::class, 'update'])->name('dashboard.profile.update');
+    Route::post('/dashboard/profile/defer', [UserProfileController::class, 'defer'])->name('dashboard.profile.defer');
     Route::get('/dashboard/payments', [UserDashboardController::class, 'payments'])->name('dashboard.payments');
     Route::get('/dashboard/enrollments/{enrollment}/continue', [UserDashboardController::class, 'continueLearning'])
         ->name('dashboard.enrollments.continue');
@@ -196,6 +203,46 @@ Route::post('/contact', [ContactController::class, 'submit'])->name('contact.sub
 Route::get('/programs-and-activities', [PageController::class, 'programs'])->name('programs');
 Route::get('/donations', [PageController::class, 'donations'])->name('donations');
 Route::get('/accessibility', [PageController::class, 'accessibility'])->name('accessibility');
+
+Route::get('/manifest.webmanifest', function () {
+    return response()
+        ->view('pwa.manifest', [], 200)
+        ->header('Content-Type', 'application/manifest+json');
+})->name('pwa.manifest');
+
+Route::get('/pwa-icon.svg', function () {
+    if (Schema::hasTable('site_settings')) {
+        $settings = SiteSetting::allAsKeyValue();
+        $iconPath = $settings['site_favicon_path'] ?? $settings['site_logo_path'] ?? null;
+
+        if (filled($iconPath) && Storage::disk('public')->exists($iconPath)) {
+            return response()->file(Storage::disk('public')->path($iconPath), [
+                'Cache-Control' => 'public, max-age=3600',
+            ]);
+        }
+    }
+
+    $svg = <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Friends of the Deaf Foundation</title>
+  <desc id="desc">Fallback app icon with the letters fdf.</desc>
+  <defs>
+    <linearGradient id="fdf-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#155e75"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#fdf-bg)"/>
+  <circle cx="392" cy="118" r="72" fill="#22d3ee" opacity="0.22"/>
+  <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-family="Fraunces, Georgia, serif" font-size="188" font-weight="700" letter-spacing="-12" fill="#f8fafc">fdf</text>
+</svg>
+SVG;
+
+    return response($svg, 200, [
+        'Content-Type' => 'image/svg+xml',
+        'Cache-Control' => 'public, max-age=3600',
+    ]);
+})->name('pwa.icon');
 
 // Dynamic Pages (for any additional pages) - Must be last
 Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');

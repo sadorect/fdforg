@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Support\AdminPermissions;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -24,6 +23,13 @@ class User extends Authenticatable
         'name',
         'email',
         'bio',
+        'learner_type',
+        'location',
+        'country',
+        'phone_number',
+        'organization_name',
+        'learner_profile_completed_at',
+        'learner_profile_deferred_at',
         'email_verified_at',
         'is_admin',
         'password',
@@ -49,8 +55,39 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'is_admin' => 'boolean',
+            'learner_profile_completed_at' => 'datetime',
+            'learner_profile_deferred_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public const LEARNER_TYPES = [
+        'educator',
+        'parent',
+        'guardian',
+        'student',
+        'explorer',
+    ];
+
+    public static function learnerTypeOptions(): array
+    {
+        return array_combine(self::LEARNER_TYPES, array_map(
+            static fn (string $type): string => ucfirst($type),
+            self::LEARNER_TYPES
+        ));
+    }
+
+    public function hasCompleteLearnerProfile(): bool
+    {
+        return filled($this->name)
+            && filled($this->learner_type)
+            && filled($this->location)
+            && filled($this->country);
+    }
+
+    public function shouldPromptForLearnerProfile(): bool
+    {
+        return ! $this->hasCompleteLearnerProfile();
     }
 
     public function roles(): BelongsToMany

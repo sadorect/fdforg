@@ -379,6 +379,18 @@
                                         @if(! empty($homeSections['testimonials']['items']))
                                             <div class="mt-4 grid gap-4 xl:grid-cols-2">
                                                 @foreach($homeSections['testimonials']['items'] as $index => $item)
+                                                    @php
+                                                        $testimonialImageUpload = $testimonialImageUploads[$index] ?? null;
+                                                        $testimonialImageUrl = null;
+
+                                                        if ($testimonialImageUpload) {
+                                                            $testimonialImageUrl = $testimonialImageUpload->temporaryUrl();
+                                                        } elseif (! empty($item['image_path'])) {
+                                                            $testimonialImageUrl = \Illuminate\Support\Str::startsWith($item['image_path'], ['http://', 'https://'])
+                                                                ? $item['image_path']
+                                                                : asset('storage/' . $item['image_path']);
+                                                        }
+                                                    @endphp
                                                     <div class="rounded-xl border border-gray-200 bg-white p-4" wire:key="homepage-testimonial-{{ $index }}">
                                                         <div class="flex flex-wrap items-start justify-between gap-3">
                                                             <p class="text-xs font-semibold uppercase tracking-wide text-cyan-700">Testimonial {{ $loop->iteration }}</p>
@@ -394,14 +406,46 @@
                                                         <label class="mt-3 block text-sm font-medium text-gray-700">Quote</label>
                                                         <textarea rows="4" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.items.{{ $index }}.quote"></textarea>
 
-                                                        <div class="mt-3 grid gap-3 md:grid-cols-2">
-                                                            <div>
+                                                        <div class="mt-4 grid gap-4 md:grid-cols-[96px,1fr]">
+                                                            <div class="space-y-3">
+                                                                <div class="mx-auto w-24 overflow-hidden rounded-full border border-dashed border-gray-300 bg-gray-50">
+                                                                    @if($testimonialImageUrl)
+                                                                        <img src="{{ $testimonialImageUrl }}" alt="{{ $item['name'] ?: 'Testimonial photo preview' }}" class="aspect-square w-full object-cover">
+                                                                    @else
+                                                                        <div class="flex aspect-square items-center justify-center px-4 text-center text-xs text-gray-400">
+                                                                            Upload a portrait
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+
+                                                                <input
+                                                                    type="file"
+                                                                    class="w-full rounded-md border-gray-300 bg-white text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                                                    wire:model="testimonialImageUploads.{{ $index }}"
+                                                                    accept="image/*"
+                                                                >
+                                                                @error('testimonial_image_uploads.' . $index) <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+
+                                                                @if(! empty($item['image_path']) || ! empty($testimonialImageUploads[$index]))
+                                                                    <button
+                                                                        type="button"
+                                                                        wire:click="removeHomepageTestimonialImage({{ $index }})"
+                                                                        class="text-xs font-medium text-red-600 hover:text-red-700"
+                                                                    >
+                                                                        Remove current image
+                                                                    </button>
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="space-y-3">
+                                                                <div>
                                                                 <label class="text-sm font-medium text-gray-700">Name</label>
                                                                 <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.items.{{ $index }}.name">
-                                                            </div>
-                                                            <div>
+                                                                </div>
+                                                                <div>
                                                                 <label class="text-sm font-medium text-gray-700">Role / Context</label>
                                                                 <input type="text" class="mt-1 w-full rounded-md border-gray-300 bg-gray-50 text-gray-900 focus:border-blue-500 focus:ring-blue-500" wire:model="homeSections.testimonials.items.{{ $index }}.role">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>

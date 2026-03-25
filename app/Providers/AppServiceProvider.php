@@ -128,6 +128,15 @@ class AppServiceProvider extends ServiceProvider
 
             $mediaSidebarChannels = app(SocialStatsService::class)->buildChannels($siteSettings);
 
+            $siteSocialLinks = array_values(array_filter([
+                ['label' => 'Facebook', 'url' => $siteSettings['social_facebook_url'] ?? null],
+                ['label' => 'Instagram', 'url' => $siteSettings['social_instagram_url'] ?? null],
+                ['label' => 'X / Twitter', 'url' => $siteSettings['social_x_url'] ?? null],
+                ['label' => 'YouTube', 'url' => $siteSettings['social_youtube_url'] ?? null],
+                ['label' => 'TikTok', 'url' => $siteSettings['social_tiktok_url'] ?? null],
+                ['label' => 'LinkedIn', 'url' => $siteSettings['social_linkedin_url'] ?? null],
+            ], static fn (array $link): bool => filled($link['url'] ?? null)));
+
             if (count($mediaSidebarChannels) === 0) {
                 $showMediaSidebar = false;
             }
@@ -147,6 +156,7 @@ class AppServiceProvider extends ServiceProvider
                     'email' => $siteSettings['footer_email'] ?? 'info@friendsofthedeaffoundation.org',
                     'address' => $siteSettings['footer_address'] ?? '',
                 ],
+                'siteSocialLinks' => $siteSocialLinks,
                 'mediaSidebar' => [
                     'show' => $showMediaSidebar,
                     'title' => $siteSettings['media_sidebar_title'] ?? 'Media Streams',

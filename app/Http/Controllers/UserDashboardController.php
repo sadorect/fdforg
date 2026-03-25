@@ -17,8 +17,9 @@ class UserDashboardController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
+        $user = $request->user();
         $enrollments = Enrollment::with(['course', 'course.instructor'])
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $user->id)
             ->orderByDesc('enrolled_at')
             ->get();
 
@@ -29,7 +30,7 @@ class UserDashboardController extends Controller
             'pending_payments' => $enrollments->where('payment_status', 'pending')->count(),
         ];
 
-        return view('dashboard.index', compact('enrollments', 'stats'));
+        return view('dashboard.index', compact('enrollments', 'stats', 'user'));
     }
 
     public function payments(Request $request): View|RedirectResponse

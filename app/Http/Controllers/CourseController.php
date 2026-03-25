@@ -11,6 +11,7 @@ use App\Support\MathCaptcha;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
@@ -104,9 +105,9 @@ class CourseController extends Controller
             ->get();
 
         $currentEnrollment = null;
-        if (auth()->check()) {
+        if (Auth::check()) {
             $currentEnrollment = Enrollment::where('course_id', $course->id)
-                ->where('user_id', auth()->id())
+                ->where('user_id', Auth::id())
                 ->first();
 
             MathCaptcha::ensure($request, 'course_enroll');
@@ -116,7 +117,7 @@ class CourseController extends Controller
             'course' => $course,
             'relatedCourses' => $relatedCourses,
             'currentEnrollment' => $currentEnrollment,
-            'captchaQuestion' => auth()->check() ? MathCaptcha::question($request, 'course_enroll') : null,
+            'captchaQuestion' => Auth::check() ? MathCaptcha::question($request, 'course_enroll') : null,
         ]);
     }
 
@@ -201,16 +202,28 @@ class CourseController extends Controller
         if ($course->isFree()) {
             MathCaptcha::regenerate($request, 'course_enroll');
 
-            return redirect()
+            $redirect = redirect()
                 ->route('dashboard')
                 ->with('success', 'Enrollment successful. You can start learning now.');
+
+            if ($user->shouldPromptForLearnerProfile()) {
+                $redirect->with('show_learner_profile_prompt', 'enrollment');
+            }
+
+            return $redirect;
         }
 
         MathCaptcha::regenerate($request, 'course_enroll');
 
-        return redirect()
+        $redirect = redirect()
             ->route('dashboard.pay', $enrollment->id)
             ->with('info', 'Enrollment created. Complete payment to unlock full access.');
+
+        if ($user->shouldPromptForLearnerProfile()) {
+            $redirect->with('show_learner_profile_prompt', 'enrollment');
+        }
+
+        return $redirect;
     }
 
     public function showLesson(Request $request, Course $course, Lesson $lesson): View|RedirectResponse
@@ -359,8 +372,14 @@ class CourseController extends Controller
         $lesson->markAsCompleted($user);
         MathCaptcha::regenerate($request, 'lesson_complete');
 
-        return redirect()
+        $redirect = redirect()
             ->route('courses.lessons.show', [$course->slug, $lesson->slug])
             ->with('success', 'Lesson marked as completed.');
+
+        if ($user->shouldPromptForLearnerProfile() && $user->learner_profile_deferred_at !== null) {
+            $redirect->with('show_learner_profile_prompt', 'lesson_completion');
+        }
+
+        return $redirect;
     }
 }

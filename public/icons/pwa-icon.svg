@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Friends of the Deaf Foundation</title>
+  <desc id="desc">Foundation app icon with FD initials on a deep slate background.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#155e75"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="384" cy="120" r="72" fill="#22d3ee" opacity="0.22"/>
+  <path d="M124 132h110c62 0 101 34 101 89 0 56-39 91-101 91h-47v68h-63V132Zm63 52v76h42c28 0 43-13 43-38 0-24-15-38-43-38h-42Zm198-52h63v248h-63z" fill="#f8fafc"/>
+</svg>
